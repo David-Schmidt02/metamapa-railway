@@ -17,7 +17,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="dinamica" options="-parameters" />
       <module name="estatica" options="-parameters" />
-      <module name="metamapa" options="-parameters" />
+      <module name="metamapa" options="" />
       <module name="proxy" options="-parameters" />
     </option>
   </component>
