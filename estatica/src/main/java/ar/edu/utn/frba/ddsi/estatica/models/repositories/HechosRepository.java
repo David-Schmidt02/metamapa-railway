@@ -3,21 +3,19 @@ package ar.edu.utn.frba.ddsi.estatica.models.repositories;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
 import org.springframework.stereotype.Repository;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class HechosRepository implements IHechosRepository{
+public class HechosRepository {
 
-    private List<Hecho> hechos;
+    private final List<Hecho> hechos = new ArrayList<Hecho>();
 
-    @Override
     public List<Hecho> findAll() {
         return this.hechos;
     }
 
-    @Override
     public Hecho findById(UUID id) {
         return this.hechos.stream()
                 .filter(hecho -> hecho.getId().equals(id))
@@ -25,20 +23,16 @@ public class HechosRepository implements IHechosRepository{
                 .orElse(null);
     }
 
-    @Override
     public void save(Hecho hecho) {
         this.hechos.add(hecho);
     }
 
-    @Override
     public void delete(Hecho hecho) {
         this.hechos.removeIf(h -> h.getId().equals(hecho.getId()));
     }
 
-    @Override
     public void addHechos(List<Hecho> hechos) {
         this.hechos.addAll(hechos);
     }
-
 
 }

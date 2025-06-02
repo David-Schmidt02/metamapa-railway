@@ -10,7 +10,12 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Hecho {
-    private UUID id;
+
+    public UUID getId() {
+        return id;
+    }
+
+    private final UUID id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;

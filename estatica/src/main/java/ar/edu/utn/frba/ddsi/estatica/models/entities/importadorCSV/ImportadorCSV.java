@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImportadorCSV implements Importador  {
+public class ImportadorCSV {
     private static LectorCSV lector = new LectorCSV();
 
     public List<Hecho> importarHechosDeCSV(String nombreArchivo) throws IOException, CsvValidationException {
