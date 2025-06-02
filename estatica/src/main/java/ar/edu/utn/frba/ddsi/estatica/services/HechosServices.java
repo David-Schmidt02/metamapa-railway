@@ -17,51 +17,14 @@ import java.util.List;
 @Service
 public class HechosServices {
     private final HechosRepository hechosRepository;
-    private final ResourceLoader resourceLoader; //Me permite abrir los recursos
+     //Me permite abrir los recursos
 
-    public HechosServices(HechosRepository hechosRepository, ResourceLoader resourceLoader) {
+    public HechosServices(HechosRepository hechosRepository) {
         this.hechosRepository = hechosRepository;
-        this.resourceLoader = resourceLoader;
-    }
 
+    }
 
     public List<Hecho> obtenerHechos() {
         return this.hechosRepository.findAll();
     }
-
-    public void importarHechosDesdeCSV(String nombreArchivo) throws IOException, CsvValidationException {
-        ImportadorCSV importador = new ImportadorCSV();
-        List<Hecho> hechosImportados = importador.importarHechosDeCSV(nombreArchivo);
-
-        if (hechosImportados.isEmpty()) {
-            System.out.println("No se encontraron hechos en el archivo: " + nombreArchivo);
-            return;
-        } else {
-            System.out.println("Se importaron " + hechosImportados.size() + " hechos desde el archivo: " + nombreArchivo);
-            this.hechosRepository.addHechos(hechosImportados);
-        }
-    }
-
-    @PostConstruct
-    public void importarTodosHechosDesdeCSV() {
-        try {
-            ResourcePatternResolver resolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader); // Es un buscador que encuentra los archivos con patron CSV
-            Resource[] recursos = resolver.getResources("classpath:*.csv"); // Busca todos los archivos CSV en el classpath
-
-            Arrays.stream(recursos).forEach(recurso -> {
-                try {
-                    String nombreArchivo = recurso.getFilename();
-                    importarHechosDesdeCSV(nombreArchivo);
-                } catch (Exception e) {
-                    System.err.println("Error al importar archivo " + recurso.getFilename() + ": " + e.getMessage());
-                }
-            });
-
-        } catch (Exception e) {
-            System.err.println("Error al buscar archivos CSV: " + e.getMessage());
-        }
-    }
-
-
-
 }
