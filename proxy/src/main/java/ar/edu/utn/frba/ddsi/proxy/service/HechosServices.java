@@ -5,13 +5,14 @@ import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
 import ar.edu.utn.frba.ddsi.proxy.models.repositories.HechosRepository;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.util.List;
 
 @Service
 public class HechosServices {
     private HechosRepository HechosRepository;
 
-    public List<Hecho> obtenerHechos() {
-        return this.HechosRepository.findAll();
+    public List<Hecho> obtenerHechos(URL url) {
+        return this.HechosRepository.findByURL(url);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ar.edu.utn.frba.ddsi.proxy.service.HechosServices;
 
+import java.net.URL;
 import java.util.List;
 
 @RequestMapping("/api/proxy")
@@ -19,7 +20,8 @@ public class ProxyController {
 
     @GetMapping("/hechos")
     public List<Hecho> ObtenerHechos() {
-        return hechosServices.obtenerHechos();
+        URL url = null; // Agregar logica para obtener la URL deseada
+        return hechosServices.obtenerHechos(url);
     }
 }
 
