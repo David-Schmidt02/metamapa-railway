@@ -1,9 +1,17 @@
 package ar.edu.utn.frba.ddsi.estatica.models.repositories;
 
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.estatica.models.entities.importadorCSV.ImportadorCSV;
+import com.opencsv.exceptions.CsvValidationException;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,9 +19,15 @@ import java.util.UUID;
 public class HechosRepository {
 
     private final List<Hecho> hechos = new ArrayList<Hecho>();
+    private final ResourceLoader resourceLoader;
+
+    public HechosRepository(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
 
     public List<Hecho> findAll() {
-        return this.hechos;
+        return importarTodosHechosDesdeCSV();
     }
 
     public Hecho findById(UUID id) {
@@ -35,4 +49,38 @@ public class HechosRepository {
         this.hechos.addAll(hechos);
     }
 
+    public List<Hecho> importarTodosHechosDesdeCSV() {
+        List<Hecho> hechosImportados = new ArrayList<>();
+        try {
+            ResourcePatternResolver resolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader); // Es un buscador que encuentra los archivos con patron CSV
+            Resource[] recursos = resolver.getResources("classpath:*.csv"); // Busca todos los archivos CSV en el classpath
+
+
+            Arrays.stream(recursos).forEach(recurso -> {
+                try {
+                    String nombreArchivo = recurso.getFilename();
+                    hechosImportados.addAll(this.importarHechosDesdeCSV(nombreArchivo));
+                } catch (Exception e) {
+                    System.err.println("Error al importar archivo " + recurso.getFilename() + ": " + e.getMessage());
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Error al buscar archivos CSV: " + e.getMessage());
+        }
+        return hechosImportados;
+    }
+
+    public List<Hecho> importarHechosDesdeCSV(String nombreArchivo) throws IOException, CsvValidationException {
+        ImportadorCSV importador = new ImportadorCSV();
+        List<Hecho> hechosImportados = importador.importarHechosDeCSV(nombreArchivo);
+
+        if (hechosImportados.isEmpty()) {
+            System.out.println("No se encontraron hechos en el archivo: " + nombreArchivo);
+            return hechosImportados;
+        } else {
+            System.out.println("Se importaron " + hechosImportados.size() + " hechos desde el archivo: " + nombreArchivo);
+            return hechosImportados;
+        }
+    }
 }
