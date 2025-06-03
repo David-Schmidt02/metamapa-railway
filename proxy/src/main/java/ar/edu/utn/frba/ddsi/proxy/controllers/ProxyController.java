@@ -20,8 +20,8 @@ public class ProxyController {
 
     @GetMapping("/hechos")
     public List<Hecho> ObtenerHechos() {
-        URL url = null; // Agregar logica para obtener la URL deseada
-        return hechosServices.obtenerHechos(url);
+        String nombre = ""; // Agregar logica para obtener el nombre ¡
+        return hechosServices.obtenerHechos(nombre);
     }
 }
 

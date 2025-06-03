@@ -12,7 +12,7 @@ import java.util.List;
 public class HechosServices {
     private HechosRepository HechosRepository;
 
-    public List<Hecho> obtenerHechos(URL url) {
-        return this.HechosRepository.findByURL(url);
+    public List<Hecho> obtenerHechos(String nombre) {
+        return this.HechosRepository.findByURL(nombre);
     }
 }
