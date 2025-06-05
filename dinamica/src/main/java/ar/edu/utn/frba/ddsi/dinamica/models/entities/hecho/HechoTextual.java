@@ -17,7 +17,6 @@ public class HechoTextual extends Hecho {
                         Categoria categoria,
                         Ubicacion ubicacion,
                         LocalDateTime fechaAcontecimiento,
-                        LocalDateTime fechaCarga,
                         List<Etiqueta> etiquetas,
                         Contribuyente contribuyente,
                         String cuerpo) {

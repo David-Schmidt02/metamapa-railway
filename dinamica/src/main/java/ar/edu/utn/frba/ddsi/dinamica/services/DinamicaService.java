@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.SolicitudesRepository;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -43,7 +42,6 @@ public class DinamicaService {
             hechoDTO.getCategoria(),
             hechoDTO.getUbicacion(),
             hechoDTO.getFechaAcontecimiento(),
-            LocalDateTime.now(),
             hechoDTO.getEtiquetas(),
             hechoDTO.getContribuyente(),
             hechoDTO.getCuerpo()
@@ -60,7 +58,6 @@ public class DinamicaService {
             hechoDTO.getCategoria(),
             hechoDTO.getUbicacion(),
             hechoDTO.getFechaAcontecimiento(),
-            LocalDateTime.now(),
             hechoDTO.getEtiquetas(),
             hechoDTO.getContribuyente(),
             hechoDTO.getContenidoMultimedia()

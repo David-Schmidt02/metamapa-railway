@@ -18,7 +18,6 @@ public class HechoMultimedia extends Hecho {
                            Categoria categoria,
                            Ubicacion ubicacion,
                            LocalDateTime fechaAcontecimiento,
-                           LocalDateTime fechaCarga,
                            List<Etiqueta> etiquetas,
                            Contribuyente contribuyente,
                            List<String> contenidoMultimedia) {

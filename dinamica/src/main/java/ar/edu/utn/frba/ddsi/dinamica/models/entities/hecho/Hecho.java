@@ -40,11 +40,12 @@ public abstract class Hecho {
         this.estaOculto = false;
         this.etiquetas = etiquetas;
         this.contribuyente = contribuyente;
-        this.esAnonimo = contribuyente.esAnonimo();
+        //this.esAnonimo = contribuyente.esAnonimo();
     }
 
     public boolean esEditable() {
-        return !this.esAnonimo && (ChronoUnit.DAYS.between(this.fechaCarga, LocalDateTime.now()) < 7 );
+        //return !this.esAnonimo && (ChronoUnit.DAYS.between(this.fechaCarga, LocalDateTime.now()) < 7 );
+        return ChronoUnit.DAYS.between(this.fechaCarga, LocalDateTime.now()) < 7;
     }
 }
 
