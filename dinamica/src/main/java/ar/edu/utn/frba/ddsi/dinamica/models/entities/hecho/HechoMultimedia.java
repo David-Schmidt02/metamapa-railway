@@ -21,10 +21,9 @@ public class HechoMultimedia extends Hecho {
                            LocalDateTime fechaCarga,
                            List<Etiqueta> etiquetas,
                            Contribuyente contribuyente,
-                           List<String> contenidoMultimedia,
-                           boolean esAnonimo) {
+                           List<String> contenidoMultimedia) {
 
-        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, fechaCarga,etiquetas, contribuyente, esAnonimo);
+        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente);
 
         this.contenidoMultimedia = contenidoMultimedia;
     }

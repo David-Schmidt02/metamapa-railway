@@ -20,10 +20,9 @@ public class HechoTextual extends Hecho {
                         LocalDateTime fechaCarga,
                         List<Etiqueta> etiquetas,
                         Contribuyente contribuyente,
-                        boolean esAnonimo,
                         String cuerpo) {
 
-        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, fechaCarga, etiquetas, contribuyente, esAnonimo);
+        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente);
         this.cuerpo = cuerpo;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class DinamicaRepository {
@@ -15,5 +16,7 @@ public class DinamicaRepository {
         hechos.add(hecho);
     }
 
-
+    public Hecho findById(UUID id) {
+        return hechos.stream().filter(hecho -> hecho.getId().equals(id)).findFirst().orElse(null);
+    }
 }

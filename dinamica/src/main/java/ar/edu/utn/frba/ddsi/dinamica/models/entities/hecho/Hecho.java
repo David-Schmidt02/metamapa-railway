@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,21 +28,28 @@ public abstract class Hecho {
     private boolean esAnonimo;
 
     public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion,
-                 LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, Contribuyente contribuyente, boolean esAnonimo) {
+                 LocalDateTime fechaAcontecimiento, List<Etiqueta> etiquetas, Contribuyente contribuyente) {
         this.id = UUID.randomUUID();
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.ubicacion = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
-        this.fechaCarga = fechaCarga;
+        this.fechaCarga = LocalDateTime.now();
         this.origen = Origen_Fuente.DINAMICA;
         this.estaOculto = false;
         this.etiquetas = etiquetas;
         this.contribuyente = contribuyente;
-        this.esAnonimo = esAnonimo;
+        this.esAnonimo = contribuyente.esAnonimo();
+    }
+
+    public boolean esEditable() {
+        return !this.esAnonimo && (ChronoUnit.DAYS.between(this.fechaCarga, LocalDateTime.now()) < 7 );
     }
 }
+
+
+
 
 
 
