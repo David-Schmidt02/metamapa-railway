@@ -2,6 +2,7 @@ package ar.edu.utn.frba.ddsi.proxy.models.repositories;
 
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.conexion.Conexion;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.conexion.conexionHelper;
 import jakarta.annotation.PostConstruct;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class HechosRepository {
 
         for (String nombre : conexiones.keySet()) {
             Conexion conexion = conexiones.get(nombre);
-            List<Hecho> hechosDeConexion = conexion.obtenerHechos();
+            List<Hecho> hechosDeConexion = conexionHelper.getInstance().obtenerHechos(conexion);
             if (hechosDeConexion != null && !hechosDeConexion.isEmpty()) {
                 this.hechos.put(nombre, hechosDeConexion);
             }
