@@ -27,7 +27,7 @@ public class HechosRepository {
 
 
     public List<Hecho> findAll() {
-        return importarTodosHechosDesdeCSV();
+        return cargarCSVs();
     }
 
     public Hecho findById(UUID id) {
@@ -49,14 +49,14 @@ public class HechosRepository {
         this.hechos.addAll(hechos);
     }
 
-    public List<Hecho> importarTodosHechosDesdeCSV() {
+    public List<Hecho> cargarCSVs() {
         List<Hecho> hechosImportados = new ArrayList<>();
         try {
             ResourcePatternResolver resolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader); // Es un buscador que encuentra los archivos con patron CSV
             Resource[] recursos = resolver.getResources("classpath:*.csv"); // Busca todos los archivos CSV en el classpath
 
 
-            Arrays.stream(recursos).forEach(recurso -> {
+            Arrays.stream(recursos).forEach(recurso -> { // el forEach recorre cada recurso (csv) encontrado
                 try {
                     String nombreArchivo = recurso.getFilename();
                     hechosImportados.addAll(this.importarHechosDesdeCSV(nombreArchivo));
