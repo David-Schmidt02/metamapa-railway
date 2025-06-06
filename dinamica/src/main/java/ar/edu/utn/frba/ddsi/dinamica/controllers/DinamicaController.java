@@ -1,5 +1,7 @@
 package ar.edu.utn.frba.ddsi.dinamica.controllers;
 
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.SolicitudDTO;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.dinamica.services.DinamicaService;
 
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +19,25 @@ public class DinamicaController {
     }
 
     @PostMapping("/hechos")
-    public void crearHecho(@RequestBody Object hechoDTO) {
+    public void subirHecho(@RequestBody Object hechoDTO) {
         dinamicaService.crearHecho(hechoDTO);
     }
 
     @PutMapping("/hechos/{id}")
-    public void actualizarHecho(@PathVariable UUID id, @RequestBody Object hechoDTO) {
+    public void modificarHecho(@PathVariable UUID id, @RequestBody Object hechoDTO) {
         dinamicaService.actualizarHecho(id, hechoDTO);
     }
 
 
-    //@PostMapping("/solicitudes")
+    @PostMapping("/solicitudes")
+    public void subirSolicitud(@RequestBody SolicitudDTO solicitudDTO) {
+        dinamicaService.crearSolicitudEliminacion(solicitudDTO);
+    }
+
+    @PutMapping("/solicitudes/{id}")
+    public void modificarSolicitud(@PathVariable UUID id, @RequestBody Estado_Solicitud nuevoEstado) {
+        dinamicaService.modificarEstadoSolicitud(id, nuevoEstado);
+    }
+
+
 }

@@ -19,4 +19,14 @@ public class DinamicaRepository {
     public Hecho findById(UUID id) {
         return hechos.stream().filter(hecho -> hecho.getId().equals(id)).findFirst().orElse(null);
     }
+
+    public Hecho findByIdAndUpdate(UUID id, Hecho updatedHecho) {
+        Hecho existingHecho = findById(id);
+        if (existingHecho != null) {
+            int index = hechos.indexOf(existingHecho);
+            hechos.set(index, updatedHecho);
+            return updatedHecho;
+        }
+        return null;
+    }
 }

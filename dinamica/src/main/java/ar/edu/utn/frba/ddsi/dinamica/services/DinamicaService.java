@@ -2,10 +2,12 @@ package ar.edu.utn.frba.ddsi.dinamica.services;
 
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoMultimediaDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoTextualDTO;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.DinamicaRepository;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 import org.springframework.stereotype.Service;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.SolicitudesRepository;
@@ -133,20 +135,31 @@ public class DinamicaService {
         }
     }
 
-    public void crearSolicitudEliminacion(UUID id, String motivo) {
-        // Implementar lógica para crear una solicitud de eliminación
+    public void crearSolicitudEliminacion(SolicitudDTO solicitud) {
 
-        Hecho hechoAeliminar = dinamicaRepository.findById(id);
+        //TODO: El detector de spam iria aca?
 
         SolicitudEliminacion nuevaSolicitudEliminacion = new SolicitudEliminacion(
-            hechoAeliminar,
-            motivo
+            solicitud.getId(),
+            solicitud.getJustificacion()
         );
 
-        solicitudesRepository.save(nuevaSolicitudEliminacion);
+        if (!nuevaSolicitudEliminacion.esCorrecta()) {
+            throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
+        }
 
+        Hecho hechoAeliminar = dinamicaRepository.findById(nuevaSolicitudEliminacion.getIdHecho());
+
+        if (hechoAeliminar == null) {
+            throw new IllegalArgumentException("Hecho no encontrado con ID: " + nuevaSolicitudEliminacion.getIdHecho());
+        }
+
+        solicitudesRepository.save(nuevaSolicitudEliminacion);
     }
 
+    public void modificarEstadoSolicitud(UUID id, Estado_Solicitud nuevoEstado) {
+        //TODO: Implementar la lógica para modificar el estado de una solicitud de eliminación
+    }
 }
 
 
