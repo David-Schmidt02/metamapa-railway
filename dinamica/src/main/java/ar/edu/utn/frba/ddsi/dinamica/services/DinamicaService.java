@@ -6,7 +6,7 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.DinamicaRepository;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 import org.springframework.stereotype.Service;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
@@ -16,11 +16,11 @@ import java.util.UUID;
 
 @Service
 public class DinamicaService {
-    private final DinamicaRepository dinamicaRepository;
+    private final HechosRepository hechosRepository;
     private final SolicitudesRepository solicitudesRepository;
 
-    public DinamicaService(DinamicaRepository dinamicaRepository, SolicitudesRepository solicitudesRepository) {
-        this.dinamicaRepository = dinamicaRepository;
+    public DinamicaService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository) {
+        this.hechosRepository = hechosRepository;
         this.solicitudesRepository = solicitudesRepository;
     }
 
@@ -37,7 +37,7 @@ public class DinamicaService {
     }
 
 
-    public void crearHechoTextual(HechoTextualDTO hechoDTO) {
+    private void crearHechoTextual(HechoTextualDTO hechoDTO) {
         HechoTextual hecho = new HechoTextual(
             hechoDTO.getTitulo(),
             hechoDTO.getDescripcion(),
@@ -49,10 +49,10 @@ public class DinamicaService {
             hechoDTO.getCuerpo()
         );
 
-        dinamicaRepository.save(hecho);
+        hechosRepository.save(hecho);
     }
 
-    public void crearHechoMultimedia(HechoMultimediaDTO hechoDTO) {
+    private void crearHechoMultimedia(HechoMultimediaDTO hechoDTO) {
 
         HechoMultimedia hecho = new HechoMultimedia(
             hechoDTO.getTitulo(),
@@ -65,7 +65,7 @@ public class DinamicaService {
             hechoDTO.getContenidoMultimedia()
         );
 
-        dinamicaRepository.save(hecho);
+        hechosRepository.save(hecho);
     }
 
     // <---------------------------------- ACTUALIZACION DE HECHOS ---------------------------------->
@@ -81,8 +81,8 @@ public class DinamicaService {
     }
 
 
-    public void actualizarHechoTextual(UUID id, HechoTextualDTO hechoDTO) {
-            Hecho hechoAEditar = dinamicaRepository.findById(id);
+    private void actualizarHechoTextual(UUID id, HechoTextualDTO hechoDTO) {
+            Hecho hechoAEditar = hechosRepository.findById(id);
 
             if (hechoAEditar == null) {
                 throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
@@ -102,14 +102,14 @@ public class DinamicaService {
                 hechoTextualEditar.setContribuyente(hechoDTO.getContribuyente());
                 hechoTextualEditar.setCuerpo(hechoDTO.getCuerpo());
 
-                dinamicaRepository.save(hechoTextualEditar);
+                hechosRepository.save(hechoTextualEditar);
             } else {
                 throw new RuntimeException("El hecho no es editable");
             }
     }
 
-    public void actualizarHechoMultimedia(UUID id, HechoMultimediaDTO hechoDTO) {
-        Hecho hechoAEditar = dinamicaRepository.findById(id);
+    private void actualizarHechoMultimedia(UUID id, HechoMultimediaDTO hechoDTO) {
+        Hecho hechoAEditar = hechosRepository.findById(id);
 
         if (hechoAEditar == null) {
             throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
@@ -129,7 +129,7 @@ public class DinamicaService {
             hechoMultimediaEditar.setContribuyente(hechoDTO.getContribuyente());
             hechoMultimediaEditar.setContenidoMultimedia(hechoDTO.getContenidoMultimedia());
 
-            dinamicaRepository.save(hechoMultimediaEditar);
+            hechosRepository.save(hechoMultimediaEditar);
         } else {
             throw new RuntimeException("El hecho no es editable");
         }
@@ -137,18 +137,21 @@ public class DinamicaService {
 
     public void crearSolicitudEliminacion(SolicitudDTO solicitud) {
 
-        //TODO: El detector de spam iria aca?
-
         SolicitudEliminacion nuevaSolicitudEliminacion = new SolicitudEliminacion(
             solicitud.getId(),
             solicitud.getJustificacion()
         );
 
+        if(DetectorDeSpam.esSpam(nuevaSolicitudEliminacion.getJustificacion())) {
+            nuevaSolicitudEliminacion.setEstado(Estado_Solicitud.RECHAZADA);
+        }
+
         if (!nuevaSolicitudEliminacion.esCorrecta()) {
             throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
         }
 
-        Hecho hechoAeliminar = dinamicaRepository.findById(nuevaSolicitudEliminacion.getIdHecho());
+        // Verifico si el hecho existe
+        Hecho hechoAeliminar = hechosRepository.findById(nuevaSolicitudEliminacion.getIdHecho());
 
         if (hechoAeliminar == null) {
             throw new IllegalArgumentException("Hecho no encontrado con ID: " + nuevaSolicitudEliminacion.getIdHecho());
@@ -158,7 +161,41 @@ public class DinamicaService {
     }
 
     public void modificarEstadoSolicitud(UUID id, Estado_Solicitud nuevoEstado) {
-        //TODO: Implementar la lógica para modificar el estado de una solicitud de eliminación
+
+        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id);
+
+        if (solicitudAEditar == null) {
+            throw new IllegalArgumentException("Solicitud no encontrada con ID: " + id);
+        }
+
+        solicitudAEditar.setEstado(nuevoEstado);
+
+        SolicitudEliminacion solicitudActualizada = solicitudesRepository.findByIdAndUpdate(id, solicitudAEditar);
+
+        if (solicitudActualizada == null) {
+            throw new RuntimeException("No se pudo actualizar la solicitud con ID: " + id);
+        }
+
+        if(nuevoEstado == Estado_Solicitud.ACEPTADA) {
+            this.ocultarHecho(solicitudAEditar.getIdHecho());
+        }
+
+    }
+
+    private void ocultarHecho(UUID idHecho) {
+        Hecho hechoParaOcultar = hechosRepository.findById(idHecho);
+
+        if (hechoParaOcultar == null) {
+            throw new IllegalArgumentException("Hecho no encontrado con ID: " + idHecho);
+        }
+
+        hechoParaOcultar.setEstaOculto(true);
+
+        Hecho hechoActualizado = hechosRepository.findByIdAndUpdate(idHecho, hechoParaOcultar);
+
+        if (hechoActualizado == null) {
+            throw new RuntimeException("No se pudo ocultar el hecho con ID: " + idHecho);
+        }
     }
 }
 

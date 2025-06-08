@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class DinamicaRepository {
+public class HechosRepository {
 
     private final List<Hecho> hechos = new ArrayList<>();
 

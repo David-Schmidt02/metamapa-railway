@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 @Getter
@@ -8,6 +9,7 @@ public class SolicitudEliminacion {
     private UUID id;
     private UUID idHecho;
     private String justificacion;
+    @Setter
     private Estado_Solicitud estado;
 
     public SolicitudEliminacion(UUID idHecho, String justificacion) {
@@ -21,4 +23,5 @@ public class SolicitudEliminacion {
         // Justificacion con minimo 500 caracteres
         return justificacion != null && justificacion.length() >= 500;
     }
+
 }
