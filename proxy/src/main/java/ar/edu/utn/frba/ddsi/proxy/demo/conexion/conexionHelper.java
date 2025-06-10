@@ -24,7 +24,8 @@ public class conexionHelper {
 
     public List<Hecho> obtenerHechos(Conexion conexion) {
         ArrayList<Hecho> hechos = new ArrayList<>();
-        Map<String, Object> hechoDescompuesto = conexion.siguienteHecho(conexion.url(), LocalDate.now()); // La fecha de consulta estara bien?
+        LocalDate fechaHaceUnaHora = LocalDateTime.now().minusHours(1).toLocalDate();
+        Map<String, Object> hechoDescompuesto = conexion.siguienteHecho(conexion.url(), fechaHaceUnaHora);
         while(hechoDescompuesto != null) {
             hechos.add(convertirHecho(hechoDescompuesto));
             hechoDescompuesto = conexion.siguienteHecho(conexion.url(), LocalDate.now());

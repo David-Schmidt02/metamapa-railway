@@ -27,4 +27,16 @@ public class MetaMapaClient {
                 .collectList()                // Junta el flujo en una lista
                 .block();                     // Bloquea y espera la respuesta (estilo imperativo)
     }
+
+    public List<Hecho> obtenerHechosPorColeccion(FiltroRequest filtro, String identificador) {
+
+        String uri = filtro.aplicarFiltroARequest(UriComponentsBuilder
+                .fromPath("/colecciones/"+ identificador + "/hechos"));
+        return webClient.get()
+                .uri(uri)
+                .retrieve()
+                .bodyToFlux(Hecho.class)
+                .collectList()
+                .block();
+    }
 }

@@ -2,10 +2,7 @@ package ar.edu.utn.frba.ddsi.proxy.controllers;
 
 import ar.edu.utn.frba.ddsi.proxy.metaMapa.FiltroRequest;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ar.edu.utn.frba.ddsi.proxy.service.HechosServices;
 
 import java.net.URL;
@@ -50,6 +47,28 @@ public class ProxyController {
         );
 
         return hechosServices.obtenerHechosMetaMapa(filtros);
+    }
+
+    @GetMapping("metaMapa/colecciones/{identificador}/hechos")
+    public List<Hecho> ObtenerHechosPorColeccion(
+         @PathVariable String identificador,
+         @RequestParam(required = false) String categoria,
+         @RequestParam(required = false) String fecha_reporte_desde,
+         @RequestParam(required = false) String fecha_reporte_hasta,
+         @RequestParam(required = false) String fecha_acontecimiento_desde,
+         @RequestParam(required = false) String fecha_acontecimiento_hasta,
+         @RequestParam(required = false) String ubicacion) {
+
+         {
+        FiltroRequest filtros = new FiltroRequest(
+                fecha_acontecimiento_hasta,
+                    ubicacion,
+                    fecha_acontecimiento_desde,
+                    fecha_reporte_hasta,
+                    fecha_reporte_desde,
+                    categoria
+            );
+        return hechosServices.obtenerHechosPorColeccion(filtros, identificador);
     }
 }
 

@@ -9,6 +9,7 @@ public class FiltroRequest {
     private final String fecha_acontecimiento_desde;
     private final String fecha_acontecimiento_hasta;
     private final String ubicacion;
+    private final String coleccionId;
 
     public FiltroRequest(String fecha_acontecimiento_hasta, String ubicacion, String fecha_acontecimiento_desde, String fecha_reporte_hasta, String fecha_reporte_desde, String categoria) {
         this.fecha_acontecimiento_hasta = fecha_acontecimiento_hasta;
@@ -28,7 +29,5 @@ public class FiltroRequest {
         if (ubicacion != null) url.queryParam("ubicacion", ubicacion);
 
         return url.toUriString();
-
-
     }
 }

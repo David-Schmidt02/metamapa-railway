@@ -27,4 +27,8 @@ public class HechosServices {
     public List<Hecho> obtenerHechosMetaMapa(FiltroRequest query) {
         return this.instanciaMetaMapa.obtenerHechos(query);
     }
+
+    public List<Hecho> obtenerHechosPorColeccion(FiltroRequest query ,String identificador) {
+        return this.instanciaMetaMapa.obtenerHechosPorColeccion(query, identificador);
+    }
 }
