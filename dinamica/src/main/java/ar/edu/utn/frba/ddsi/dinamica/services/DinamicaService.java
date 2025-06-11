@@ -33,8 +33,20 @@ public class DinamicaService {
     // <---------------------------------- CREACION DE HECHOS ---------------------------------->
 
     public Hecho crearHecho(Object hechoDTO) {
-        System.out.println(hechoDTO);
+        HechoTextualDTO hechoTextualDTO = verificarYConvertirHechoDTO(hechoDTO, HechoTextualDTO.class);
+        if (hechoTextualDTO != null) {
+            return crearHechoTextual(hechoTextualDTO);
+        }
 
+        HechoMultimediaDTO hechoMultimediaDTO = verificarYConvertirHechoDTO(hechoDTO, HechoMultimediaDTO.class);
+        if (hechoMultimediaDTO != null) {
+            return crearHechoMultimedia(hechoMultimediaDTO);
+        }
+
+        throw new IllegalArgumentException("Tipo de hecho no soportado");
+    }
+
+    private <T> T verificarYConvertirHechoDTO(Object hechoDTO, Class<T> tipo) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
@@ -52,15 +64,19 @@ public class DinamicaService {
                 }
             }
 
-            // Verificar el tipo específico de hecho
+            // Verificar tipo específico y validar contra el tipo esperado
             if (hechoMap.containsKey("cuerpo")) {
-                System.out.println("Creando hecho textual");
-                HechoTextualDTO dto = mapper.convertValue(hechoDTO, HechoTextualDTO.class);
-                return crearHechoTextual(dto);
+                if (tipo == HechoTextualDTO.class) {
+                    return mapper.convertValue(hechoDTO, tipo);
+                } else {
+                    return null; // No es del tipo solicitado
+                }
             } else if (hechoMap.containsKey("contenidoMultimedia")) {
-                System.out.println("Creando hecho multimedia");
-                HechoMultimediaDTO dto = mapper.convertValue(hechoDTO, HechoMultimediaDTO.class);
-                return crearHechoMultimedia(dto);
+                if (tipo == HechoMultimediaDTO.class) {
+                    return mapper.convertValue(hechoDTO, tipo);
+                } else {
+                    return null; // No es del tipo solicitado
+                }
             } else {
                 throw new IllegalArgumentException("Tipo de hecho no identificado: falta campo 'cuerpo' o 'contenidoMultimedia'");
             }
@@ -111,11 +127,17 @@ public class DinamicaService {
     // <---------------------------------- ACTUALIZACION DE HECHOS ---------------------------------->
 
     public void actualizarHecho(UUID id, Object hechoDTO) {
-        if (hechoDTO instanceof HechoTextualDTO) {
-            actualizarHechoTextual(id, (HechoTextualDTO) hechoDTO);
-        } else if (hechoDTO instanceof HechoMultimediaDTO) {
-            actualizarHechoMultimedia(id, (HechoMultimediaDTO) hechoDTO);
-        } else {
+        HechoTextualDTO hechoTextualDTO = verificarYConvertirHechoDTO(hechoDTO, HechoTextualDTO.class);
+        if (hechoTextualDTO != null) {
+            actualizarHechoTextual(id, hechoTextualDTO);
+        }
+
+        HechoMultimediaDTO hechoMultimediaDTO = verificarYConvertirHechoDTO(hechoDTO, HechoMultimediaDTO.class);
+        if (hechoMultimediaDTO != null) {
+            actualizarHechoMultimedia(id, hechoMultimediaDTO);
+        }
+
+        if(hechoTextualDTO == null && hechoMultimediaDTO == null) {
             throw new IllegalArgumentException("Tipo de hecho no soportado");
         }
     }
@@ -142,7 +164,7 @@ public class DinamicaService {
                 hechoTextualEditar.setContribuyente(hechoDTO.getContribuyente());
                 hechoTextualEditar.setCuerpo(hechoDTO.getCuerpo());
 
-                hechosRepository.save(hechoTextualEditar);
+                hechosRepository.findByIdAndUpdate(id, hechoTextualEditar);
             } else {
                 throw new RuntimeException("El hecho no es editable");
             }
@@ -169,7 +191,7 @@ public class DinamicaService {
             hechoMultimediaEditar.setContribuyente(hechoDTO.getContribuyente());
             hechoMultimediaEditar.setContenidoMultimedia(hechoDTO.getContenidoMultimedia());
 
-            hechosRepository.save(hechoMultimediaEditar);
+            hechosRepository.findByIdAndUpdate(id, hechoMultimediaEditar);
         } else {
             throw new RuntimeException("El hecho no es editable");
         }
