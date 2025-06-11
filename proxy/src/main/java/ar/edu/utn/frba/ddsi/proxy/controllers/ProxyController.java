@@ -2,10 +2,12 @@ package ar.edu.utn.frba.ddsi.proxy.controllers;
 
 import ar.edu.utn.frba.ddsi.proxy.metaMapa.FiltroRequest;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.SolicitudEliminacion;
 import org.springframework.web.bind.annotation.*;
 import ar.edu.utn.frba.ddsi.proxy.service.HechosServices;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequestMapping("/api/proxy")
 @RestController
@@ -58,17 +60,19 @@ public class ProxyController {
             @RequestParam(required = false) String fecha_acontecimiento_hasta,
             @RequestParam(required = false) String ubicacion) {
 
-        {
-            FiltroRequest filtros = new FiltroRequest(
-                    fecha_acontecimiento_hasta,
-                    ubicacion,
-                    fecha_acontecimiento_desde,
-                    fecha_reporte_hasta,
-                    fecha_reporte_desde,
-                    categoria
-            );
-            return hechosServices.obtenerHechosPorColeccion(filtros, identificador);
-        }
-        // TODO POST /solicitudes
+        FiltroRequest filtros = new FiltroRequest(
+                fecha_acontecimiento_hasta,
+                ubicacion,
+                fecha_acontecimiento_desde,
+                fecha_reporte_hasta,
+                fecha_reporte_desde,
+                categoria
+        );
+        return hechosServices.obtenerHechosPorColeccion(filtros, identificador);
+    }
+
+    @PostMapping("metaMapa/solicitudes")
+    public SolicitudEliminacion crearSolicitudEliminacion(@RequestParam UUID idHecho, @RequestParam String justificacion) {
+        return hechosServices.crearSolicitudDeEliminacion(idHecho, justificacion);
     }
 

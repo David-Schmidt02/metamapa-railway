@@ -4,11 +4,13 @@ package ar.edu.utn.frba.ddsi.proxy.service;
 import ar.edu.utn.frba.ddsi.proxy.metaMapa.FiltroRequest;
 import ar.edu.utn.frba.ddsi.proxy.metaMapa.MetaMapaClient;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.proxy.models.repositories.HechosRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class HechosServices {
@@ -30,5 +32,9 @@ public class HechosServices {
 
     public List<Hecho> obtenerHechosPorColeccion(FiltroRequest query, String identificador) {
         return this.instanciaMetaMapa.obtenerHechosPorColeccion(query, identificador);
+    }
+
+    public SolicitudEliminacion crearSolicitudDeEliminacion(UUID idHecho, String justificacion) {
+        return this.instanciaMetaMapa.crearSolicitudDeEliminacion(idHecho, justificacion);
     }
 }

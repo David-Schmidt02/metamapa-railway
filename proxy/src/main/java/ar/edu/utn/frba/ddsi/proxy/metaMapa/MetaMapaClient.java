@@ -1,10 +1,13 @@
 package ar.edu.utn.frba.ddsi.proxy.metaMapa;
 
+import ar.edu.utn.frba.ddsi.proxy.models.entities.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.SolicitudEliminacion;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 public class MetaMapaClient {
     private final WebClient webClient;
@@ -37,6 +40,15 @@ public class MetaMapaClient {
                 .retrieve()
                 .bodyToFlux(Hecho.class)
                 .collectList()
+                .block();
+    }
+
+    public SolicitudEliminacion crearSolicitudDeEliminacion(UUID idHecho, String justificacion) {
+        return webClient.post()
+                .uri("/solicitudes/eliminacion")
+                .bodyValue(new SolicitudEliminacion(idHecho, justificacion))
+                .retrieve()
+                .bodyToMono(SolicitudEliminacion.class)
                 .block();
     }
 
