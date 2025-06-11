@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.ddsi.proxy.models.entities;
+package ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes;
 
 import lombok.Getter;
 import lombok.Setter;

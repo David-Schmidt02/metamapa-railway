@@ -1,9 +1,10 @@
 package ar.edu.utn.frba.ddsi.proxy.metaMapa;
 
-import ar.edu.utn.frba.ddsi.proxy.models.entities.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
-import ar.edu.utn.frba.ddsi.proxy.models.entities.SolicitudEliminacion;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacion;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
@@ -44,8 +45,16 @@ public class MetaMapaClient {
     }
 
     public SolicitudEliminacion crearSolicitudDeEliminacion(UUID idHecho, String justificacion) {
+        Hecho hechoReferenciado = webClient.get()
+                .uri("/hechos/"+ idHecho)
+                .retrieve()
+                .bodyToMono(Hecho.class)
+                .block();
+        if (hechoReferenciado == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro el hecho con ID: " + idHecho);
+        }
         return webClient.post()
-                .uri("/solicitudes/eliminacion")
+                .uri("/solicitudes")
                 .bodyValue(new SolicitudEliminacion(idHecho, justificacion))
                 .retrieve()
                 .bodyToMono(SolicitudEliminacion.class)

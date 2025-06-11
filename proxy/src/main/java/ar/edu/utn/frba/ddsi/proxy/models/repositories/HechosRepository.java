@@ -6,13 +6,14 @@ import ar.edu.utn.frba.ddsi.proxy.demo.conexion.conexionHelper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Repository
 public class HechosRepository {
 
     private Map<String, Conexion> conexiones = Map.of();
-    private Map<String, List<Hecho>> hechos = Map.of();
+    private Map<String, List<Hecho>> hechos = new HashMap<>(); // la conexion es la clave,
 
 
     @PostConstruct

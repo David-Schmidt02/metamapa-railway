@@ -4,10 +4,12 @@ package ar.edu.utn.frba.ddsi.proxy.service;
 import ar.edu.utn.frba.ddsi.proxy.metaMapa.FiltroRequest;
 import ar.edu.utn.frba.ddsi.proxy.metaMapa.MetaMapaClient;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho;
-import ar.edu.utn.frba.ddsi.proxy.models.entities.SolicitudEliminacion;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.proxy.models.repositories.HechosRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,11 +24,16 @@ public class HechosServices {
     }
 
     public List<Hecho> obtenerHechos(String nombre) {
-        return this.hechosRepository.findByName(nombre);
+        System.out.println("Buscando hechos para: " + nombre);
+        List<Hecho> hechos = this.hechosRepository.findByName(nombre);
+        if (hechos == null || hechos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron hechos para el nombre: " + nombre);
+        }
+        return hechos;
     }
 
     @Scheduled(fixedRate = 60 * 60 * 1000) // cada 1 hora
-    public void actualizarHechosPeriodicamente() {
+    public void actualizarHechosPeriodicament() {
         this.hechosRepository.obtenerHechos();
     }
 
