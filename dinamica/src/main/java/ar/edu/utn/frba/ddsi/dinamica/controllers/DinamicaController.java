@@ -8,6 +8,7 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Solici
 import ar.edu.utn.frba.ddsi.dinamica.services.DinamicaService;
 
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,6 +55,15 @@ public class DinamicaController {
     public void modificarSolicitud(@PathVariable UUID id, @RequestBody Estado_Solicitud nuevoEstado) {
         dinamicaService.modificarEstadoSolicitud(id, nuevoEstado);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception e) {
+        // Manejo de excepciones genérico
+        return ResponseEntity
+                .badRequest()
+                .body(e.getMessage());
+    }
+
 
 
 
