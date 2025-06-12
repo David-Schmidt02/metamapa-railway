@@ -11,15 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class conexionHelper {
+public class ConexionHelper {
     // Instancia única (singleton)
-    private static final conexionHelper instancia = new conexionHelper();
+    private static final ConexionHelper instancia = new ConexionHelper();
 
     // Constructor privado
-    private conexionHelper() {
+    private ConexionHelper() {
     }
 
-    public static conexionHelper getInstance() {
+    public static ConexionHelper getInstance() {
         return instancia;
     }
 

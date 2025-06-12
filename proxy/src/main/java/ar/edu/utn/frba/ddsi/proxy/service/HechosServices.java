@@ -32,7 +32,7 @@ public class HechosServices {
         return hechos;
     }
 
-    @Scheduled(fixedRate = 60 * 60 * 1000) // cada 1 hora
+    @Scheduled(fixedRate = 60 * 60 * 1000)  //cada 1 hora
     public void actualizarHechosPeriodicamente() {
         this.hechosRepository.obtenerHechos();
     }
