@@ -32,10 +32,10 @@ public class MetaMapaClient {
                 .block();                     // Bloquea y espera la respuesta (estilo imperativo)
     }
 
-    public List<Hecho> obtenerHechosPorColeccion(FiltroRequest filtro, String identificador) {
+    public List<Hecho> obtenerHechosPorColeccion(FiltroRequest filtro, String handle) {
 
         String uri = filtro.aplicarFiltroARequest(UriComponentsBuilder
-                .fromPath("/colecciones/" + identificador + "/hechos"));
+                .fromPath("/colecciones/" + handle + "/hechos"));
         return webClient.get()
                 .uri(uri)
                 .retrieve()

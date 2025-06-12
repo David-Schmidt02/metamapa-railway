@@ -1,8 +1,8 @@
 package ar.edu.utn.frba.ddsi.proxy.models.repositories;
 
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Hecho;
-import ar.edu.utn.frba.ddsi.proxy.demo.conexion.Conexion;
-import ar.edu.utn.frba.ddsi.proxy.demo.conexion.conexionHelper;
+import ar.edu.utn.frba.ddsi.proxy.conexionDemo.Conexion;
+import ar.edu.utn.frba.ddsi.proxy.conexionDemo.conexionHelper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
@@ -12,11 +12,11 @@ import java.util.Map;
 @Repository
 public class HechosRepository {
 
-    private Map<String, Conexion> conexiones = Map.of();
-    private Map<String, List<Hecho>> hechos = new HashMap<>(); // la conexion es la clave,
+    private Map<String, Conexion> conexiones = Map.of(); // Clave: nombreConexion, Valor: objeto Conexion
+    private Map<String, List<Hecho>> hechos = new HashMap<>();  // Clave: nombreConexion, Valor: lista de hechos
 
 
-    @PostConstruct
+    @PostConstruct // IMPORTANTE: esto se ejecuta cuando arranca la aplicacion y llena la lista de hechos segun conexion
     public void obtenerHechos() {
 
         for (String nombre : conexiones.keySet()) {
@@ -28,7 +28,7 @@ public class HechosRepository {
         }
     }
 
-    public List<Hecho> findByName(String nombre) {
-        return this.hechos.get(nombre);
-    }
+    public List<Hecho> findByName(String nombreConexion) {
+        return this.hechos.get(nombreConexion);
+    } // Get a la lista de hechos de una conexion específica
 }

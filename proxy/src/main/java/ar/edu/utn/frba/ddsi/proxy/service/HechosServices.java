@@ -23,17 +23,17 @@ public class HechosServices {
         this.hechosRepository = hechosRepository;
     }
 
-    public List<Hecho> obtenerHechos(String nombre) {
-        System.out.println("Buscando hechos para: " + nombre);
-        List<Hecho> hechos = this.hechosRepository.findByName(nombre);
+    public List<Hecho> obtenerHechos(String nombreConexion) {
+        System.out.println("Buscando hechos para: " + nombreConexion);
+        List<Hecho> hechos = this.hechosRepository.findByName(nombreConexion);
         if (hechos == null || hechos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron hechos para el nombre: " + nombre);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron hechos para el nombre: " + nombreConexion);
         }
         return hechos;
     }
 
     @Scheduled(fixedRate = 60 * 60 * 1000) // cada 1 hora
-    public void actualizarHechosPeriodicament() {
+    public void actualizarHechosPeriodicamente() {
         this.hechosRepository.obtenerHechos();
     }
 
@@ -41,8 +41,8 @@ public class HechosServices {
         return this.instanciaMetaMapa.obtenerHechos(query);
     }
 
-    public List<Hecho> obtenerHechosPorColeccion(FiltroRequest query, String identificador) {
-        return this.instanciaMetaMapa.obtenerHechosPorColeccion(query, identificador);
+    public List<Hecho> obtenerHechosPorColeccion(FiltroRequest query, String handle) {
+        return this.instanciaMetaMapa.obtenerHechosPorColeccion(query, handle);
     }
 
     public SolicitudEliminacion crearSolicitudDeEliminacion(UUID idHecho, String justificacion) {

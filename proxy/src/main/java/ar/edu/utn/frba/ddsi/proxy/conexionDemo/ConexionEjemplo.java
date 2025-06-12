@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.ddsi.proxy.demo.conexion;
+package ar.edu.utn.frba.ddsi.proxy.conexionDemo;
 
 import java.net.URL;
 import java.time.LocalDate;
