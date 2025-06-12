@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 public class HechosServices {
     private final HechosRepository hechosRepository;
-    private MetaMapaClient instanciaMetaMapa;
+    private final MetaMapaClient instanciaMetaMapa = new MetaMapaClient("http://localhost:8081");
 
     public HechosServices(HechosRepository hechosRepository) {
         this.hechosRepository = hechosRepository;
