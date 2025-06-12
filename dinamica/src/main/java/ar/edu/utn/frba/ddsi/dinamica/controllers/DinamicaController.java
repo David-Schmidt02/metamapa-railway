@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.ddsi.dinamica.controllers;
 
 
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
@@ -48,13 +49,25 @@ public class DinamicaController {
     }
 
     @PostMapping("/hechos")
-    public Hecho subirHecho(@RequestBody Object hechoDTO){
-        return dinamicaService.crearHecho(hechoDTO);
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED) // Para indicar que se ha creado un recurso
+    public Hecho subirHecho(@RequestBody HechoDTO hechoDTO) {
+
+        switch (hechoDTO.getTipo().toLowerCase()) {
+            case "textual":
+                return dinamicaService.crearHechoTextual(hechoDTO);
+
+            case "multimedia":
+                return dinamicaService.crearHechoMultimedia(hechoDTO);
+
+            default:
+                throw new IllegalArgumentException("Tipo de hecho no soportado: " + hechoDTO.getTipo());
+        }
+        // return dinamicaService.crearHecho(hechoDTO);
     }
 
     @PutMapping("/hechos/{id}")
     public void modificarHecho(@PathVariable UUID id, @RequestBody Object hechoDTO) {
-        dinamicaService.actualizarHecho(id, hechoDTO);
+        // dinamicaService.actualizarHecho(id, hechoDTO);
     }
 
     @GetMapping("/solicitudes")

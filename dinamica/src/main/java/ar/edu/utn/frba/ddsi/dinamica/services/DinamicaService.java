@@ -1,11 +1,11 @@
 package ar.edu.utn.frba.ddsi.dinamica.services;
 
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoMultimediaDTO;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoTextualDTO;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 
@@ -34,73 +34,16 @@ public class DinamicaService {
 
     // <---------------------------------- CREACION DE HECHOS ---------------------------------->
 
-    public Hecho crearHecho(Object hechoDTO) {
-        HechoTextualDTO hechoTextualDTO = verificarYConvertirHechoDTO(hechoDTO, HechoTextualDTO.class);
-        if (hechoTextualDTO != null) {
-            return crearHechoTextual(hechoTextualDTO);
-        }
-
-        HechoMultimediaDTO hechoMultimediaDTO = verificarYConvertirHechoDTO(hechoDTO, HechoMultimediaDTO.class);
-        if (hechoMultimediaDTO != null) {
-            return crearHechoMultimedia(hechoMultimediaDTO);
-        }
-
-        throw new IllegalArgumentException("Tipo de hecho no soportado");
-    }
-
-    private <T> T verificarYConvertirHechoDTO(Object hechoDTO, Class<T> tipo) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
-        try {
-            // Convertir el objeto a un mapa
-            Map<String, Object> hechoMap = mapper.convertValue(hechoDTO, Map.class);
-
-            // Verificar campos comunes obligatorios
-            String[] camposObligatorios = {"titulo", "descripcion", "categoria", "ubicacion",
-                    "fechaAcontecimiento", "contribuyente", "etiquetas"};
-
-            for (String campo : camposObligatorios) {
-                if (hechoMap.get(campo) == null) {
-                    throw new IllegalArgumentException("Campo obligatorio faltante: " + campo);
-                }
-            }
-
-            // Verificar tipo específico y validar contra el tipo esperado
-            if (hechoMap.containsKey("cuerpo")) {
-                if (tipo == HechoTextualDTO.class) {
-                    return mapper.convertValue(hechoDTO, tipo);
-                } else {
-                    return null; // No es del tipo solicitado
-                }
-            } else if (hechoMap.containsKey("contenidoMultimedia")) {
-                if (tipo == HechoMultimediaDTO.class) {
-                    return mapper.convertValue(hechoDTO, tipo);
-                } else {
-                    return null; // No es del tipo solicitado
-                }
-            } else {
-                throw new IllegalArgumentException("Tipo de hecho no identificado: falta campo 'cuerpo' o 'contenidoMultimedia'");
-            }
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error al procesar el DTO: " + e.getMessage());
-        }
-    }
-
-
-
-    private Hecho crearHechoTextual(HechoTextualDTO hechoDTO) {
+    public Hecho crearHechoTextual(HechoDTO hechoDTO) {
         HechoTextual hecho = new HechoTextual(
-            hechoDTO.getTitulo(),
-            hechoDTO.getDescripcion(),
-            hechoDTO.getCategoria(),
-            hechoDTO.getUbicacion(),
-            hechoDTO.getFechaAcontecimiento(),
-            hechoDTO.getEtiquetas(),
-            hechoDTO.getContribuyente(),
-            hechoDTO.getCuerpo()
+                hechoDTO.getTitulo(),
+                hechoDTO.getDescripcion(),
+                hechoDTO.getCategoria(),
+                hechoDTO.getUbicacion(),
+                hechoDTO.getFechaAcontecimiento(),
+                hechoDTO.getEtiquetas(),
+                hechoDTO.getRegistrado() != null ? hechoDTO.getRegistrado() : Anonimo.getInstance(),
+                hechoDTO.getCuerpo()
         );
 
         hechosRepository.save(hecho);
@@ -108,17 +51,17 @@ public class DinamicaService {
         return hecho;
     }
 
-    private Hecho crearHechoMultimedia(HechoMultimediaDTO hechoDTO) {
+    public Hecho crearHechoMultimedia(HechoDTO hechoDTO) {
 
         HechoMultimedia hecho = new HechoMultimedia(
-            hechoDTO.getTitulo(),
-            hechoDTO.getDescripcion(),
-            hechoDTO.getCategoria(),
-            hechoDTO.getUbicacion(),
-            hechoDTO.getFechaAcontecimiento(),
-            hechoDTO.getEtiquetas(),
-            hechoDTO.getContribuyente(),
-            hechoDTO.getContenidoMultimedia()
+                hechoDTO.getTitulo(),
+                hechoDTO.getDescripcion(),
+                hechoDTO.getCategoria(),
+                hechoDTO.getUbicacion(),
+                hechoDTO.getFechaAcontecimiento(),
+                hechoDTO.getEtiquetas(),
+                hechoDTO.getRegistrado() != null ? hechoDTO.getRegistrado() : Anonimo.getInstance(),
+                hechoDTO.getContenidoMultimedia()
         );
 
         hechosRepository.save(hecho);
@@ -126,78 +69,79 @@ public class DinamicaService {
         return hecho;
     }
 
+
     // <---------------------------------- ACTUALIZACION DE HECHOS ---------------------------------->
-
-    public void actualizarHecho(UUID id, Object hechoDTO) {
-        HechoTextualDTO hechoTextualDTO = verificarYConvertirHechoDTO(hechoDTO, HechoTextualDTO.class);
-        if (hechoTextualDTO != null) {
-            actualizarHechoTextual(id, hechoTextualDTO);
-        }
-
-        HechoMultimediaDTO hechoMultimediaDTO = verificarYConvertirHechoDTO(hechoDTO, HechoMultimediaDTO.class);
-        if (hechoMultimediaDTO != null) {
-            actualizarHechoMultimedia(id, hechoMultimediaDTO);
-        }
-
-        if(hechoTextualDTO == null && hechoMultimediaDTO == null) {
-            throw new IllegalArgumentException("Tipo de hecho no soportado");
-        }
-    }
-
-
-    private void actualizarHechoTextual(UUID id, HechoTextualDTO hechoDTO) {
-            Hecho hechoAEditar = hechosRepository.findById(id);
-
-            if (hechoAEditar == null) {
-                throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
-            }
-
-
-            HechoTextual hechoTextualEditar = (HechoTextual) hechoAEditar;
-
-
-            if (hechoTextualEditar.esEditable()) {
-                hechoTextualEditar.setTitulo(hechoDTO.getTitulo());
-                hechoTextualEditar.setDescripcion(hechoDTO.getDescripcion());
-                hechoTextualEditar.setCategoria(hechoDTO.getCategoria());
-                hechoTextualEditar.setUbicacion(hechoDTO.getUbicacion());
-                hechoTextualEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
-                hechoTextualEditar.setEtiquetas(hechoDTO.getEtiquetas());
-                hechoTextualEditar.setContribuyente(hechoDTO.getContribuyente());
-                hechoTextualEditar.setCuerpo(hechoDTO.getCuerpo());
-
-                hechosRepository.findByIdAndUpdate(id, hechoTextualEditar);
-            } else {
-                throw new RuntimeException("El hecho no es editable");
-            }
-    }
-
-    private void actualizarHechoMultimedia(UUID id, HechoMultimediaDTO hechoDTO) {
-        Hecho hechoAEditar = hechosRepository.findById(id);
-
-        if (hechoAEditar == null) {
-            throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
-        }
-
-
-        HechoMultimedia hechoMultimediaEditar = (HechoMultimedia) hechoAEditar;
-
-
-        if (hechoMultimediaEditar.esEditable()) {
-            hechoMultimediaEditar.setTitulo(hechoDTO.getTitulo());
-            hechoMultimediaEditar.setDescripcion(hechoDTO.getDescripcion());
-            hechoMultimediaEditar.setCategoria(hechoDTO.getCategoria());
-            hechoMultimediaEditar.setUbicacion(hechoDTO.getUbicacion());
-            hechoMultimediaEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
-            hechoMultimediaEditar.setEtiquetas(hechoDTO.getEtiquetas());
-            hechoMultimediaEditar.setContribuyente(hechoDTO.getContribuyente());
-            hechoMultimediaEditar.setContenidoMultimedia(hechoDTO.getContenidoMultimedia());
-
-            hechosRepository.findByIdAndUpdate(id, hechoMultimediaEditar);
-        } else {
-            throw new RuntimeException("El hecho no es editable");
-        }
-    }
+//
+//    public void actualizarHecho(UUID id, Object hechoDTO) {
+//        HechoTextualDTO hechoTextualDTO = verificarYConvertirHechoDTO(hechoDTO, HechoTextualDTO.class);
+//        if (hechoTextualDTO != null) {
+//            actualizarHechoTextual(id, hechoTextualDTO);
+//        }
+//
+//        HechoMultimediaDTO hechoMultimediaDTO = verificarYConvertirHechoDTO(hechoDTO, HechoMultimediaDTO.class);
+//        if (hechoMultimediaDTO != null) {
+//            actualizarHechoMultimedia(id, hechoMultimediaDTO);
+//        }
+//
+//        if(hechoTextualDTO == null && hechoMultimediaDTO == null) {
+//            throw new IllegalArgumentException("Tipo de hecho no soportado");
+//        }
+//    }
+//
+//
+//    private void actualizarHechoTextual(UUID id, HechoTextualDTO hechoDTO) {
+//            Hecho hechoAEditar = hechosRepository.findById(id);
+//
+//            if (hechoAEditar == null) {
+//                throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
+//            }
+//
+//
+//            HechoTextual hechoTextualEditar = (HechoTextual) hechoAEditar;
+//
+//
+//            if (hechoTextualEditar.esEditable()) {
+//                hechoTextualEditar.setTitulo(hechoDTO.getTitulo());
+//                hechoTextualEditar.setDescripcion(hechoDTO.getDescripcion());
+//                hechoTextualEditar.setCategoria(hechoDTO.getCategoria());
+//                hechoTextualEditar.setUbicacion(hechoDTO.getUbicacion());
+//                hechoTextualEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
+//                hechoTextualEditar.setEtiquetas(hechoDTO.getEtiquetas());
+//                hechoTextualEditar.setContribuyente(hechoDTO.getContribuyente());
+//                hechoTextualEditar.setCuerpo(hechoDTO.getCuerpo());
+//
+//                hechosRepository.findByIdAndUpdate(id, hechoTextualEditar);
+//            } else {
+//                throw new RuntimeException("El hecho no es editable");
+//            }
+//    }
+//
+//    private void actualizarHechoMultimedia(UUID id, HechoMultimediaDTO hechoDTO) {
+//        Hecho hechoAEditar = hechosRepository.findById(id);
+//
+//        if (hechoAEditar == null) {
+//            throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
+//        }
+//
+//
+//        HechoMultimedia hechoMultimediaEditar = (HechoMultimedia) hechoAEditar;
+//
+//
+//        if (hechoMultimediaEditar.esEditable()) {
+//            hechoMultimediaEditar.setTitulo(hechoDTO.getTitulo());
+//            hechoMultimediaEditar.setDescripcion(hechoDTO.getDescripcion());
+//            hechoMultimediaEditar.setCategoria(hechoDTO.getCategoria());
+//            hechoMultimediaEditar.setUbicacion(hechoDTO.getUbicacion());
+//            hechoMultimediaEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
+//            hechoMultimediaEditar.setEtiquetas(hechoDTO.getEtiquetas());
+//            hechoMultimediaEditar.setContribuyente(hechoDTO.getContribuyente());
+//            hechoMultimediaEditar.setContenidoMultimedia(hechoDTO.getContenidoMultimedia());
+//
+//            hechosRepository.findByIdAndUpdate(id, hechoMultimediaEditar);
+//        } else {
+//            throw new RuntimeException("El hecho no es editable");
+//        }
+//    }
 
     public UUID crearSolicitudEliminacion(SolicitudDTO solicitud) {
 
