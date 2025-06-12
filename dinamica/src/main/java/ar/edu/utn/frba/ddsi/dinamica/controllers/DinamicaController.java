@@ -26,7 +26,6 @@ public class DinamicaController {
         this.dinamicaService = dinamicaService;
     }
 
-    // En DinamicaController.java
     @GetMapping("/hechos")
     public List<Hecho> obtenerHechos(
             @RequestParam(required = false) String categoria,
@@ -49,7 +48,7 @@ public class DinamicaController {
     }
 
     @PostMapping("/hechos")
-    @ResponseStatus(org.springframework.http.HttpStatus.CREATED) // Para indicar que se ha creado un recurso
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public Hecho subirHecho(@RequestBody HechoDTO hechoDTO) {
 
         switch (hechoDTO.getTipo().toLowerCase()) {
@@ -66,8 +65,17 @@ public class DinamicaController {
     }
 
     @PutMapping("/hechos/{id}")
-    public void modificarHecho(@PathVariable UUID id, @RequestBody Object hechoDTO) {
-        // dinamicaService.actualizarHecho(id, hechoDTO);
+    public void modificarHecho(@PathVariable UUID id, @RequestBody HechoDTO hechoDTO) {
+        switch (hechoDTO.getTipo().toLowerCase()) {
+            case "textual":
+                dinamicaService.actualizarHechoTextual(id, hechoDTO);
+
+            case "multimedia":
+                dinamicaService.actualizarHechoMultimedia(id, hechoDTO);
+
+            default:
+                throw new IllegalArgumentException("Tipo de hecho no soportado: " + hechoDTO.getTipo());
+        }
     }
 
     @GetMapping("/solicitudes")

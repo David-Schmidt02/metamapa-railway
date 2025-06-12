@@ -6,6 +6,8 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Anonimo;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Registrado;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 
@@ -42,7 +44,7 @@ public class DinamicaService {
                 hechoDTO.getUbicacion(),
                 hechoDTO.getFechaAcontecimiento(),
                 hechoDTO.getEtiquetas(),
-                hechoDTO.getRegistrado() != null ? hechoDTO.getRegistrado() : Anonimo.getInstance(),
+                determinarContribuyente(hechoDTO),
                 hechoDTO.getCuerpo()
         );
 
@@ -60,7 +62,7 @@ public class DinamicaService {
                 hechoDTO.getUbicacion(),
                 hechoDTO.getFechaAcontecimiento(),
                 hechoDTO.getEtiquetas(),
-                hechoDTO.getRegistrado() != null ? hechoDTO.getRegistrado() : Anonimo.getInstance(),
+                determinarContribuyente(hechoDTO),
                 hechoDTO.getContenidoMultimedia()
         );
 
@@ -69,79 +71,78 @@ public class DinamicaService {
         return hecho;
     }
 
+    public Contribuyente determinarContribuyente(HechoDTO hechoDTO) {
+        if (hechoDTO.getRegistrado() != null) {
+            return new Registrado(
+                hechoDTO.getRegistrado().getNombre(),
+                hechoDTO.getRegistrado().getEmail(),
+                hechoDTO.getRegistrado().getEdad()
+            );
+        } else {
+            return Anonimo.getInstance();
+        }
+    }
+
 
     // <---------------------------------- ACTUALIZACION DE HECHOS ---------------------------------->
-//
-//    public void actualizarHecho(UUID id, Object hechoDTO) {
-//        HechoTextualDTO hechoTextualDTO = verificarYConvertirHechoDTO(hechoDTO, HechoTextualDTO.class);
-//        if (hechoTextualDTO != null) {
-//            actualizarHechoTextual(id, hechoTextualDTO);
-//        }
-//
-//        HechoMultimediaDTO hechoMultimediaDTO = verificarYConvertirHechoDTO(hechoDTO, HechoMultimediaDTO.class);
-//        if (hechoMultimediaDTO != null) {
-//            actualizarHechoMultimedia(id, hechoMultimediaDTO);
-//        }
-//
-//        if(hechoTextualDTO == null && hechoMultimediaDTO == null) {
-//            throw new IllegalArgumentException("Tipo de hecho no soportado");
-//        }
-//    }
-//
-//
-//    private void actualizarHechoTextual(UUID id, HechoTextualDTO hechoDTO) {
-//            Hecho hechoAEditar = hechosRepository.findById(id);
-//
-//            if (hechoAEditar == null) {
-//                throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
-//            }
-//
-//
-//            HechoTextual hechoTextualEditar = (HechoTextual) hechoAEditar;
-//
-//
-//            if (hechoTextualEditar.esEditable()) {
-//                hechoTextualEditar.setTitulo(hechoDTO.getTitulo());
-//                hechoTextualEditar.setDescripcion(hechoDTO.getDescripcion());
-//                hechoTextualEditar.setCategoria(hechoDTO.getCategoria());
-//                hechoTextualEditar.setUbicacion(hechoDTO.getUbicacion());
-//                hechoTextualEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
-//                hechoTextualEditar.setEtiquetas(hechoDTO.getEtiquetas());
-//                hechoTextualEditar.setContribuyente(hechoDTO.getContribuyente());
-//                hechoTextualEditar.setCuerpo(hechoDTO.getCuerpo());
-//
-//                hechosRepository.findByIdAndUpdate(id, hechoTextualEditar);
-//            } else {
-//                throw new RuntimeException("El hecho no es editable");
-//            }
-//    }
-//
-//    private void actualizarHechoMultimedia(UUID id, HechoMultimediaDTO hechoDTO) {
-//        Hecho hechoAEditar = hechosRepository.findById(id);
-//
-//        if (hechoAEditar == null) {
-//            throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
-//        }
-//
-//
-//        HechoMultimedia hechoMultimediaEditar = (HechoMultimedia) hechoAEditar;
-//
-//
-//        if (hechoMultimediaEditar.esEditable()) {
-//            hechoMultimediaEditar.setTitulo(hechoDTO.getTitulo());
-//            hechoMultimediaEditar.setDescripcion(hechoDTO.getDescripcion());
-//            hechoMultimediaEditar.setCategoria(hechoDTO.getCategoria());
-//            hechoMultimediaEditar.setUbicacion(hechoDTO.getUbicacion());
-//            hechoMultimediaEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
-//            hechoMultimediaEditar.setEtiquetas(hechoDTO.getEtiquetas());
-//            hechoMultimediaEditar.setContribuyente(hechoDTO.getContribuyente());
-//            hechoMultimediaEditar.setContenidoMultimedia(hechoDTO.getContenidoMultimedia());
-//
-//            hechosRepository.findByIdAndUpdate(id, hechoMultimediaEditar);
-//        } else {
-//            throw new RuntimeException("El hecho no es editable");
-//        }
-//    }
+
+
+
+    public void actualizarHechoTextual(UUID id, HechoDTO hechoDTO) {
+            Hecho hechoAEditar = hechosRepository.findById(id);
+
+            if (hechoAEditar == null) {
+                throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
+            }
+
+
+            HechoTextual hechoTextualEditar = (HechoTextual) hechoAEditar;
+
+
+            if (hechoTextualEditar.esEditable()) {
+                hechoTextualEditar.setTitulo(hechoDTO.getTitulo());
+                hechoTextualEditar.setDescripcion(hechoDTO.getDescripcion());
+                hechoTextualEditar.setCategoria(hechoDTO.getCategoria());
+                hechoTextualEditar.setUbicacion(hechoDTO.getUbicacion());
+                hechoTextualEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
+                hechoTextualEditar.setEtiquetas(hechoDTO.getEtiquetas());
+                hechoTextualEditar.setContribuyente(hechoDTO.getRegistrado());
+                hechoTextualEditar.setCuerpo(hechoDTO.getCuerpo());
+
+                hechosRepository.findByIdAndUpdate(id, hechoTextualEditar);
+            } else {
+                throw new RuntimeException("El hecho no es editable");
+            }
+    }
+
+    public void actualizarHechoMultimedia(UUID id, HechoDTO hechoDTO) {
+        Hecho hechoAEditar = hechosRepository.findById(id);
+
+        if (hechoAEditar == null) {
+            throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
+        }
+
+
+        HechoMultimedia hechoMultimediaEditar = (HechoMultimedia) hechoAEditar;
+
+
+        if (hechoMultimediaEditar.esEditable()) {
+            hechoMultimediaEditar.setTitulo(hechoDTO.getTitulo());
+            hechoMultimediaEditar.setDescripcion(hechoDTO.getDescripcion());
+            hechoMultimediaEditar.setCategoria(hechoDTO.getCategoria());
+            hechoMultimediaEditar.setUbicacion(hechoDTO.getUbicacion());
+            hechoMultimediaEditar.setFechaAcontecimiento(hechoDTO.getFechaAcontecimiento());
+            hechoMultimediaEditar.setEtiquetas(hechoDTO.getEtiquetas());
+            hechoMultimediaEditar.setContribuyente(hechoDTO.getRegistrado());
+            hechoMultimediaEditar.setContenidoMultimedia(hechoDTO.getContenidoMultimedia());
+
+            hechosRepository.findByIdAndUpdate(id, hechoMultimediaEditar);
+        } else {
+            throw new RuntimeException("El hecho no es editable");
+        }
+    }
+
+    // <---------------------------------- GESTION DE SOLICITUDES DE ELIMINACION ---------------------------------->
 
     public UUID crearSolicitudEliminacion(SolicitudDTO solicitud) {
 
