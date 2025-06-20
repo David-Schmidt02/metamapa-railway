@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import ar.edu.utn.frba.ddsi.models.entities.hecho.Hecho;
-import ar.edu.utn.frba.ddsi.models.entities.repositories.HechosRepository;
-import ar.edu.utn.frba.ddsi.models.entities.repositories.ColeccionRepository;
-import ar.edu.utn.frba.ddsi.models.entities.repositories.SolicitudesRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.HechosRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.ColeccionRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.SolicitudesRepository;
 
 @Service
 public class AgregadorService {
@@ -21,6 +21,7 @@ public class AgregadorService {
         this.solicitudesRepository = solicitudesRepository;
         this.coleccionRepository = coleccionRepository;
     }
+}
 /*
     // <---------------------------------- CREACION DE HECHOS ---------------------------------->
 

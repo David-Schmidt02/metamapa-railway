@@ -1,13 +1,14 @@
 package ar.edu.utn.frba.ddsi.agregador.controllers;
 
 
-import ar.edu.utn.frba.ddsi.models.entities.dtos.HechoDTO;
-import ar.edu.utn.frba.ddsi.models.entities.dtos.SolicitudDTO;
-import ar.edu.utn.frba.ddsi.models.entities.hecho.Hecho;
-import ar.edu.utn.frba.ddsi.services.AgregadorService;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.agregador.services.AgregadorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;

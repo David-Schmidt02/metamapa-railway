@@ -10,6 +10,7 @@
         <module name="dinamica" />
         <module name="proxy" />
         <module name="estatica" />
+        <module name="agregador" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
