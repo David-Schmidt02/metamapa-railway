@@ -4,6 +4,8 @@ package ar.edu.utn.frba.ddsi.agregador.controllers;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.agregador.services.AgregadorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,27 +59,32 @@ public class AgregadorController {
     * con todos los campos requeridos (salvo contribuyente, que si es null
      * se asume como anonimo). Devuelve el ID del hecho creado.
     **/
-    @PostMapping("/hechos")
-    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
-    public UUID subirHecho(@RequestBody HechoDTO hechoDTO) {
 
-        verificarCamposHecho(hechoDTO);
-        return dinamicaService.crearHecho(hechoDTO);
+    // En teoria los hechos/solicitudes solo se suben a las fuentes, no en el agregador
 
-    }
+//    @PostMapping("/hechos")
+//    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+//    public UUID subirHecho(@RequestBody HechoDTO hechoDTO) {
+//
+//        verificarCamposHecho(hechoDTO);
+//        return agregadorService.crearHecho(hechoDTO);
+//
+//    }
 
     /**
      * Permite la modificacion de hecho pasando como cuerpo un hecho
      * con todos los campos requeridos (salvo contribuyente, que si es null
      * se asume como anonimo). Devuelve el nuevo hecho con la actualizacion.
      **/
-    @PutMapping("/hechos/{id}")
-    public Hecho modificarHecho(@PathVariable UUID id, @RequestBody HechoDTO hechoDTO) {
 
-        verificarCamposHecho(hechoDTO);
-
-        return dinamicaService.actualizarHecho(id, hechoDTO);
-    }
+    // TODO: En teoria los hechos/solicitudes solo se suben a las fuentes, no en el agregador
+//    @PutMapping("/hechos/{id}")
+//    public Hecho modificarHecho(@PathVariable UUID id, @RequestBody HechoDTO hechoDTO) {
+//
+//        verificarCamposHecho(hechoDTO);
+//
+//        return agregadorService.actualizarHecho(id, hechoDTO);
+//    }
 
     /**
      * Verifica que los campos obligatorios del HechoDTO esten presentes
@@ -119,17 +126,18 @@ public class AgregadorController {
 
     @GetMapping("/solicitudes")
     public List<SolicitudEliminacion> obtenerSolicitudes() {
-        return dinamicaService.encontrarSolicitudes();
+        return agregadorService.encontrarSolicitudes();
     }
 
-    @PostMapping("/solicitudes")
-    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
-    public UUID subirSolicitud(@RequestBody SolicitudDTO solicitudDTO) {
-        return dinamicaService.crearSolicitudEliminacion(solicitudDTO);
-    }
+    // En teoria los hechos/solicitudes solo se suben a las fuentes, no en el agregador
+//    @PostMapping("/solicitudes")
+//    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+//    public UUID subirSolicitud(@RequestBody SolicitudDTO solicitudDTO) {
+//        return agregadorService.crearSolicitudEliminacion(solicitudDTO);
+//    }
 
     @PutMapping("/solicitudes/{id}")
     public SolicitudEliminacion modificarSolicitud(@PathVariable UUID id, @RequestBody Estado_Solicitud nuevoEstado) {
-        return dinamicaService.modificarEstadoSolicitud(id, nuevoEstado);
+        return agregadorService.modificarEstadoSolicitud(id, nuevoEstado);
     }
 }

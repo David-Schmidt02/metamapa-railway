@@ -1,9 +1,9 @@
 package ar.edu.utn.frba.ddsi.agregador.models.entities.dtos;
 
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Categoria;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Etiqueta;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Ubicacion;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Registrado;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Etiqueta;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Registrado;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
