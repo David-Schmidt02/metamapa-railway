@@ -36,7 +36,7 @@ public class Importador {
                     .block();
 
             if (hechos != null) {
-                List<Hecho> hechosMapeados = hechos.stream().map(adaptador::convertirHecho).collect(Collectors.toList());
+                List<Hecho> hechosMapeados = hechos.stream().map(adaptador::convertirHecho).toList();
                 hechosImportados.addAll(hechosMapeados);
             }
                 // Si no hay (nuevos ?) hechos, sigue la misma lista?
