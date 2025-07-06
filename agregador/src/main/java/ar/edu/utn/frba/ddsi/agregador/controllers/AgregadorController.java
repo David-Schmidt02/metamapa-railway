@@ -47,6 +47,13 @@ public class AgregadorController {
         return this.agregadorService.obtenerColecciones();
     }
 
+    @GetMapping("/hechosVerificadosDeColeccion{id}")
+    public List<Hecho> obtenerColeccionesCurada(@PathVariable UUID id){
+        return this.agregadorService.obtenerColeccionCurada(id);
+    }
+
+
+
     /**
      * Devuelve una coleccion en particular a partir de su ID.
      * Si no se encuentra la coleccion, devuelve un error 404.

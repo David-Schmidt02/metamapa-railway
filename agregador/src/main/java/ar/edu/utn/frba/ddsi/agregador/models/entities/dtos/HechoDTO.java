@@ -31,6 +31,7 @@ public class HechoDTO {
     private List<String> contenidoMultimedia;
     private String cuerpo;
     private Contribuyente contribuyente;
+    private boolean verificado = false;
 
     public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente origenFuente, Contribuyente contribuyente) {
         this.id = id;

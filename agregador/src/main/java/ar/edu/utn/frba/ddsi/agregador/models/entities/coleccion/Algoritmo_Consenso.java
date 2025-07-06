@@ -4,5 +4,4 @@ public enum Algoritmo_Consenso {
     MULTIPLES_MENCIONES,
     MAYORIA_SIMPLE,
     ABSOLUTA,
-    NINGUNO
 }

@@ -60,6 +60,45 @@ public class Coleccion {
 //        return true; //TODO: IMPLEMENTAR ESTO
 //    }
 
+    public void aplivarVerificacionAlgoritmoPorDefecto() {
+        this.fuentes.stream()
+                .flatMap(fuente -> fuente.getHechos().stream())
+                .forEach(hecho -> hecho.setVerificado(true));
+    }
+
+    // aplicarVerifiacionAlgoritmo
+    /*
+    public void aplicarVerificacionAlgoritmo(String algoritmo) {
+        Map<Hecho, Long> conteo = this.fuentes.stream()
+                .flatMap(fuente -> fuente.getHechos().stream())
+                .filter(hecho -> this.criterios.stream()
+                        .allMatch(criterio -> criterio.cumpleConCriterio(hecho)))
+                .collect(Collectors.groupingBy(
+                        Function.identity(),
+                        Collectors.counting()
+                ));
+
+        int totalFuentes = this.fuentes.size();
+
+        conteo.entrySet().stream()
+                .filter(entry -> {
+                    long cantidad = entry.getValue();
+                    switch (algoritmo) {
+                        case "multiplesMenciones":
+                            return cantidad > 1;
+                        case "mayoriaSimple":
+                            return cantidad > totalFuentes / 2;
+                        case "absoluta":
+                            return cantidad == totalFuentes;
+                        default:
+                            return false;
+                    }
+                })
+                .map(Map.Entry::getKey)
+                .forEach(hecho -> hecho.setVerificado(true));
+    }
+
+     */
 
     public List<Hecho> mostrarHechosPorConsenso(String algoritmo) {
         // Mapa que cuenta menciones de cada hecho

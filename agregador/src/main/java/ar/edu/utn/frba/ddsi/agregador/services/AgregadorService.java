@@ -45,6 +45,12 @@ public class AgregadorService {
         hechosRepository.importarHechosDesdeFuentes();
     }
 
+    @Scheduled(cron = "0 0 3 * * *")
+    public void aplicarAlgoritmosDeConsenso() {
+
+        
+    }
+
     // <----------------- COLECCIONES ----------------->
     // TODO: Implementar manejo de errores y validaciones
 
@@ -63,10 +69,16 @@ public class AgregadorService {
         Coleccion nuevaColeccion = new Coleccion(
                 coleccionDTO.getTitulo(),
                 coleccionDTO.getDescripcion(),
-                coleccionDTO.getAlgoritmo_consenso(),
+                coleccionDTO.getAlgoritmo_consenso().orElse(null),
                 fuentes,
                 criterios
         );
+
+        if (nuevaColeccion.getAlgoritmo_consenso() != null) {
+            nuevaColeccion.aplicarVerifiacionAlgoritmo(getAlgoritmo_consenso); // que ver esto
+        }else{
+            nuevaColeccion.aplivarVerificacionAlgoritmoPorDefecto();
+        }
 
         this.coleccionRepository.save(nuevaColeccion);
 
@@ -93,6 +105,17 @@ public class AgregadorService {
         return this.coleccionRepository.findAll();
     }
 
+    public List<Hecho> obtenerColeccionCurada(UUID id) {
+        Coleccion coleccion = this.coleccionRepository.findById(id);
+        if (coleccion == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+        }
+        return coleccion.getFuentes().stream()
+                .flatMap(fuente -> fuente.getHechos().stream())
+                .filter(Hecho::isVerificado)
+                .collect(Collectors.toList());
+    }
+
     public Coleccion obtenerColeccion(UUID id){ return this.coleccionRepository.findById(id);}
 
     public Coleccion eliminarColeccionPorId(UUID id) { return this.coleccionRepository.findAndDelete(id);}
@@ -109,7 +132,7 @@ public class AgregadorService {
         Coleccion coleccionEditada = new Coleccion(
                 coleccionDTO.getTitulo(),
                 coleccionDTO.getDescripcion(),
-                coleccionDTO.getAlgoritmo_consenso(),
+                coleccionDTO.getAlgoritmo_consenso().orElse(null),
                 fuentes,
                 criterios
         );

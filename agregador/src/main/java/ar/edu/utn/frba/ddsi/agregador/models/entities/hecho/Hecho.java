@@ -25,6 +25,7 @@ public abstract class Hecho {
     private Origen_Fuente origenFuente;
     private List<Etiqueta> etiquetas;
     private Contribuyente contribuyente;
+    private boolean verificado = false;
 
     public Hecho(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion,
                  LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, Origen_Fuente origenFuente, List<Etiqueta> etiquetas, Contribuyente contribuyente) {

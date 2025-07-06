@@ -24,6 +24,8 @@ public class ColeccionRepository {
         return colecciones.stream().filter(coleccion -> coleccion.getId().equals(id)).findFirst().orElse(null);
     }
 
+
+
     public Coleccion findByIdAndUpdate(UUID id, Coleccion updatedColeccion) {
         Coleccion existingColeccion = findById(id);
         if (existingColeccion != null) {
