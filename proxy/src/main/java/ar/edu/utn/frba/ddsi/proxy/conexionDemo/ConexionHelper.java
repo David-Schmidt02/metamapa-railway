@@ -50,7 +50,7 @@ public class ConexionHelper {
         String cuerpo = (String) hechoDescompuesto.get("cuerpo");
         List<String> contenidoMultimedia = (List<String>) hechoDescompuesto.get("contenidoMultimedia");
         if(cuerpo != null) {
-            return new HechoTextual(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, fechaCarga, origenFuente, etiquetas ,contribuyente, cuerpo);
+            return new HechoTextual(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas ,contribuyente, cuerpo);
         } else {
             return new HechoMultimedia(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente, contenidoMultimedia);
         }
