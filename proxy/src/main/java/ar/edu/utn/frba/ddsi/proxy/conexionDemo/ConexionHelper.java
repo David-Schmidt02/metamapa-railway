@@ -1,9 +1,9 @@
 package ar.edu.utn.frba.ddsi.proxy.conexionDemo;
 
-import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Categoria;
-import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Hecho;
-import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Origen_Fuente;
-import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Ubicacion;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.*;
+
+import ar.edu.utn.frba.ddsi.proxy.models.entities.personas.Contribuyente;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.personas.Anonimo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,9 +39,20 @@ public class ConexionHelper {
         String descripcion = (String) hechoDescompuesto.get("descripcion");
         Categoria categoria = (Categoria) hechoDescompuesto.get("categoria");
         Ubicacion ubicacion = (Ubicacion) hechoDescompuesto.get("ubicacion");
-        LocalDate fechaAcontecimiento = (LocalDate) hechoDescompuesto.get("fechaAcontecimiento");
-        LocalDateTime fechaImportacion = LocalDateTime.now();
+        LocalDateTime fechaAcontecimiento = (LocalDateTime) hechoDescompuesto.get("fechaAcontecimiento");
+        List<Etiqueta> etiquetas = (List<Etiqueta>) hechoDescompuesto.get("etiquetas");
+        Contribuyente contribuyente = (Contribuyente) hechoDescompuesto.get("contribuyente");
+        if (contribuyente == null) {
+            contribuyente = Anonimo.getInstance();
+        }
+        LocalDateTime fechaCarga = LocalDateTime.now();
         Origen_Fuente origenFuente = Origen_Fuente.INTERMEDIARIA;
-        return new Hecho(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, fechaImportacion, origenFuente);
+        String cuerpo = (String) hechoDescompuesto.get("cuerpo");
+        List<String> contenidoMultimedia = (List<String>) hechoDescompuesto.get("contenidoMultimedia");
+        if(cuerpo != null) {
+            return new HechoTextual(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, fechaCarga, origenFuente, etiquetas ,contribuyente, cuerpo);
+        } else {
+            return new HechoMultimedia(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente, contenidoMultimedia);
+        }
     }
 }
