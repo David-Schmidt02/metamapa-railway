@@ -1,7 +1,11 @@
 package ar.edu.utn.frba.ddsi.agregador.controllers;
 
 
+import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Algoritmo_Consenso;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.agregador.services.AgregadorService;
@@ -23,6 +27,7 @@ public class AgregadorController {
         this.agregadorService = agregadorService;
     }
 
+    // <----------------- OPERACIONES CRUD SOBRE COLECCIONES ----------------->
     /**
      * Crea una nueva coleccion en el sistema a partir del DTO que recibe.
      * Si se crea correctamente, devuelve el ID de la coleccion creada.
@@ -65,24 +70,71 @@ public class AgregadorController {
      * Permite modificar una coleccion.
      * Recibe el ID de la coleccion a modificar y un DTO con los nuevos datos.
      */
-//    @PutMapping("/colecciones/{id}")
-//    @ResponseStatus(org.springframework.http.HttpStatus.OK)
-//    public Coleccion modificarColeccion(@PathVariable UUID id, @RequestBody ColeccionDTO coleccionDTO) {
-//        return this.agregadorService.modificarColeccion(id, coleccionDTO);
-//    }
+    @PutMapping("/colecciones/{id}")
+    @ResponseStatus(org.springframework.http.HttpStatus.OK)
+    public Coleccion modificarColeccion(@PathVariable UUID id, @RequestBody ColeccionDTO coleccionDTO) {
+        return this.agregadorService.actualizarColeccion(id, coleccionDTO);
+    }
+
+
+     //Endpoint para modificar algoritmo de consenso de una coleccion
+    @PatchMapping("/colecciones/{id}")
+    public Coleccion modificarAlgoritmoConsenso(@PathVariable UUID id, @RequestBody Algoritmo_Consenso nuevoAlgoritmo) {
+       return this.agregadorService.modificarAlgoritmoConsenso(id, nuevoAlgoritmo);
+    }
+    // fuentes: [estatica1, estatica2, dinamica]
+
+    // borrar: estatica1
+
+    // body: [estatica2, dinamica]
+
+    // coleccion.setFuentes(lista)
+
+    @PatchMapping("/colecciones/{id}")
+    public Coleccion modificarFuentes(@PathVariable UUID id, @RequestBody List<String> urls_fuente) {
+        return this.agregadorService.modificarListaDeFuentes(id, urls_fuente);
+    }
 
     // Endpoint para aceptar/rechazar solicitudes de eliminacion
-
     @PutMapping("/solicitudes/{id}")
     public SolicitudEliminacion modificarSolicitud(@PathVariable UUID id, @RequestBody Estado_Solicitud nuevoEstado) {
         return agregadorService.modificarEstadoSolicitud(id, nuevoEstado);
+
     }
 
-    // Endpoint para modificar algoritmo de consenso de una coleccion
-    // @PatchMapping("/colecciones/{id}/{algoritmo}")
-    //public void modificarAlgoritmoConsenso(@PathVariable UUID id, //@PathVariable algoritmo de que tipo seria??) {
-    //   agregadorService.modificarAlgoritmoConsenso(id, algoritmo);
-    //}
+    // ENDPOINT AL QUE LE PEGA LA FUENTE METAMAPA PARA OBTENER HECHOS POR COLEECCION
+
+    @GetMapping("/colecciones/{id}/hechos")
+    public List<Hecho> obtenerHechosPorColeccion(@PathVariable UUID id,
+                @RequestParam(required = false) String categoria,
+                @RequestParam(required = false) String fecha_reporte_desde,
+                @RequestParam(required = false) String fecha_reporte_hasta,
+                @RequestParam(required = false) String fecha_acontecimiento_desde,
+                @RequestParam(required = false) String fecha_acontecimiento_hasta,
+                @RequestParam(required = false) Integer latitud,
+                @RequestParam(required = false) Integer longitud) {
+
+        var filtros = new Filtro(
+                fecha_reporte_desde,
+                fecha_reporte_hasta,
+                fecha_acontecimiento_desde,
+                fecha_acontecimiento_hasta,
+                categoria,
+                latitud,
+                longitud
+        );
+
+
+        return this.agregadorService.encontrarHechosPorColeccion(id, filtros);
+    }
+
+
+
+    // Endpoint para generar solicitudes de eliminacion de hechos le pega metamapa
+    @PostMapping("/solicitudes/{id}")
+    public SolicitudEliminacion generarSolicitudEliminacion(@PathVariable UUID id, @RequestBody SolicitudDTO solicitudEliminacion) {
+        return agregadorService.generarSolicitudEliminacion(id, solicitudEliminacion);
+    }
 
 
 
@@ -90,9 +142,5 @@ public class AgregadorController {
 
 
 
-
-
-//@GetMapping("/solicitudes")
-//public List<SolicitudEliminacion> obtenerSolicitudes() {// return agregadorService.encontrarSolicitudes();
 }
 

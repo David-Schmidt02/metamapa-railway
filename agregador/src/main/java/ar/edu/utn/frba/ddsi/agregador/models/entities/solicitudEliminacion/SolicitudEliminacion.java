@@ -16,7 +16,7 @@ public class SolicitudEliminacion {
         this.id = UUID.randomUUID();
         this.idHecho = idHecho;
         this.justificacion = justificacion;
-        this.estado = Estado_Solicitud.PENDIENTE; // Estado inicial por defecto
+        this.estado = Estado_Solicitud.PENDIENTE;
     }
 
     public boolean esCorrecta() {

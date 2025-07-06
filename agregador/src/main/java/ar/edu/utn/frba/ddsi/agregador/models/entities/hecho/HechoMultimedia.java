@@ -20,7 +20,7 @@ public class HechoMultimedia extends Hecho{
                         String descripcion,
                         Categoria categoria,
                         Ubicacion ubicacion,
-                        LocalDate fechaAcontecimiento,
+                        LocalDateTime fechaAcontecimiento,
                         LocalDateTime fechaCarga,
                         Origen_Fuente origenFuente,
                         List<Etiqueta> etiquetas,

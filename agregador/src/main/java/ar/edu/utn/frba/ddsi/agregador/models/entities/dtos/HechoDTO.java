@@ -20,12 +20,11 @@ import java.util.UUID;
 
 public class HechoDTO {
     private UUID id;
-    private String tipo;
     private String titulo;
     private String descripcion;
     private Categoria categoria;
     private Ubicacion ubicacion;
-    private LocalDate fechaAcontecimiento;
+    private LocalDateTime fechaAcontecimiento;
     private LocalDateTime fechaCarga;
     private Origen_Fuente origenFuente;
     private List<Etiqueta> etiquetas;
@@ -33,7 +32,7 @@ public class HechoDTO {
     private String cuerpo;
     private Contribuyente contribuyente;
 
-    public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente origenFuente, Contribuyente contribuyente) {
+    public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente origenFuente, Contribuyente contribuyente) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;

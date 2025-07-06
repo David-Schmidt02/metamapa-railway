@@ -33,4 +33,9 @@ public class SolicitudesRepository {
         return null;
     }
 
+    public void save(SolicitudEliminacion solicitud){
+        // Logica sin base de datos
+        solicitudes.add(solicitud);
+    }
+
 }

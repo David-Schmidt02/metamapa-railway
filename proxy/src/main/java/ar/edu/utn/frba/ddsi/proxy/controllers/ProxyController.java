@@ -28,6 +28,7 @@ public class ProxyController {
         return hechosServices.obtenerHechos(nombreConexion);
     }
 
+    // Devuelve todos los hechos de la fuente MetaMapa en una lista JSON.
     @GetMapping("metaMapa/hechos")
     public List<Hecho> ObtenerHechosMetaMapa(
             @RequestParam(required = false) String categoria,
@@ -48,7 +49,7 @@ public class ProxyController {
 
         return hechosServices.obtenerHechosMetaMapa(filtros);
     }
-
+    // Devuelve todos los hechos de una coleccion específica de la Metamapa en una lista JSON.
     @GetMapping("metaMapa/colecciones/{identificador}/hechos")
     public List<Hecho> ObtenerHechosPorColeccion(
             @PathVariable String identificador,
@@ -69,7 +70,7 @@ public class ProxyController {
         );
         return hechosServices.obtenerHechosPorColeccion(filtros, identificador);
     }
-
+    // Permite crear solicitudes de eliminacion de hechos en la Metamapa.
     @PostMapping("metaMapa/solicitudes")
     public SolicitudEliminacion crearSolicitudEliminacion(@RequestBody SolicitudEliminacionDTO solicitudEliminacion) {
         return hechosServices.crearSolicitudDeEliminacion(solicitudEliminacion.getIdHecho(), solicitudEliminacion.getJustificacion());

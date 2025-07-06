@@ -22,7 +22,6 @@ public abstract class Hecho {
     private LocalDateTime fechaAcontecimiento;
     private LocalDateTime fechaCarga;
     private Origen_Fuente origen;
-    private boolean estaOculto;
     private List<Etiqueta> etiquetas;
     private Contribuyente contribuyente;
 
@@ -36,7 +35,6 @@ public abstract class Hecho {
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = LocalDateTime.now();
         this.origen = Origen_Fuente.DINAMICA;
-        this.estaOculto = false;
         this.etiquetas = etiquetas;
         this.contribuyente = contribuyente;
     }

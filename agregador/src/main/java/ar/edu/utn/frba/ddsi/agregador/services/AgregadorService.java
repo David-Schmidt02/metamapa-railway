@@ -1,25 +1,32 @@
 package ar.edu.utn.frba.ddsi.agregador.services;
 
+import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Algoritmo_Consenso;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.CriterioDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.ColeccionRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.SolicitudesRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
+import org.springframework.web.server.ResponseStatusException;
+import java.time.LocalDateTime;
 
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AgregadorService {
@@ -42,13 +49,11 @@ public class AgregadorService {
     // TODO: Implementar manejo de errores y validaciones
 
     public UUID crearColeccion(ColeccionDTO coleccionDTO){
-//        if (!coleccionRepository.estaRepetida(coleccion){
-//            return this.coleccionRepository.save(coleccion);
-//        }
+
         List<Fuente> fuentes = this.hechosRepository.findFuentes(coleccionDTO.getUrls_fuente());
 
         if (fuentes == null) {
-            throw new IllegalArgumentException("Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND ,"Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
         }
 
         List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
@@ -92,72 +97,69 @@ public class AgregadorService {
 
     public Coleccion eliminarColeccionPorId(UUID id) { return this.coleccionRepository.findAndDelete(id);}
 
-//    public Coleccion modificarColeccion(UUID id, ColeccionDTO coleccionDTO) {
-//
-//        Coleccion coleccionEditada = new Coleccion(
-//                coleccionDTO.getTitulo(),
-//                coleccionDTO.getDescripcion(),
-//                coleccionDTO.getHechos(),
-//                coleccionDTO.getAlgoritmo_consenso()
-//        );
-//
-//        return this.coleccionRepository.findByIdAndUpdate(id, coleccionEditada);
-//    }
+    public Coleccion actualizarColeccion(UUID id, ColeccionDTO coleccionDTO) {
 
-    public List<Hecho> encontrarHechosPorColeccion(UUID idColeccion) {
-        Coleccion coleccion = this.coleccionRepository.findById(idColeccion);
+        List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
+                .map(this::criterioFromDTO)
+                .toList();
 
-        return coleccion.mostrarHechos();
+        List<Fuente> fuentes = this.hechosRepository.findFuentes(coleccionDTO.getUrls_fuente());
+
+
+        Coleccion coleccionEditada = new Coleccion(
+                coleccionDTO.getTitulo(),
+                coleccionDTO.getDescripcion(),
+                coleccionDTO.getAlgoritmo_consenso(),
+                fuentes,
+                criterios
+        );
+
+        return this.coleccionRepository.findByIdAndUpdate(id, coleccionEditada);
+    }
+
+    public Coleccion modificarAlgoritmoConsenso(UUID id, Algoritmo_Consenso nuevoAlgoritmo){
+        Coleccion coleccionAModificadar = this.coleccionRepository.findById(id);
+        if (coleccionAModificadar == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+        }
+        coleccionAModificadar.setAlgoritmo_consenso(nuevoAlgoritmo);
+        return this.coleccionRepository.findByIdAndUpdate(id, coleccionAModificadar);
+    }
+
+    public Coleccion modificarListaDeFuentes(UUID id, List<String> urls_fuente) {
+        Coleccion coleccionAModificadar = this.coleccionRepository.findById(id);
+        if (coleccionAModificadar == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+        }
+
+        List<Fuente> fuentes = this.hechosRepository.findFuentes(urls_fuente);
+        
+        coleccionAModificadar.setFuentes(fuentes);
+
+        return this.coleccionRepository.findByIdAndUpdate(id, coleccionAModificadar);
+
+    }
+
+    public List<Hecho> encontrarHechosPorColeccion(
+            UUID id,
+            Filtro filtros
+    ) {
+
+
+        Coleccion coleccion = this.coleccionRepository.findById(id);
+
+        if (coleccion == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+        }
+
+        List<Hecho> hechos = coleccion.mostrarHechos();
+
+        return this.hechosFiltrados(hechos, filtros);
+
+
     }
 
 
-//    public List<Hecho> encontrarHechosFiltrados(
-//            String categoria,
-//            String fechaReporteDesde,
-//            String fechaReporteHasta,
-//            String fechaAcontecimientoDesde,
-//            String fechaAcontecimientoHasta,
-//            Double latitud,
-//            Double longitud
-//    ) {
-//        //TODO: traerHechosFuentes()
-//        return hechosRepository.findAll().stream()
-//                .filter(hecho -> categoria == null ||
-//                        (hecho.getCategoria() != null && categoria.equalsIgnoreCase(hecho.getCategoria().getDetalle())))
-//                .filter(hecho -> {
-//                    if (fechaReporteDesde == null && fechaReporteHasta == null) return true;
-//                    if (hecho.getFechaCarga() == null) return false;
-//                    boolean desde = fechaReporteDesde == null ||
-//                            !hecho.getFechaCarga().isBefore(LocalDateTime.parse(fechaReporteDesde));
-//                    boolean hasta = fechaReporteHasta == null ||
-//                            !hecho.getFechaCarga().isAfter(LocalDateTime.parse(fechaReporteHasta));
-//                    return desde && hasta;
-//                })
-//                .filter(hecho -> {
-//                    if (fechaAcontecimientoDesde == null && fechaAcontecimientoHasta == null) return true;
-//                    if (hecho.getFechaAcontecimiento() == null) return false;
-//                    boolean desde = fechaAcontecimientoDesde == null ||
-//                            !hecho.getFechaAcontecimiento().isBefore(LocalDate.parse(fechaAcontecimientoDesde));
-//                    boolean hasta = fechaAcontecimientoHasta == null ||
-//                            !hecho.getFechaAcontecimiento().isAfter(LocalDate.parse(fechaAcontecimientoHasta));
-//                    return desde && hasta;
-//                })
-//                .filter(hecho -> {
-//                    if (latitud == null && longitud == null) return true;
-//                    if (hecho.getUbicacion() == null) return false;
-//                    boolean latOk = latitud == null || hecho.getUbicacion().getLatitud().equals(latitud);
-//                    boolean lonOk = longitud == null || hecho.getUbicacion().getLongitud().equals(longitud);
-//                    return latOk && lonOk;
-//                })
-//                .collect(Collectors.toList());
-//    }
-
-
-
-
-    private void consenso(UUID idColeccion) {
-
-    }
 
     public SolicitudEliminacion modificarEstadoSolicitud(UUID id, Estado_Solicitud nuevoEstado) {
 
@@ -177,6 +179,57 @@ public class AgregadorService {
 
         return solicitudActualizada;
 
+    }
+
+    public SolicitudEliminacion generarSolicitudEliminacion(UUID id, SolicitudDTO solicitudDTO) {
+            SolicitudEliminacion nuevaSolicitud = new SolicitudEliminacion(
+                    solicitudDTO.getIdHecho(),
+                    solicitudDTO.getJustificacion()
+            );
+
+            this.solicitudesRepository.save(nuevaSolicitud);
+
+        return nuevaSolicitud;
+    }
+
+    public List<Hecho> hechosFiltrados(List<Hecho> hechos, Filtro filtros) {
+        String categoria = filtros.getCategoria();
+        String fechaReporteDesde = filtros.getFecha_reporte_desde();
+        String fechaReporteHasta = filtros.getFecha_reporte_hasta();
+        String fechaAcontecimientoDesde = filtros.getFecha_acontecimiento_desde();
+        String fechaAcontecimientoHasta = filtros.getFecha_acontecimiento_hasta();
+        Integer latitud = filtros.getLatitud();
+        Integer longitud = filtros.getLongitud();
+
+        return hechos.stream()
+                .filter(hecho -> categoria == null ||
+                        (hecho.getCategoria() != null && categoria.equalsIgnoreCase(hecho.getCategoria().getDetalle())))
+                .filter(hecho -> {
+                    if (fechaReporteDesde == null && fechaReporteHasta == null) return true;
+                    if (hecho.getFechaCarga() == null) return false;
+                    boolean desde = fechaReporteDesde == null ||
+                            !hecho.getFechaCarga().isBefore(LocalDateTime.parse(fechaReporteDesde));
+                    boolean hasta = fechaReporteHasta == null ||
+                            !hecho.getFechaCarga().isAfter(LocalDateTime.parse(fechaReporteHasta));
+                    return desde && hasta;
+                })
+                .filter(hecho -> {
+                    if (fechaAcontecimientoDesde == null && fechaAcontecimientoHasta == null) return true;
+                    if (hecho.getFechaAcontecimiento() == null) return false;
+                    boolean desde = fechaAcontecimientoDesde == null ||
+                            !hecho.getFechaAcontecimiento().isBefore(LocalDateTime.parse(fechaAcontecimientoDesde));
+                    boolean hasta = fechaAcontecimientoHasta == null ||
+                            !hecho.getFechaAcontecimiento().isAfter(LocalDateTime.parse(fechaAcontecimientoHasta));
+                    return desde && hasta;
+                })
+                .filter(hecho -> {
+                    if (latitud == null && longitud == null) return true;
+                    if (hecho.getUbicacion() == null) return false;
+                    boolean latOk = latitud == null || hecho.getUbicacion().getLatitud().equals(latitud);
+                    boolean lonOk = longitud == null || hecho.getUbicacion().getLongitud().equals(longitud);
+                    return latOk && lonOk;
+                })
+                .collect(Collectors.toList());
     }
 }
 

@@ -20,14 +20,14 @@ public abstract class Hecho {
     private String descripcion;
     private Categoria categoria;
     private Ubicacion ubicacion;
-    private LocalDate fechaAcontecimiento;
+    private LocalDateTime fechaAcontecimiento;
     private LocalDateTime fechaCarga;
     private Origen_Fuente origenFuente;
     private List<Etiqueta> etiquetas;
     private Contribuyente contribuyente;
 
     public Hecho(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion,
-                 LocalDate fechaAcontecimiento, LocalDateTime fechaCarga, Origen_Fuente origenFuente, List<Etiqueta> etiquetas, Contribuyente contribuyente) {
+                 LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, Origen_Fuente origenFuente, List<Etiqueta> etiquetas, Contribuyente contribuyente) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
