@@ -11,14 +11,14 @@ import java.util.Optional;
 public class ColeccionDTO {
     private String titulo;
     private String descripcion;
-    private Optional <Algoritmo_Consenso> algoritmo_consenso;
+    private Algoritmo_Consenso algoritmo_consenso;
     private List<String> urls_fuente;
     private List<CriterioDTO> criterios;
 
     public ColeccionDTO(String titulo, String descripcion, List<Hecho> hechos, Algoritmo_Consenso algoritmo_consenso, List<String> urls_fuente, List<CriterioDTO> criterios) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.algoritmo_consenso = Optional.of(algoritmo_consenso);
+        this.algoritmo_consenso = algoritmo_consenso;
         this.urls_fuente = urls_fuente;
         this.criterios = criterios;
 

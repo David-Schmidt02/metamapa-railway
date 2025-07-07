@@ -42,6 +42,8 @@ public class Coleccion {
 
     }
 
+
+
 //    public boolean vericidad(String algoritmo) {
 //        // Verifica la veracidad de los hechos en la coleccion
 //        switch (algoritmo) {

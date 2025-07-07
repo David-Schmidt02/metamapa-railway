@@ -69,16 +69,11 @@ public class AgregadorService {
         Coleccion nuevaColeccion = new Coleccion(
                 coleccionDTO.getTitulo(),
                 coleccionDTO.getDescripcion(),
-                coleccionDTO.getAlgoritmo_consenso().orElse(null),
+                coleccionDTO.getAlgoritmo_consenso(),
                 fuentes,
                 criterios
         );
 
-        if (nuevaColeccion.getAlgoritmo_consenso() != null) {
-            nuevaColeccion.aplicarVerifiacionAlgoritmo(getAlgoritmo_consenso); // que ver esto
-        }else{
-            nuevaColeccion.aplivarVerificacionAlgoritmoPorDefecto();
-        }
 
         this.coleccionRepository.save(nuevaColeccion);
 
@@ -105,15 +100,24 @@ public class AgregadorService {
         return this.coleccionRepository.findAll();
     }
 
-    public List<Hecho> obtenerColeccionCurada(UUID id) {
+    public List<Hecho> obtenerHechosCurados(UUID id) {
         Coleccion coleccion = this.coleccionRepository.findById(id);
         if (coleccion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
         return coleccion.getFuentes().stream()
                 .flatMap(fuente -> fuente.getHechos().stream())
-                .filter(Hecho::isVerificado)
+                .filter(hecho -> hecho.consensuado(this.mencionesNecesarias(coleccion.getAlgoritmo_consenso())))
                 .collect(Collectors.toList());
+    }
+
+    public Double mencionesNecesarias(Algoritmo_Consenso algoritmo) {
+        return switch (algoritmo) {
+            case MULTIPLES_MENCIONES -> 2.0;
+            case MAYORIA_SIMPLE -> Math.floor(this.hechosRepository.countFuentes() / 2.0);
+            case ABSOLUTA -> this.hechosRepository.countFuentes();
+            default -> 1.0;
+        };
     }
 
     public Coleccion obtenerColeccion(UUID id){ return this.coleccionRepository.findById(id);}

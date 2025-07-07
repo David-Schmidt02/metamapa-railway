@@ -47,12 +47,6 @@ public class AgregadorController {
         return this.agregadorService.obtenerColecciones();
     }
 
-    @GetMapping("/hechosVerificadosDeColeccion{id}")
-    public List<Hecho> obtenerColeccionesCurada(@PathVariable UUID id){
-        return this.agregadorService.obtenerColeccionCurada(id);
-    }
-
-
 
     /**
      * Devuelve una coleccion en particular a partir de su ID.
@@ -89,13 +83,7 @@ public class AgregadorController {
     public Coleccion modificarAlgoritmoConsenso(@PathVariable UUID id, @RequestBody Algoritmo_Consenso nuevoAlgoritmo) {
        return this.agregadorService.modificarAlgoritmoConsenso(id, nuevoAlgoritmo);
     }
-    // fuentes: [estatica1, estatica2, dinamica]
 
-    // borrar: estatica1
-
-    // body: [estatica2, dinamica]
-
-    // coleccion.setFuentes(lista)
 
     @PatchMapping("/colecciones/{id}")
     public Coleccion modificarFuentes(@PathVariable UUID id, @RequestBody List<String> urls_fuente) {
@@ -109,7 +97,7 @@ public class AgregadorController {
 
     }
 
-    // ENDPOINT AL QUE LE PEGA LA FUENTE METAMAPA PARA OBTENER HECHOS POR COLEECCION
+    // Navegacion de forma irrestricta -> No se aplica curacion
 
     @GetMapping("/colecciones/{id}/hechos")
     public List<Hecho> obtenerHechosPorColeccion(@PathVariable UUID id,
@@ -119,7 +107,8 @@ public class AgregadorController {
                 @RequestParam(required = false) String fecha_acontecimiento_desde,
                 @RequestParam(required = false) String fecha_acontecimiento_hasta,
                 @RequestParam(required = false) Integer latitud,
-                @RequestParam(required = false) Integer longitud) {
+                @RequestParam(required = false) Integer longitud,
+                @RequestParam(required=true) String tipoNavegacion) {
 
         var filtros = new Filtro(
                 fecha_reporte_desde,
@@ -131,10 +120,25 @@ public class AgregadorController {
                 longitud
         );
 
+        if(tipoNavegacion == null) {
+            throw new IllegalArgumentException("El tipo de navegacion es obligatorio");
+        }
 
-        return this.agregadorService.encontrarHechosPorColeccion(id, filtros);
+        if(tipoNavegacion.equals("irrestricta")) {
+            return this.agregadorService.encontrarHechosPorColeccion(id, filtros);
+        } else if (tipoNavegacion.equals("curada")) {
+            return this.agregadorService.obtenerHechosCurados(id);
+        } else {
+            throw new IllegalArgumentException("Tipo de navegacion no soportado: " + tipoNavegacion);
+        }
     }
 
+
+
+//    @GetMapping("/hechosVerificadosDeColeccion{id}")
+//    public List<Hecho> obtenerHechosCurados(@PathVariable UUID id){
+//        return this.agregadorService.obtenerHechosCurados(id);
+//    }
 
 
     // Endpoint para generar solicitudes de eliminacion de hechos le pega metamapa

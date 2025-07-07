@@ -69,4 +69,8 @@ public class HechosRepository {
                 .filter(fuente -> urls.contains(fuente.getUrl()))
                 .toList();
     }
+
+    public Double countFuentes() {
+        return fuentes.stream().count();
+    }
 }

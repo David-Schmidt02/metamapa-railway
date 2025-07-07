@@ -25,7 +25,7 @@ public abstract class Hecho {
     private Origen_Fuente origenFuente;
     private List<Etiqueta> etiquetas;
     private Contribuyente contribuyente;
-    private boolean verificado = false;
+    private Integer cantidadMenciones;
 
     public Hecho(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion,
                  LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, Origen_Fuente origenFuente, List<Etiqueta> etiquetas, Contribuyente contribuyente) {
@@ -44,6 +44,10 @@ public abstract class Hecho {
     public boolean esEditable() {
         //return !this.esAnonimo && (ChronoUnit.DAYS.between(this.fechaCarga, LocalDateTime.now()) < 7 );
         return ChronoUnit.DAYS.between(this.fechaCarga, LocalDateTime.now()) < 7;
+    }
+
+    public boolean consensuado(Double mencionesNecesarias) {
+        return this.cantidadMenciones >= mencionesNecesarias;
     }
 }
 
