@@ -4,6 +4,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.importador.Importador;
 
+import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -17,10 +18,11 @@ public class HechosRepository {
      * Por ahora las fuentes se hardcodean aca. Eventualmente se
      * vera si se pueden agregar/sacar usando requests.
      */
-    private final List<Fuente> fuentes = List.of(
-            new Fuente("https://dinamica", "Dinamica"),
-            new Fuente("https://estatica", "Estatica"),
-            new Fuente("https://proxy", "Proxy")
+    @Setter
+    private List<Fuente> fuentes = List.of(
+            new Fuente("http://localhost:8080/api/dinamica", "Dinamica"),
+            new Fuente("http://localhost:8080/api/estatica", "Estatica"),
+            new Fuente("http://localhost:8080/api/proxy", "Proxy")
     );
 
     private final Importador importador= new Importador();
@@ -64,20 +66,14 @@ public class HechosRepository {
 
     }
 
-    // Ahora el tema es que hacemos con los hechos clasificados. Pisamos los de las fuentes?
-    // Si pisamos los de las fuentes, podríamos hacer lo siguiente:
-    public void actualizarHechosClasificadoFuentes(List<Hecho> hechosClasificados) {
-        for (Fuente fuente : fuentes) {
-            List<Hecho> hechosActualizados = new ArrayList<>();
-            for (Hecho hecho : fuente.getHechos()) {
-                Hecho hechoActualizado = hechosClasificados.stream()
-                        .filter(hc -> hc.getId().equals(hecho.getId()))
-                        .findFirst()
-                        .orElse(hecho);
-                hechosActualizados.add(hechoActualizado);
-            }
-            fuente.setHechos(hechosActualizados);
-        }
+
+    public List<Fuente> findAllFuentes() {
+        return fuentes;
+    }
+
+    public void update(List<Fuente> fuentesNuevas) {
+        this.setFuentes(fuentesNuevas);
+
     }
 
     public List<Fuente> findFuentes(List<String> urls) {

@@ -106,9 +106,9 @@ public class AgregadorController {
                 @RequestParam(required = false) String fecha_reporte_hasta,
                 @RequestParam(required = false) String fecha_acontecimiento_desde,
                 @RequestParam(required = false) String fecha_acontecimiento_hasta,
-                @RequestParam(required = false) Integer latitud,
-                @RequestParam(required = false) Integer longitud,
-                @RequestParam(required=true) String tipoNavegacion) {
+                @RequestParam(required = false) Double latitud,
+                @RequestParam(required = false) Double longitud,
+                @RequestParam String tipoNavegacion) {
 
         var filtros = new Filtro(
                 fecha_reporte_desde,
@@ -134,24 +134,25 @@ public class AgregadorController {
     }
 
 
-
-//    @GetMapping("/hechosVerificadosDeColeccion{id}")
-//    public List<Hecho> obtenerHechosCurados(@PathVariable UUID id){
-//        return this.agregadorService.obtenerHechosCurados(id);
-//    }
-
-
     // Endpoint para generar solicitudes de eliminacion de hechos le pega metamapa
     @PostMapping("/solicitudes/{id}")
     public SolicitudEliminacion generarSolicitudEliminacion(@PathVariable UUID id, @RequestBody SolicitudDTO solicitudEliminacion) {
         return agregadorService.generarSolicitudEliminacion(id, solicitudEliminacion);
     }
 
+// ucraniano
+    /*
+    private final WebClient webClient;
 
-
-
-
-
-
+    @PostMapping("/hechos")
+    public Mono<ResponseEntity<Void>> redirigirEndpoint(@RequestBody HechoDTO hechoDTO) {
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build();
+        return webClient.post()
+                .uri("/dinamica/hechos")
+                .bodyValue(hechoDTO)
+                .retrieve()
+                .toBodilessEntity();
+    }
+    */
 }
 

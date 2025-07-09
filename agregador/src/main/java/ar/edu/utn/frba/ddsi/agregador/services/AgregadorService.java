@@ -12,6 +12,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
+import jakarta.annotation.PostConstruct;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,25 +35,40 @@ public class AgregadorService {
     private final HechosRepository hechosRepository;
     private final SolicitudesRepository solicitudesRepository;
     private final ColeccionRepository coleccionRepository;
-    private final Clasificador clasificador;
 
-    public AgregadorService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository, Clasificador clasificador) {
+    public AgregadorService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository) {
         this.hechosRepository = hechosRepository;
         this.solicitudesRepository = solicitudesRepository;
         this.coleccionRepository = coleccionRepository;
-        this.clasificador =  clasificador;
+    }
+
+    @PostConstruct
+    public void consultarHechosPorPrimeraVez() {
+        hechosRepository.importarHechosDesdeFuentes(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
+        this.clasificarHechos();
     }
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void consultarHechosPeriodicamente() {
-        hechosRepository.importarHechosDesdeFuentes();
+        hechosRepository.importarHechosDesdeFuentes(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
     }
 
     @Scheduled(cron = "0 0 3 * * *")
     public void clasificarHechos() {
-        List<Hecho> hechos = hechosRepository.findAll();
-        List<Hecho> hechosClasificados = clasificador.clasificarHechosPorMenciones(hechos);
-        hechosRepository.actualizarHechosClasificadoFuentes(hechosClasificados);
+
+        List<Fuente> fuentes = hechosRepository.findAllFuentes();
+
+        for (Fuente fuente : fuentes) {
+            List<Fuente> fuentesParaEvaluar = fuentes.stream()
+                    .filter(f -> !f.equals(fuente))  // excluye la fuente actual de la iteración
+                    .collect(Collectors.toList());
+
+
+            List<Hecho> hechosClasificados = Clasificador.clasificarHechosPorMenciones(fuente.getHechos(), fuentesParaEvaluar);
+            fuente.setHechos(hechosClasificados);
+        }
+
+        hechosRepository.update(fuentes);
     }
 
     // <----------------- COLECCIONES ----------------->
@@ -115,12 +131,12 @@ public class AgregadorService {
                 .collect(Collectors.toList());
     }
 
-    public Double mencionesNecesarias(Algoritmo_Consenso algoritmo) {
+    private Double mencionesNecesarias(Algoritmo_Consenso algoritmo) {
         return switch (algoritmo) {
             case MULTIPLES_MENCIONES -> 2.0;
             case MAYORIA_SIMPLE -> Math.floor(this.hechosRepository.countFuentes() / 2.0);
             case ABSOLUTA -> Math.ceil(this.hechosRepository.countFuentes());
-            default -> 1.0;
+            default -> 0.0; // Algoritmo de consenso = 'NINGUNO'
         };
     }
 
@@ -229,8 +245,8 @@ public class AgregadorService {
         String fechaReporteHasta = filtros.getFecha_reporte_hasta();
         String fechaAcontecimientoDesde = filtros.getFecha_acontecimiento_desde();
         String fechaAcontecimientoHasta = filtros.getFecha_acontecimiento_hasta();
-        Integer latitud = filtros.getLatitud();
-        Integer longitud = filtros.getLongitud();
+        Double latitud = filtros.getLatitud();
+        Double longitud = filtros.getLongitud();
 
         return hechos.stream()
                 .filter(hecho -> categoria == null ||

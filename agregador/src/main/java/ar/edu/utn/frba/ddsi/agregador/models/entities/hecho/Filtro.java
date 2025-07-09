@@ -9,10 +9,10 @@ public class Filtro {
     private final String fecha_reporte_hasta;
     private final String fecha_acontecimiento_desde;
     private final String fecha_acontecimiento_hasta;
-    private final Integer latitud;
-    private final Integer longitud;
+    private final Double latitud;
+    private final Double longitud;
 
-    public Filtro(String categoria, String fecha_reporte_desde, String fecha_reporte_hasta, String fecha_acontecimiento_desde, String fecha_acontecimiento_hasta, Integer latitud, Integer longitud) {
+    public Filtro(String categoria, String fecha_reporte_desde, String fecha_reporte_hasta, String fecha_acontecimiento_desde, String fecha_acontecimiento_hasta, Double latitud, Double longitud) {
         this.categoria = categoria;
         this.fecha_reporte_desde = fecha_reporte_desde;
         this.fecha_reporte_hasta = fecha_reporte_hasta;
