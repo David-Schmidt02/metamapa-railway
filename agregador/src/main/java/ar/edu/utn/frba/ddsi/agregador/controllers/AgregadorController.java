@@ -10,16 +10,16 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estad
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.agregador.services.AgregadorService;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
-
-
+import jakarta.annotation.PostConstruct;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 import java.util.UUID;
 
+
 @RequestMapping("/agregador")
 @RestController
-
 public class AgregadorController {
     private final AgregadorService agregadorService;
 
@@ -85,10 +85,10 @@ public class AgregadorController {
     }
 
 
-    @PatchMapping("/colecciones/{id}")
-    public Coleccion modificarFuentes(@PathVariable UUID id, @RequestBody List<String> urls_fuente) {
-        return this.agregadorService.modificarListaDeFuentes(id, urls_fuente);
-    }
+//    @PatchMapping("/colecciones/{id}")
+//    public Coleccion modificarFuentes(@PathVariable UUID id, @RequestBody List<String> urls_fuente) {
+//        return this.agregadorService.modificarListaDeFuentes(id, urls_fuente);
+//    }
 
     // Endpoint para aceptar/rechazar solicitudes de eliminacion
     @PutMapping("/solicitudes/{id}")
@@ -138,6 +138,11 @@ public class AgregadorController {
     @PostMapping("/solicitudes/{id}")
     public SolicitudEliminacion generarSolicitudEliminacion(@RequestBody SolicitudDTO solicitudEliminacion) {
         return agregadorService.crearSolicitudEliminacion(solicitudEliminacion);
+    }
+
+    @GetMapping("/init")
+    public void init() {
+        this.agregadorService.consultarHechosPorPrimeraVez();
     }
 
 // ucraniano

@@ -20,9 +20,9 @@ public class HechosRepository {
      */
     @Setter
     private List<Fuente> fuentes = List.of(
-            new Fuente("http://localhost:8080/api/dinamica", "Dinamica"),
-            new Fuente("http://localhost:8080/api/estatica", "Estatica"),
-            new Fuente("http://localhost:8080/api/proxy", "Proxy")
+            //new Fuente("http://localhost:8080/api/dinamica", "Dinamica"),
+            new Fuente("http://localhost:8080/api/estatica/hechos", "Estatica")
+            //new Fuente("http://localhost:8080/api/proxy", "Proxy")
     );
 
     private final Importador importador= new Importador();
