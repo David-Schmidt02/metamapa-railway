@@ -252,11 +252,11 @@ public class AgregadorService {
                         (hecho.getCategoria() != null && categoria.equalsIgnoreCase(hecho.getCategoria().getDetalle())))
                 .filter(hecho -> {
                     if (fechaReporteDesde == null && fechaReporteHasta == null) return true;
-                    if (hecho.getFechaImportacion() == null) return false;
+                    if (hecho.getFechaCarga() == null) return false;
                     boolean desde = fechaReporteDesde == null ||
-                            !hecho.getFechaImportacion().isBefore(LocalDateTime.parse(fechaReporteDesde));
+                            !hecho.getFechaCarga().isBefore(LocalDateTime.parse(fechaReporteDesde));
                     boolean hasta = fechaReporteHasta == null ||
-                            !hecho.getFechaImportacion().isAfter(LocalDateTime.parse(fechaReporteHasta));
+                            !hecho.getFechaCarga().isAfter(LocalDateTime.parse(fechaReporteHasta));
                     return desde && hasta;
                 })
                 .filter(hecho -> {

@@ -4,6 +4,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Etiqueta;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Origen_Fuente;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,27 +25,34 @@ public class HechoDTO {
     private Categoria categoria;
     private Ubicacion ubicacion;
     private LocalDateTime fechaAcontecimiento;
-    private LocalDateTime fechaImportacion;
+    private LocalDateTime fechaCarga;
     private Origen_Fuente origenFuente;
     private List<Etiqueta> etiquetas;
     private List<String> contenidoMultimedia;
     private String cuerpo;
     private Contribuyente contribuyente;
 
-    public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaImportacion, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente origenFuente, Contribuyente contribuyente) {
+    public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente origenFuente, Contribuyente contribuyente) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.ubicacion = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
-        this.fechaImportacion = fechaImportacion;
+        this.fechaCarga = fechaCarga;
         this.etiquetas = etiquetas;
         this.contenidoMultimedia = contenidoMultimedia;
         this.cuerpo = cuerpo;
         this.origenFuente = origenFuente;
         this.contribuyente = contribuyente;
 
+    }
+
+    public Contribuyente getContribuyente() {
+        if (contribuyente == null) {
+            return Anonimo.getInstance();
+        } else
+        return contribuyente;
     }
 
 

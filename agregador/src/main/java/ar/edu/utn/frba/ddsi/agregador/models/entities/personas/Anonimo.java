@@ -35,8 +35,4 @@ public class Anonimo extends Contribuyente {
         return instance;
     }
 
-    @JsonProperty("tipo")
-    public String getTipo() {
-        return "anonimo";
-    }
 }

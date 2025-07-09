@@ -13,6 +13,7 @@ public class Conversor {
     public Conversor() {}
 
     public Hecho convertirHecho(HechoDTO hechoDTO) {
+        System.out.println(hechoDTO);
         Hecho hecho = creacionHecho(hechoDTO);
         // Caso fuente estática
         if (hecho.getOrigenFuente() == Origen_Fuente.ESTATICA) {
@@ -41,7 +42,7 @@ public class Conversor {
                 hechoDTO.getCategoria(),
                 hechoDTO.getUbicacion(),
                 hechoDTO.getFechaAcontecimiento(),
-                hechoDTO.getFechaImportacion(),
+                hechoDTO.getFechaCarga(),
                 hechoDTO.getOrigenFuente(),
                 hechoDTO.getEtiquetas(),
                 hechoDTO.getContribuyente(),
@@ -57,7 +58,7 @@ public class Conversor {
                 hechoDTO.getCategoria(),
                 hechoDTO.getUbicacion(),
                 hechoDTO.getFechaAcontecimiento(),
-                hechoDTO.getFechaImportacion(),
+                hechoDTO.getFechaCarga(),
                 hechoDTO.getOrigenFuente(),
                 hechoDTO.getEtiquetas(),
                 hechoDTO.getContribuyente(),

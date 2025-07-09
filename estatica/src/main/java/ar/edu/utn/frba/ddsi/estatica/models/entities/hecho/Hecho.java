@@ -17,7 +17,7 @@ public class Hecho {
     private Categoria categoria;
     private Ubicacion ubicacion;
     private LocalDateTime fechaAcontecimiento;
-    private LocalDateTime fechaImportacion;
+    private LocalDateTime fechaCarga;
     private Origen_Fuente origenFuente;
 
     public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento) {
@@ -27,7 +27,7 @@ public class Hecho {
         this.categoria = categoria;
         this.ubicacion = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
-        this.fechaImportacion = LocalDateTime.now();
+        this.fechaCarga = LocalDateTime.now();
         this.origenFuente = Origen_Fuente.ESTATICA;
     }
 
