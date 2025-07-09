@@ -7,10 +7,21 @@ import java.util.List;
 import java.util.UUID;
 
 import ar.edu.utn.frba.ddsi.proxy.models.entities.personas.Contribuyente;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 
 @Getter
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "tipo"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = HechoTextual.class, name = "textual"),
+        @JsonSubTypes.Type(value = HechoMultimedia.class, name = "multimedia")
+})
 public abstract class Hecho {
     private UUID id;
     private String titulo;
@@ -32,7 +43,7 @@ public abstract class Hecho {
         this.ubicacion = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = LocalDateTime.now();
-        this.origen = Origen_Fuente.DINAMICA;
+        this.origen = Origen_Fuente.INTERMEDIARIA;
         this.etiquetas = etiquetas;
         this.contribuyente = contribuyente;
     }

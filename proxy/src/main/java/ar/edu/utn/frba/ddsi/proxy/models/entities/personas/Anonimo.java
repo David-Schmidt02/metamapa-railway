@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -34,8 +33,4 @@ public class Anonimo extends Contribuyente {
         return instance;
     }
 
-    @JsonProperty("tipo")
-    public String getTipo() {
-        return "anonimo";
-    }
 }
