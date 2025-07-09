@@ -16,6 +16,7 @@ public class Anonimo extends Contribuyente {
     private static Anonimo instance;
 
     private Anonimo() {
+        super();
         // Constructor privado
     }
 

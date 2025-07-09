@@ -32,7 +32,7 @@ public abstract class Hecho {
         this.ubicacion = ubicacion;
         this.fechaAcontecimiento = fechaAcontecimiento;
         this.fechaCarga = LocalDateTime.now();
-        this.origen = Origen_Fuente.DINAMICA;
+        this.origen = Origen_Fuente.INTERMEDIARIA;
         this.etiquetas = etiquetas;
         this.contribuyente = contribuyente;
     }
