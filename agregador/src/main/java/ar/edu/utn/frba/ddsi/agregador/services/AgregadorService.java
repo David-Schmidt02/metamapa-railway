@@ -141,7 +141,12 @@ public class AgregadorService {
     public Coleccion obtenerColeccion(UUID id){ return this.coleccionRepository.findById(id);}
 
 
-    public void eliminarColeccionPorId(UUID id) { this.coleccionRepository.findAndDelete(id);}
+    public void eliminarColeccionPorId(UUID id) {
+        Coleccion coleccionBuscada = this.coleccionRepository.findAndDelete(id);
+        if (coleccionBuscada == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+        }
+    }
 
     public Coleccion actualizarColeccion(UUID id, ColeccionDTO coleccionDTO) {
 
