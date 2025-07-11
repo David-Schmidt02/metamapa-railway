@@ -149,9 +149,9 @@ public class DinamicaService {
             throw new RuntimeException("No se pudo actualizar la solicitud con ID: " + id);
         }
 
-        if(nuevoEstado == Estado_Solicitud.ACEPTADA) {
-            this.ocultarHecho(solicitudAEditar.getIdHecho());
-        }
+//        if(nuevoEstado == Estado_Solicitud.ACEPTADA) {
+//            this.ocultarHecho(solicitudAEditar.getIdHecho());
+//        }
 
         return solicitudActualizada;
 
@@ -164,7 +164,7 @@ public class DinamicaService {
             throw new IllegalArgumentException("Hecho no encontrado con ID: " + idHecho);
         }
 
-        hechoParaOcultar.setEstaOculto(true);
+        //hechoParaOcultar.setEstaOculto(true);
 
         Hecho hechoActualizado = hechosRepository.findByIdAndUpdate(idHecho, hechoParaOcultar);
 
@@ -175,6 +175,7 @@ public class DinamicaService {
 
 
     public List<Hecho> encontrarHechosFiltrados(
+            String ultimaConsulta,
             String categoria,
             String fechaReporteDesde,
             String fechaReporteHasta,
@@ -182,7 +183,9 @@ public class DinamicaService {
             String fechaAcontecimientoHasta,
             Double latitud,
             Double longitud
-    ) {
+    )
+    {
+        System.out.println("Consulta desde dinamica:" + ultimaConsulta);
         return hechosRepository.findAll().stream()
                 .filter(hecho -> categoria == null ||
                         (hecho.getCategoria() != null && categoria.equalsIgnoreCase(hecho.getCategoria().getDetalle())))
@@ -210,6 +213,11 @@ public class DinamicaService {
                     boolean latOk = latitud == null || hecho.getUbicacion().getLatitud().equals(latitud);
                     boolean lonOk = longitud == null || hecho.getUbicacion().getLongitud().equals(longitud);
                     return latOk && lonOk;
+                })
+                .filter(hecho -> {
+                    if (ultimaConsulta == null) return true;
+                    System.out.println(ultimaConsulta);
+                    return hecho.getFechaCarga().isAfter(LocalDateTime.parse(ultimaConsulta));
                 })
                 .collect(Collectors.toList());
     }

@@ -12,6 +12,7 @@
         <module>dinamica</module>
         <module>estatica</module>
         <module>proxy</module>
+        <module>agregador</module>
     </modules>
     <groupId>ar.edu.utn.frba.ddsi</groupId>
     <artifactId>metamapa</artifactId>

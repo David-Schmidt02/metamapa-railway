@@ -48,13 +48,13 @@ public class MetaMapaClient {
         Hecho hechoReferenciado = webClient.get()
                 .uri("/hechos/"+ idHecho)
                 .retrieve()
-                .bodyToMono(Hecho.class)
+                .bodyToMono(Hecho.class) // convierte el cuerpo en un mono 🐒
                 .block();
         if (hechoReferenciado == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro el hecho con ID: " + idHecho);
         }
         return webClient.post()
-                .uri("/solicitudes")
+                .uri("/solicitudes/" + idHecho)
                 .bodyValue(new SolicitudEliminacion(idHecho, justificacion))
                 .retrieve()
                 .bodyToMono(SolicitudEliminacion.class)
