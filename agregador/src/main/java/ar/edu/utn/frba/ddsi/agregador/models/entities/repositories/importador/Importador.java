@@ -47,7 +47,7 @@ public class Importador {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
 
         if (ultimaConsulta != null) {
-            String ultimaConsultaString = this.ultimaConsulta.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+            String ultimaConsultaString = ultimaConsulta.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
             builder.queryParam("ultimaConsulta", ultimaConsultaString);
         }
 

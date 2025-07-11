@@ -4,6 +4,7 @@ import ar.edu.utn.frba.ddsi.proxy.metaMapa.FiltroRequest;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Hecho;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacionDTO;
+import org.apache.coyote.Request;
 import org.springframework.web.bind.annotation.*;
 import ar.edu.utn.frba.ddsi.proxy.service.HechosServices;
 
@@ -36,7 +37,8 @@ public class ProxyController {
             @RequestParam(required = false) String fecha_reporte_hasta,
             @RequestParam(required = false) String fecha_acontecimiento_desde,
             @RequestParam(required = false) String fecha_acontecimiento_hasta,
-            @RequestParam(required = false) String ubicacion
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String ultimaConsulta
     ) {
         FiltroRequest filtros = new FiltroRequest(
                 fecha_acontecimiento_hasta,
@@ -44,7 +46,8 @@ public class ProxyController {
                 fecha_acontecimiento_desde,
                 fecha_reporte_hasta,
                 fecha_reporte_desde,
-                categoria
+                categoria,
+                ultimaConsulta
         );
 
         return hechosServices.obtenerHechosMetaMapa(filtros);
@@ -58,7 +61,9 @@ public class ProxyController {
             @RequestParam(required = false) String fecha_reporte_hasta,
             @RequestParam(required = false) String fecha_acontecimiento_desde,
             @RequestParam(required = false) String fecha_acontecimiento_hasta,
-            @RequestParam(required = false) String ubicacion) {
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String ultimaConsulta ){
+
 
         FiltroRequest filtros = new FiltroRequest(
                 fecha_acontecimiento_hasta,
@@ -66,7 +71,8 @@ public class ProxyController {
                 fecha_acontecimiento_desde,
                 fecha_reporte_hasta,
                 fecha_reporte_desde,
-                categoria
+                categoria,
+                ultimaConsulta
         );
         return hechosServices.obtenerHechosPorColeccion(filtros, identificador);
     }

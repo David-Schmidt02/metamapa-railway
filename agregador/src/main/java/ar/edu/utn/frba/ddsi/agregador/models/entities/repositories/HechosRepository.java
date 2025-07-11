@@ -22,7 +22,7 @@ public class HechosRepository {
     private List<Fuente> fuentes = List.of(
             new Fuente("http://localhost:8082/api/dinamica/hechos", "Dinamica"),
             new Fuente("http://localhost:8081/api/estatica/hechos", "Estatica"),
-            new Fuente("http://localhost:8083/api/proxy/metaMapa/hechos", "Proxy")
+            new Fuente("http://localhost:8083/api/proxy/hechos", "Proxy")
     );
 
     private final Importador importador= new Importador();
