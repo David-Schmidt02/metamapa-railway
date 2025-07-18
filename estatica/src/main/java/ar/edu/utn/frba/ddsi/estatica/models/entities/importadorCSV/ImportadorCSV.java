@@ -5,10 +5,7 @@ import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.HechoCSV;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Ubicacion;
 import com.opencsv.exceptions.CsvValidationException;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternUtils;
+
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,7 +18,7 @@ import java.util.List;
 public class ImportadorCSV {
     private static final LectorCSV lector = new LectorCSV();
 
-    ; // Cargador de recursos para acceder a los archivos CSV
+     // Cargador de recursos para acceder a los archivos CSV
 
 //    public List<Hecho> cargarCSVs() {
 //        List<Hecho> hechosImportados = new ArrayList<>();

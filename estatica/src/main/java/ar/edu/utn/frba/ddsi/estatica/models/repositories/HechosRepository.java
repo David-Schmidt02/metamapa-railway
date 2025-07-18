@@ -2,26 +2,22 @@ package ar.edu.utn.frba.ddsi.estatica.models.repositories;
 
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.importador.Importador;
-import ar.edu.utn.frba.ddsi.estatica.models.entities.importadorCSV.ImportadorCSV;
-import com.opencsv.exceptions.CsvValidationException;
+
 import jakarta.annotation.PostConstruct;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternUtils;
+
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.UUID;
-import java.util.*;
+
 
 @Repository
 public class HechosRepository {
 
-    private final List<Hecho> hechos = new ArrayList<Hecho>();
+    private final List<Hecho> hechos = new ArrayList<>();
     private final Importador importador;
 
 

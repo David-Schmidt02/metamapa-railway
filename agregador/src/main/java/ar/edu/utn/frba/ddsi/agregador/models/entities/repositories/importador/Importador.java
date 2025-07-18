@@ -34,7 +34,7 @@ public class Importador {
                 .block();
         if (hechos != null) {
             fuente.agregarHechos(hechos.stream().map(adaptador::convertirHecho).toList());
-        };
+        }
 
 
         System.out.print("Ultima consulta: ");

@@ -4,7 +4,6 @@ import ar.edu.utn.frba.ddsi.proxy.metaMapa.FiltroRequest;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Hecho;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacionDTO;
-import org.apache.coyote.Request;
 import org.springframework.web.bind.annotation.*;
 import ar.edu.utn.frba.ddsi.proxy.service.HechosServices;
 
