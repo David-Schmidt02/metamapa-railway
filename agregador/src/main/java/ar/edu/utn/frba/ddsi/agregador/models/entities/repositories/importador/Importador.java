@@ -13,7 +13,6 @@ import java.util.List;
 
 public class Importador {
 
-    private LocalDateTime ultimaConsulta;
     protected WebClient webClient;
     private final Conversor adaptador = new Conversor();
 
@@ -21,11 +20,11 @@ public class Importador {
         this.webClient = WebClient.builder()
                 .baseUrl("")
                 .build();
-        this.ultimaConsulta = null;
+
     }
 
-    public void importarHechos(Fuente fuente) {
-        URI uri = aplicarUltimaConsulta(fuente.getUrl());
+    public void importarHechos(Fuente fuente, LocalDateTime ultimaConsulta) {
+        URI uri = aplicarUltimaConsulta(fuente.getUrl(), ultimaConsulta);
         System.out.println(uri);
         List<HechoDTO> hechos = webClient.get()
                 .uri(uri)
@@ -37,12 +36,12 @@ public class Importador {
             fuente.agregarHechos(hechos.stream().map(adaptador::convertirHecho).toList());
         };
 
-        this.ultimaConsulta = LocalDateTime.now();
+
         System.out.print("Ultima consulta: ");
         System.out.println(ultimaConsulta);
     }
 
-    public URI aplicarUltimaConsulta(String url){
+    public URI aplicarUltimaConsulta(String url, LocalDateTime ultimaConsulta) {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
 

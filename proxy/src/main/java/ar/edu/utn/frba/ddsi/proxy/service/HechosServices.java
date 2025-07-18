@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class HechosServices {
@@ -29,6 +31,17 @@ public class HechosServices {
 
     public HechosServices(HechosRepository hechosRepository) {
         this.hechosRepository = hechosRepository;
+    }
+
+    public List<Hecho> findAllHechos(String ultimaConsulta) {
+        List<Hecho> hechos = new ArrayList<>(this.hechosRepository.findAll());
+        hechos.addAll(this.obtenerHechosMetaMapa(
+                new FiltroRequest(null, null, null, null, null, null, ultimaConsulta)));
+
+        return hechos.stream()
+                .filter(hecho -> ultimaConsulta == null ||
+                        hecho.getFechaCarga().isAfter(LocalDateTime.parse(ultimaConsulta)))
+                .collect(Collectors.toList());
     }
 
     public List<Hecho> obtenerHechos(String nombreConexion) {

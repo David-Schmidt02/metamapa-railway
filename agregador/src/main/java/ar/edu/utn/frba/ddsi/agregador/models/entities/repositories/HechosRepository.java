@@ -7,6 +7,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.importador.Im
 import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +26,8 @@ public class HechosRepository {
             new Fuente("http://localhost:8083/api/proxy/hechos", "Proxy")
     );
 
-    private final Importador importador= new Importador();
+    private LocalDateTime ultimaConsulta;
+    private final Importador importador = new Importador();
 
 
     public Hecho findById(UUID id) {
@@ -62,8 +64,8 @@ public class HechosRepository {
     }
 
     public void importarHechosDesdeFuentes() {
-        fuentes.forEach(importador::importarHechos);
-
+        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta));
+        this.ultimaConsulta = LocalDateTime.now();
     }
 
 

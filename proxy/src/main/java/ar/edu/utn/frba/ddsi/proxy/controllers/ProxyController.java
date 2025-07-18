@@ -24,6 +24,11 @@ public class ProxyController {
     // 3. Como persona usuaria, quiero poder obtener todos los hechos de las fuentes MetaMapa
     //  configuradas en cada colección, en tiempo real.
 
+    @GetMapping("hechos")
+    public List<Hecho> ObtenerHechos(@RequestParam(required = false) String ultimaConsulta) {
+        return hechosServices.findAllHechos(ultimaConsulta);
+    }
+
     @GetMapping("demo/hechos/{nombreConexion}")
     public List<Hecho> ObtenerHechosDemo(@PathVariable String nombreConexion) {
         return hechosServices.obtenerHechos(nombreConexion);

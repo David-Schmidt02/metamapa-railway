@@ -28,6 +28,12 @@ public class HechosRepository {
         }
     }
 
+    public List<Hecho> findAll() {
+        return this.hechos.values().stream()
+                .flatMap(List::stream)
+                .toList();
+    }
+
     public List<Hecho> findByName(String nombreConexion) {
         return this.hechos.get(nombreConexion);
     } // Get a la lista de hechos de una conexion específica
