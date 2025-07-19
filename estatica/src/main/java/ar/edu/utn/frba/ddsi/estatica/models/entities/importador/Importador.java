@@ -8,21 +8,31 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.stereotype.Component;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 
 // Clase singleton para importar desde distintos tipos de archivos
 @Component
 public class Importador {
     private final ImportadorCSV importadorCSV;
     private ResourceLoader resourceLoader;
+    private final Map<String, Function<Resource, List<Hecho>>> importadores = new HashMap<>();
 
     @Autowired
     public Importador(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
         this.importadorCSV = new ImportadorCSV();
+        importadores.put("csv", recurso -> {
+            try {
+                return importadorCSV.importarCSV(recurso.getFilename());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // Agrega más importadores si lo necesitas
     }
 
     public List<Hecho> importarHechos() {
@@ -53,7 +63,7 @@ public class Importador {
         return hechosImportados;
 
     }
-
+    /*
     private List<Hecho> importarSegunArchivo(Resource recurso) throws Exception {
         String extensionArchivo = recurso.getFilename().substring(recurso.getFilename().lastIndexOf(".") + 1).toLowerCase();
         switch (extensionArchivo) {
@@ -64,6 +74,13 @@ public class Importador {
         }
 
     }
-
-
+*/
+    private List<Hecho> importarSegunArchivo(Resource recurso) throws Exception {
+        String extension = recurso.getFilename().substring(recurso.getFilename().lastIndexOf(".") + 1).toLowerCase();
+        Function<Resource, List<Hecho>> importador = importadores.get(extension);
+        if (importador == null) {
+            throw new Exception("Formato de archivo no soportado: " + extension);
+        }
+        return importador.apply(recurso);
+    }
 }
