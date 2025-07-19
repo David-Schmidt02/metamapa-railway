@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.*;
 import java.util.function.Function;
 
-// Clase singleton para importar desde distintos tipos de archivos
 @Component
 public class Importador {
     private final ImportadorCSV importadorCSV;
     private ResourceLoader resourceLoader;
     private final Map<String, Function<Resource, List<Hecho>>> importadores = new HashMap<>();
+    private final String[] patrones = {"classpath:*.csv"};
 
     @Autowired
     public Importador(ResourceLoader resourceLoader) {
@@ -32,7 +32,7 @@ public class Importador {
                 throw new RuntimeException(e);
             }
         });
-        // Agrega más importadores si lo necesitas
+        // En el futuro aca agregariamos mas importadores segun el tipo de archivo
     }
 
     public List<Hecho> importarHechos() {
@@ -40,8 +40,6 @@ public class Importador {
 
         try {
             ResourcePatternResolver resolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader); // Es un buscador que encuentra los archivos con patron CSV
-
-            String[] patrones = {"classpath:*.csv"};
 
             for (String patron : patrones) {
                 Resource[] recursos = resolver.getResources(patron);
