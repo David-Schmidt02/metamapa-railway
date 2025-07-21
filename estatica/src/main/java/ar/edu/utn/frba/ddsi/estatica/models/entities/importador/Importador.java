@@ -20,7 +20,7 @@ public class Importador {
     private final Map<String, Lector> lectores = new HashMap<>();
     private final String[] patrones = {"classpath:*.csv"};
 
-    @Autowired
+
     public Importador() {
         // TODO decidir cuando / donde instanciar los lectores
         this.lectorCSV = new LectorCSV();
