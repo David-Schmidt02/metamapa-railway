@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.ddsi.agregador.models.entities.repositories;
+package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import org.springframework.stereotype.Repository;

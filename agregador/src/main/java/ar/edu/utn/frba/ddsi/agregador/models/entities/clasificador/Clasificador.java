@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.clasificador;
+package ar.edu.utn.frba.ddsi.agregador.models.entities.clasificador;
 
 import java.util.List;
 import java.util.Objects;

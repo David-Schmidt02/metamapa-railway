@@ -8,14 +8,14 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Registrado;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.HechosRepository;
+import ar.edu.utn.frba.ddsi.dinamica.models.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 
 
 import org.springframework.stereotype.Service;
 
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
-import ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories.SolicitudesRepository;
+import ar.edu.utn.frba.ddsi.dinamica.models.repositories.SolicitudesRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

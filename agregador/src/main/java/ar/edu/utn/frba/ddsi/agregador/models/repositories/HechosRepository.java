@@ -1,8 +1,8 @@
-package ar.edu.utn.frba.ddsi.agregador.models.entities.repositories;
+package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.repositories.importador.Importador;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.importador.Importador;
 
 import lombok.Setter;
 import org.springframework.stereotype.Repository;

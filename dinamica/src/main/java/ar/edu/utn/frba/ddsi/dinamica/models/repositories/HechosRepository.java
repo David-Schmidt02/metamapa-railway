@@ -1,4 +1,4 @@
-package ar.edu.utn.frba.ddsi.dinamica.models.entities.repositories;
+package ar.edu.utn.frba.ddsi.dinamica.models.repositories;
 
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import org.springframework.stereotype.Repository;
