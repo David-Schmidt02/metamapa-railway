@@ -1,6 +1,6 @@
-package ar.edu.utn.frba.ddsi.agregador.models.repositories;
+package ar.edu.utn.frba.ddsi.normalizador.models.repositories;
 
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Categoria;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;

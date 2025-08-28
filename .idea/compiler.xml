@@ -11,6 +11,7 @@
         <module name="proxy" />
         <module name="estatica" />
         <module name="agregador" />
+        <module name="normalizador" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
       <module name="dinamica" options="-parameters" />
       <module name="estatica" options="-parameters" />
       <module name="metamapa" options="" />
+      <module name="normalizador" options="-parameters" />
       <module name="proxy" options="-parameters" />
     </option>
   </component>
