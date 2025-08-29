@@ -26,9 +26,10 @@ public class Normalizador {
                 (hecho1, hecho2) -> hecho2
         );
 
-
         return hechoNormalizado;
 
+    }
+}
         /*
          * Hecho hechoNormalizado = unHecho
          * for (INormalizador unNormalizador : normalizadores) {
@@ -37,5 +38,3 @@ public class Normalizador {
          * return hechoNormalizado;
          *
          */
-    }
-}

@@ -3,9 +3,11 @@ package ar.edu.utn.frba.ddsi.normalizador.models.entities.normalizador;
 import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.normalizador.models.repositories.EquivalenciasRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 
+@Repository
 public class NormalizadorCategorias {
     private final EquivalenciasRepository equivalenciasCategoriasRepo;
 
@@ -24,7 +26,6 @@ public class NormalizadorCategorias {
 
             equivalenciasCategoriasRepo.agregarCategoriaNueva(hechoCrudo.getCategoria());
         }
-        //commit
 
         return hechoCrudo;
     }

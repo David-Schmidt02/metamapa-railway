@@ -1,4 +1,34 @@
 {
  "incendio forestal": "INCENDIO_FORESTAL",
- "fuego forestal": "INCENDIO_FORESTAL"
+ "fuego forestal": "INCENDIO_FORESTAL",
+ "quema de bosque": "INCENDIO_FORESTAL",
+ "incendio en bosque": "INCENDIO_FORESTAL",
+
+ "inundacion": "INUNDACION",
+ "anegamiento": "INUNDACION",
+ "desborde de rio": "INUNDACION",
+ "crecida de agua": "INUNDACION",
+
+ "terremoto": "SISMO",
+ "sismo": "SISMO",
+ "temblor": "SISMO",
+ "movimiento telurico": "SISMO",
+
+ "accidente vehicular": "ACCIDENTE_TRANSITO",
+ "choque": "ACCIDENTE_TRANSITO",
+ "colision vehicular": "ACCIDENTE_TRANSITO",
+ "accidente de transito": "ACCIDENTE_TRANSITO",
+
+ "tornado": "EVENTO_CLIMATICO_EXTREMO",
+ "huracan": "EVENTO_CLIMATICO_EXTREMO",
+ "tormenta severa": "EVENTO_CLIMATICO_EXTREMO",
+ "granizada": "EVENTO_CLIMATICO_EXTREMO",
+
+ "derrame quimico": "INCIDENTE_AMBIENTAL",
+ "contaminacion": "INCIDENTE_AMBIENTAL",
+ "vertido toxico": "INCIDENTE_AMBIENTAL",
+
+ "corte de energia": "FALLA_SERVICIO_PUBLICO",
+ "corte de agua": "FALLA_SERVICIO_PUBLICO",
+ "interrupcion de suministro": "FALLA_SERVICIO_PUBLICO"
 }

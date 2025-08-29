@@ -44,17 +44,17 @@ public class DinamicaService {
     }
 
 
-    private Contribuyente determinarContribuyente(HechoDTO hechoDTO) {
-        if (hechoDTO.getRegistrado() != null) {
-            return new Registrado(
-                hechoDTO.getRegistrado().getNombre(),
-                hechoDTO.getRegistrado().getEmail(),
-                hechoDTO.getRegistrado().getEdad()
-            );
-        } else {
-            return Anonimo.getInstance();
-        }
-    }
+//    private Contribuyente determinarContribuyente(HechoDTO hechoDTO) {
+//        if (hechoDTO.getRegistrado() != null) {
+//            return new Registrado(
+//                hechoDTO.getRegistrado().getNombre(),
+//                hechoDTO.getRegistrado().getEmail(),
+//                hechoDTO.getRegistrado().getEdad()
+//            );
+//        } else {
+//            return Anonimo.getInstance();
+//        }
+//    }
 
     private Hecho hechoFromDTO (HechoDTO hechoDTO) {
         if (hechoDTO.getTipo().equalsIgnoreCase("textual")) {
@@ -65,7 +65,7 @@ public class DinamicaService {
                     hechoDTO.getUbicacion(),
                     hechoDTO.getFechaAcontecimiento(),
                     hechoDTO.getEtiquetas(),
-                    determinarContribuyente(hechoDTO),
+                    hechoDTO.getContribuyente_id(),
                     hechoDTO.getCuerpo()
             );
         } else if (hechoDTO.getTipo().equalsIgnoreCase("multimedia")) {
@@ -76,7 +76,7 @@ public class DinamicaService {
                     hechoDTO.getUbicacion(),
                     hechoDTO.getFechaAcontecimiento(),
                     hechoDTO.getEtiquetas(),
-                    determinarContribuyente(hechoDTO),
+                    hechoDTO.getContribuyente_id(),
                     hechoDTO.getContenidoMultimedia()
             );
         } else {

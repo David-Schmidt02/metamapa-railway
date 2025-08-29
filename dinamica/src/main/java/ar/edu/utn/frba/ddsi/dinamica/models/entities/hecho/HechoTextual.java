@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,10 +19,10 @@ public class HechoTextual extends Hecho {
                         Ubicacion ubicacion,
                         LocalDateTime fechaAcontecimiento,
                         List<Etiqueta> etiquetas,
-                        Contribuyente contribuyente,
+                        UUID contribuyente_id,
                         String cuerpo) {
 
-        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente);
+        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente_id);
         this.cuerpo = cuerpo;
     }
 }
