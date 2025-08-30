@@ -19,10 +19,10 @@ public class HechoTextual extends Hecho {
                         Ubicacion ubicacion,
                         LocalDateTime fechaAcontecimiento,
                         List<Etiqueta> etiquetas,
-                        UUID contribuyente_id,
+                        Contribuyente contribuyente,
                         String cuerpo) {
 
-        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente_id);
+        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente);
         this.cuerpo = cuerpo;
     }
 }

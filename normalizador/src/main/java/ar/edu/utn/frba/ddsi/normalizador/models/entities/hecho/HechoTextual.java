@@ -1,10 +1,10 @@
 package ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho;
 
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Origen_Fuente;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Categoria;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Origen_Fuente;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Ubicacion;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
 

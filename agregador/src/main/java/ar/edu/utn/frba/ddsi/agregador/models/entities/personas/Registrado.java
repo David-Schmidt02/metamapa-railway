@@ -17,10 +17,9 @@ public class Registrado extends Contribuyente {
     private UUID id;
     private String nombre;
 
-    public Registrado(String nombre, String email, int edad) {
-        this.id = UUID.randomUUID();
+    public Registrado(UUID id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
-
 
 }

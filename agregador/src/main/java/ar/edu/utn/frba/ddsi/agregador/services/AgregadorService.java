@@ -21,6 +21,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.repositories.ColeccionRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.SolicitudesRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.clasificador.Clasificador;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
@@ -34,11 +35,13 @@ public class AgregadorService {
     private final HechosRepository hechosRepository;
     private final SolicitudesRepository solicitudesRepository;
     private final ColeccionRepository coleccionRepository;
+    private final WebClient normalizador;
 
     public AgregadorService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository) {
         this.hechosRepository = hechosRepository;
         this.solicitudesRepository = solicitudesRepository;
         this.coleccionRepository = coleccionRepository;
+        this.normalizador = WebClient.builder().baseUrl("http://localhost:8085").build();
     }
 
     /**

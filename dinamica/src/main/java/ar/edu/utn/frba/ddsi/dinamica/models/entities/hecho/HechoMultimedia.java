@@ -20,10 +20,10 @@ public class HechoMultimedia extends Hecho {
                            Ubicacion ubicacion,
                            LocalDateTime fechaAcontecimiento,
                            List<Etiqueta> etiquetas,
-                           UUID contribuyente_id,
+                           Contribuyente contribuyente,
                            List<String> contenidoMultimedia) {
 
-        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente_id);
+        super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente);
 
         this.contenidoMultimedia = contenidoMultimedia;
     }

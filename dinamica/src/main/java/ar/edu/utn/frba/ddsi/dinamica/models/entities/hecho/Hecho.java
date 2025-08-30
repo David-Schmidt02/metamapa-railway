@@ -23,10 +23,10 @@ public abstract class Hecho {
     private LocalDateTime fechaCarga;
     private Origen_Fuente origenFuente;
     private List<Etiqueta> etiquetas;
-    private UUID contribuyente_id;
+    private Contribuyente contribuyente;
 
     public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion,
-                 LocalDateTime fechaAcontecimiento, List<Etiqueta> etiquetas, UUID contribuyente_id) {
+                 LocalDateTime fechaAcontecimiento, List<Etiqueta> etiquetas, Contribuyente contribuyente) {
         this.id = UUID.randomUUID();
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -36,7 +36,7 @@ public abstract class Hecho {
         this.fechaCarga = LocalDateTime.now();
         this.origenFuente = Origen_Fuente.DINAMICA;
         this.etiquetas = etiquetas;
-        this.contribuyente_id = contribuyente_id;
+        this.contribuyente = contribuyente;
     }
 
     public boolean esEditable() {

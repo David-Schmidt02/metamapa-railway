@@ -41,10 +41,7 @@ public class ConexionHelper {
         Ubicacion ubicacion = (Ubicacion) hechoDescompuesto.get("ubicacion");
         LocalDateTime fechaAcontecimiento = (LocalDateTime) hechoDescompuesto.get("fechaAcontecimiento");
         List<Etiqueta> etiquetas = (List<Etiqueta>) hechoDescompuesto.get("etiquetas");
-        Contribuyente contribuyente = (Contribuyente) hechoDescompuesto.get("contribuyente");
-        if (contribuyente == null) {
-            contribuyente = Anonimo.getInstance();
-        }
+        Contribuyente contribuyente  = Anonimo.getInstance();
         LocalDateTime fechaCarga = LocalDateTime.now();
         Origen_Fuente origenFuente = Origen_Fuente.INTERMEDIARIA;
         String cuerpo = (String) hechoDescompuesto.get("cuerpo");

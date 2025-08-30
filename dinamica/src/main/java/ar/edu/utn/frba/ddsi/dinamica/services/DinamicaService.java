@@ -44,17 +44,16 @@ public class DinamicaService {
     }
 
 
-//    private Contribuyente determinarContribuyente(HechoDTO hechoDTO) {
-//        if (hechoDTO.getRegistrado() != null) {
-//            return new Registrado(
-//                hechoDTO.getRegistrado().getNombre(),
-//                hechoDTO.getRegistrado().getEmail(),
-//                hechoDTO.getRegistrado().getEdad()
-//            );
-//        } else {
-//            return Anonimo.getInstance();
-//        }
-//    }
+    private Contribuyente determinarContribuyente(HechoDTO hechoDTO) {
+        if (hechoDTO.getRegistrado() != null) {
+            return new Registrado(
+                    hechoDTO.getRegistrado().getId(),
+                hechoDTO.getRegistrado().getNombre()
+            );
+        } else {
+            return Anonimo.getInstance();
+        }
+    }
 
     private Hecho hechoFromDTO (HechoDTO hechoDTO) {
         if (hechoDTO.getTipo().equalsIgnoreCase("textual")) {
@@ -65,7 +64,7 @@ public class DinamicaService {
                     hechoDTO.getUbicacion(),
                     hechoDTO.getFechaAcontecimiento(),
                     hechoDTO.getEtiquetas(),
-                    hechoDTO.getContribuyente_id(),
+                    determinarContribuyente(hechoDTO),
                     hechoDTO.getCuerpo()
             );
         } else if (hechoDTO.getTipo().equalsIgnoreCase("multimedia")) {
@@ -76,7 +75,7 @@ public class DinamicaService {
                     hechoDTO.getUbicacion(),
                     hechoDTO.getFechaAcontecimiento(),
                     hechoDTO.getEtiquetas(),
-                    hechoDTO.getContribuyente_id(),
+                    determinarContribuyente(hechoDTO),
                     hechoDTO.getContenidoMultimedia()
             );
         } else {
@@ -117,9 +116,9 @@ public class DinamicaService {
             nuevaSolicitudEliminacion.setEstado(Estado_Solicitud.RECHAZADA);
         }
 
-//        if (!nuevaSolicitudEliminacion.esCorrecta()) {
-//            throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
-//        }
+        if (!nuevaSolicitudEliminacion.esCorrecta()) {
+            throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
+        }
 
         // Verifico si el hecho existe
         Hecho hechoAeliminar = hechosRepository.findById(nuevaSolicitudEliminacion.getIdHecho());

@@ -1,6 +1,9 @@
 package ar.edu.utn.frba.ddsi.proxy.metaMapa;
 
+import ar.edu.utn.frba.ddsi.proxy.models.entities.DTOS.HechoDto;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Hecho;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.HechoMultimedia;
+import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacion;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,12 +27,39 @@ public class MetaMapaClient {
         String uri = filtro.aplicarFiltroARequest(UriComponentsBuilder
                 .fromPath("/hechos")); //Por ejemplo, podría agregar parámetros como ?tipo=evento&fecha=2025.
 
-        return webClient.get()                 // Inicia construcción de un GET
-                .uri(uri)                      // Usa la URI construida con filtros
-                .retrieve()                    // Realiza la solicitud (envía el GET)
-                .bodyToFlux(Hecho.class)      // Convierte la respuesta JSON en un flujo de objetos `Hecho`
-                .collectList()                // Junta el flujo en una lista
-                .block();                     // Bloquea y espera la respuesta (estilo imperativo)
+        List<HechoDto> hechosMetaMapa = webClient.get()                // Inicia construcción de un GET
+                                        .uri(uri)                      // Usa la URI construida con filtros
+                                        .retrieve()                    // Realiza la solicitud (envía el GET)
+                                        .bodyToFlux(HechoDto.class)    // Convierte la respuesta JSON en un flujo de objetos `Hecho`
+                                        .collectList()                 // Junta el flujo en una lista
+                                        .block();                      // Bloquea y espera la respuesta (estilo imperativo)
+        return hechosMetaMapa.stream().map(this::hechoFromDto).toList();
+    }
+
+    public Hecho hechoFromDto(HechoDto dto) {
+        if(dto.getCuerpo() == null){
+        return new HechoMultimedia(
+                dto.getTitulo(),
+                dto.getDescripcion(),
+                dto.getCategoria(),
+                dto.getUbicacion(),
+                dto.getFechaAcontecimiento(),
+                dto.getEtiquetas(),
+                dto.getContribuyente(),
+                dto.getContenidoMultimedia()
+        );}
+        else{
+            return new HechoTextual(
+                    dto.getTitulo(),
+                    dto.getDescripcion(),
+                    dto.getCategoria(),
+                    dto.getUbicacion(),
+                    dto.getFechaAcontecimiento(),
+                    dto.getEtiquetas(),
+                    dto.getContribuyente(),
+                    dto.getCuerpo()
+            );
+        }
     }
 
     public List<Hecho> obtenerHechosPorColeccion(FiltroRequest filtro, String handle) {

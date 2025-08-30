@@ -1,7 +1,10 @@
 package ar.edu.utn.frba.ddsi.agregador.models.entities.persona;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 public class Persona {
 
     private UUID id;
