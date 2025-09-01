@@ -21,6 +21,8 @@ public class Conversor {
             hecho.setEtiquetas(List.of());
         }
 
+        hecho.setCantidadMenciones(1);
+
         return hecho;
     }
 

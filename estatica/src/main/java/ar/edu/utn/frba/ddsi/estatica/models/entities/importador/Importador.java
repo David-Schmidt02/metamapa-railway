@@ -18,7 +18,6 @@ public class Importador {
     private final LectorCSV lectorCSV;
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
     private final Map<String, Lector> lectores = new HashMap<>();
-    private final String[] patrones = {"classpath:*.csv"};
 
 
     public Importador() {
