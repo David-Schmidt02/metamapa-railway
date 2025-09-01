@@ -31,14 +31,12 @@ public class HechosRepository {
 
 
     public Hecho findById(UUID id) {
-
         // Implementacion sin base de datos
         return fuentes.stream()
                 .flatMap(fuente -> fuente.getHechos().stream())
                 .filter(hecho -> hecho.getId().equals(id))
                 .findFirst()
                 .orElse(null);
-
     }
 
     public Hecho findByIdAndUpdate(UUID id, Hecho updatedHecho) {
