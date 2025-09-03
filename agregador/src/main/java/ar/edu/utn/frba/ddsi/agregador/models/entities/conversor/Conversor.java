@@ -7,6 +7,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.Estatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,8 @@ public class Conversor {
     public Conversor() {}
 
     public Hecho convertirHecho(HechoDTO hechoDTO, OrigenFuente origen) {
-        Hecho hecho = creacionHecho(hechoDTO, origen);
+        HechoDTO hechoNormalizado = this.aplicarNormalizacion(hechoDTO);
+        Hecho hecho = creacionHecho(hechoNormalizado, origen);
         // Caso fuente estática
         if (origen instanceof Estatica) {
             ((HechoTextual) hecho).setCuerpo(hechoDTO.getDescripcion());
@@ -26,6 +28,17 @@ public class Conversor {
 
         return hecho;
     }
+
+    public HechoDTO aplicarNormalizacion(HechoDTO hecho) {
+        WebClient webClient = WebClient.create("http://localhost:8087");
+        return webClient.patch()
+                .uri("/normalizador/normalizar")
+                .bodyValue(hecho)
+                .retrieve()
+                .bodyToMono(HechoDTO.class)
+                .block();
+    }
+
 
     public Hecho creacionHecho(HechoDTO hechoDTO, OrigenFuente origen) {
 

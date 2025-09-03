@@ -18,7 +18,7 @@ import java.util.Map;
 @Repository
 public class EquivalenciasRepository {
     @Getter
-    private Map<String, Categoria> equivalenciasCategorias;
+    public Map<String, Categoria> equivalenciasCategorias = new HashMap<>();
     private final ObjectMapper objectMapper;
 
 
@@ -42,13 +42,13 @@ public class EquivalenciasRepository {
                     new TypeReference<Map<String, String>>() {});
 
             // Inicializar el mapa de equivalencias
-            equivalenciasCategorias = new HashMap<>();
-
+            System.out.println("DICCIONARIO LEVANTADO DEL JSON \n "+mapaJson);
             // Convertir las entradas del JSON a objetos Categoria
             mapaJson.forEach((clave, valor) -> {
-                Categoria categoria = new Categoria();
-                categoria.setDetalle(valor);
+                Categoria categoria = new Categoria(valor);
+                this.agregarAMapaDeEquivalencias(clave,categoria);
                 equivalenciasCategorias.put(clave, categoria);
+                // adsada
             });
 
 
@@ -56,10 +56,22 @@ public class EquivalenciasRepository {
         } catch (IOException e) {
             throw new RuntimeException("Error al cargar el archivo de equivalencias", e);
         }
+        System.out.println(equivalenciasCategorias);
     }
 
     public void agregarCategoriaNueva(Categoria nuevaCategoria) {
         equivalenciasCategorias.put(nuevaCategoria.getDetalle().toLowerCase(), nuevaCategoria);
     }
 
+    public void agregarAMapaDeEquivalencias(String clave, Categoria nuevaCategoria){
+        Categoria categoriaYaExistente = equivalenciasCategorias.get(nuevaCategoria.getDetalle());
+        if(categoriaYaExistente == null){
+            equivalenciasCategorias.put(nuevaCategoria.getDetalle(), nuevaCategoria);
+            equivalenciasCategorias.put(nuevaCategoria.getDetalle(), nuevaCategoria);
+;        }
+        else{
+            equivalenciasCategorias.put(clave, categoriaYaExistente);
+        }
+    }
+    
 }

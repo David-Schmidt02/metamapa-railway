@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho;
 
 import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.Origen_Fuente;
+import ar.edu.utn.frba.ddsi.normalizador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.normalizador.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class HechoMultimedia extends Hecho{
                         Ubicacion ubicacion,
                         LocalDateTime fechaAcontecimiento,
                         LocalDateTime fechaCarga,
-                        Origen_Fuente origenFuente,
+                        OrigenFuente origenFuente,
                         List<Etiqueta> etiquetas,
                         Contribuyente contribuyente,
                         List<String> contenidoMultimedia) {
