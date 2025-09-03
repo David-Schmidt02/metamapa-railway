@@ -1,6 +1,5 @@
 package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
-import ar.edu.utn.frba.ddsi.agregador.models.entities.archivoProcesado.ArchivoProcesado;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.FuenteEstatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;

@@ -9,7 +9,6 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenF
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Conversor {
     public Conversor() {}

@@ -4,7 +4,6 @@ import ar.edu.utn.frba.ddsi.estatica.models.entities.ArchivoProcesado.ArchivoPro
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.importador.lector.Lector;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.importador.lector.LectorCSV;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -21,7 +20,7 @@ public class Importador {
     private final LectorCSV lectorCSV;
     private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
     private final Map<String, Lector> lectores = new HashMap<>();
-    private List<String> archivosProcesados = new ArrayList<>();
+    private List<String> archivosProcesados;
 
     public Importador() {
         // TODO decidir cuando / donde instanciar los lectores
@@ -71,7 +70,7 @@ public class Importador {
             throw new RuntimeException(e);
         }
 
-        List<Resource> archivosNuevos = new ArrayList<>();
+        List<Resource> archivosNuevos;
         /*
            for (Resource archivo : archivosAlmacenados) {
             if (!this.archivosProcesados.contains(archivo)) {

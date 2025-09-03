@@ -8,9 +8,9 @@ import java.util.List;
 @Getter
 public class ArchivoProcesadoDTO {
 
-    private String nombre;
-    private LocalDateTime fechaCarga;
-    private List<HechoDTO> hechos;
+    private final String nombre;
+    private final LocalDateTime fechaCarga;
+    private final List<HechoDTO> hechos;
 
     public ArchivoProcesadoDTO(String nombre, LocalDateTime fechaCarga, List<HechoDTO> hechos) {
         this.nombre = nombre;

@@ -1,10 +1,8 @@
 package ar.edu.utn.frba.ddsi.estatica.models.repositories;
 
 import ar.edu.utn.frba.ddsi.estatica.models.entities.ArchivoProcesado.ArchivoProcesado;
-import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.importador.Importador;
 
-import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Repository
