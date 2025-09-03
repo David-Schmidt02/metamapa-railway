@@ -1,7 +1,6 @@
 package ar.edu.utn.frba.ddsi.estatica.models.entities.dtos;
 
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Categoria;
-import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Origen_Fuente;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Ubicacion;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

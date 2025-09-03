@@ -3,8 +3,6 @@ package ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.archivoProcesado.ArchivoProcesado;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.conversor.Conversor;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ArchivoProcesadoDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.Estatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import lombok.Getter;

@@ -4,7 +4,6 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.HechoTextual;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Origen_Fuente_VIEJO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.Estatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;

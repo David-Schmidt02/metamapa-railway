@@ -1,15 +1,12 @@
 package ar.edu.utn.frba.ddsi.agregador.models.entities.importador;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.conversor.Conversor;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class Importador {
 
