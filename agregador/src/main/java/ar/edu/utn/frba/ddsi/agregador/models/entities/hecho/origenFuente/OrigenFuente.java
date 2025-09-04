@@ -6,8 +6,8 @@ public abstract class OrigenFuente {
 
         return switch (tipo) {
             case "DINAMICA" -> new Dinamica();
-            case "INTERMEDIARIA" -> new Proxy();
-            case "ESTATICA" -> new Estatica(null); // Aquí deberías pasar el ArchivoProcesado correspondiente
+            case "PROXY" -> new Proxy();
+            case "ESTATICA" -> new Estatica(null);
 
             default -> throw new IllegalArgumentException();
         };
