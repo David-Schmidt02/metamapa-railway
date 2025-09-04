@@ -23,12 +23,9 @@ public class Importador {
     public void importarHechos(Fuente fuente, LocalDateTime ultimaConsulta) {
         URI uri = aplicarUltimaConsulta(fuente, ultimaConsulta);
 
-        System.out.println(uri);
+        //System.out.println(uri);
         fuente.realizarConsulta(uri, webClient, conversor);
 
-
-        System.out.print("Ultima consulta: ");
-        System.out.println(ultimaConsulta);
     }
 
     public URI aplicarUltimaConsulta(Fuente fuente, LocalDateTime ultimaConsulta) {

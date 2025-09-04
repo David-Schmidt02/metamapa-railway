@@ -26,7 +26,7 @@ public class AlgoritmoSpam {
                 .mapToDouble(Map.Entry::getValue)
                 .sum();
 
-        System.out.println(puntaje);
+        //System.out.println(puntaje);
         return puntaje < 2.5;
     }
 

@@ -64,6 +64,8 @@ public class HechosRepository {
 
     public void importarHechosDesdeFuentes() {
         fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta));
+        System.out.print("Ultima consulta: ");
+        System.out.println(ultimaConsulta);
         this.ultimaConsulta = LocalDateTime.now();
     }
 

@@ -19,17 +19,6 @@ public class Normalizador {
 
     private final List<INormalizador> normalizadores;
 
-    private static Normalizador instance;
-
-//    private Normalizador() {// Constructor privado
-//    }
-//
-//    public static Normalizador getInstance() {
-//        if (instance == null) {
-//            instance = new Normalizador();
-//        }
-//        return instance;
-//    }
 
     public HechoDTO normalizar(HechoDTO hechoCrudo) {
         HechoDTO hechoNormalizado = normalizadores.stream().reduce(hechoCrudo,

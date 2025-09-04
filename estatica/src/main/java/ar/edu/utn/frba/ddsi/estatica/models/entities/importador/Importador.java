@@ -84,7 +84,7 @@ public class Importador {
     }
 
     private boolean noProcesado(Resource recurso) {
-        System.out.println(recurso.getFilename());
+        //System.out.println(recurso.getFilename());
         return !this.archivosProcesados.contains(recurso.getFilename());
     }
 

@@ -215,7 +215,7 @@ public class DinamicaService {
                 })
                 .filter(hecho -> {
                     if (ultimaConsulta == null) return true;
-                    System.out.println(ultimaConsulta);
+                    //System.out.println(ultimaConsulta);
                     return hecho.getFechaCarga().isAfter(LocalDateTime.parse(ultimaConsulta));
                 })
                 .collect(Collectors.toList());

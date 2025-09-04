@@ -28,7 +28,7 @@ public class EquivalenciasRepository {
     }
 
     public Map<String, Categoria> obtenerEquivalencias() {
-        System.out.println("Devolviendo las categorias: \n" + equivalenciasCategorias);
+        //System.out.println("Devolviendo las categorias: \n" + equivalenciasCategorias);
         return equivalenciasCategorias;
     }
 
@@ -43,13 +43,12 @@ public class EquivalenciasRepository {
                     new TypeReference<Map<String, String>>() {});
 
             // Inicializar el mapa de equivalencias
-            System.out.println("DICCIONARIO LEVANTADO DEL JSON \n "+mapaJson);
+            //System.out.println("DICCIONARIO LEVANTADO DEL JSON \n "+mapaJson);
             // Convertir las entradas del JSON a objetos Categoria
             mapaJson.forEach((clave, valor) -> {
                 Categoria categoria = new Categoria(valor);
                 this.agregarAMapaDeEquivalencias(clave,categoria);
                 equivalenciasCategorias.put(clave, categoria);
-                // adsada
             });
 
         } catch (IOException e) {

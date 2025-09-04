@@ -19,7 +19,7 @@ public class NormalizadorController {
 
     @PatchMapping("/normalizar")
     public HechoDTO normalizar(@RequestBody HechoDTO hechoCrudo) {
-        System.out.println("Recibio el hecho con categoria: " + hechoCrudo.getCategoria().getDetalle());
+        //System.out.println("Recibio el hecho con categoria: " + hechoCrudo.getCategoria().getDetalle());
         return this.normalizadorService.normalizar(hechoCrudo);
     }
 
