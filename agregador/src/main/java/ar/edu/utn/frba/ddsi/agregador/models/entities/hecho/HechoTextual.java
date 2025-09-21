@@ -5,13 +5,17 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.DiscriminatorColumn;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-@Entity @DiscriminatorValue("TEXTUAL")
+@Entity
+@DiscriminatorValue("TEXTUAL")
 public class HechoTextual extends Hecho {
     @Column(name = "Cuerpo")
     private String cuerpo;
