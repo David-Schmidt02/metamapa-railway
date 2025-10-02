@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FuentesRepository extends JpaRepository<Fuente, Integer> {
+public interface FuentesRepository extends JpaRepository<Fuente, String> {
     Fuente findFuenteByNombre(String nombre);
 
     

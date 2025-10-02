@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +23,7 @@ import java.util.List;
 @DiscriminatorColumn(name="tipo")
 public class Fuente {
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="url_fuente", referencedColumnName = "url")
     public List<Hecho> hechos = new ArrayList<>();
 

@@ -3,7 +3,7 @@ package ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.archivoProcesado.ArchivoProcesado;
 import lombok.Getter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Getter
@@ -17,5 +17,9 @@ public class Estatica extends OrigenFuente {
     public Estatica(ArchivoProcesado archivoProcesado) {
         super();
         this.archivoProcesado = archivoProcesado;
+    }
+
+    public Estatica() {
+
     }
 }

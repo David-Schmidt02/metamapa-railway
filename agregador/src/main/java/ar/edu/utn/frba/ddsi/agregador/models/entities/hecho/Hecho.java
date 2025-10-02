@@ -39,7 +39,9 @@ public abstract class Hecho {
     @JoinColumn(name = "hecho_id",referencedColumnName = "id")
     private List<Etiqueta> etiquetas;
 
+    @OneToOne
     private Contribuyente contribuyente;
+
     private Integer cantidadMenciones;
 
     public Hecho(Integer id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion,

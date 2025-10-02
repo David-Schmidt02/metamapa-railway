@@ -5,14 +5,11 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.importador.Importador;
 
-import ar.edu.utn.frba.ddsi.agregador.models.repositories.utils.BdUtils;
-import jakarta.persistence.EntityManager;
-import lombok.Setter;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Repository

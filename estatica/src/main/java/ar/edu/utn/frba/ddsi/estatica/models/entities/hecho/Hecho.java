@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 public class Hecho {
 
-    private final UUID id;
+    private Integer id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;
@@ -20,7 +20,6 @@ public class Hecho {
     private Origen_Fuente origenFuente;
 
     public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento) {
-        this.id = UUID.randomUUID();
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;

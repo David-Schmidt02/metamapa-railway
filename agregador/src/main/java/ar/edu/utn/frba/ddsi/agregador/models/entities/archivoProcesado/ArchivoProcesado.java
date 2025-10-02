@@ -4,10 +4,7 @@ package ar.edu.utn.frba.ddsi.agregador.models.entities.archivoProcesado;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter

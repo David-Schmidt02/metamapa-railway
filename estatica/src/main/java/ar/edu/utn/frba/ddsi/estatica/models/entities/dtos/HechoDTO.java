@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 
 public class HechoDTO {
-    private UUID id;
+    private Integer id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;
@@ -25,7 +25,7 @@ public class HechoDTO {
     private List<String> contenidoMultimedia;
     private String cuerpo;
 
-    public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<String> contenidoMultimedia, String cuerpo) {
+    public HechoDTO(Integer id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<String> contenidoMultimedia, String cuerpo) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;

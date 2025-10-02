@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 
+@Entity
 public class Coleccion {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -43,6 +44,10 @@ public class Coleccion {
         this.algoritmo_consenso = algoritmo_consenso;
         this.fuentes = fuentes;
         this.criterios = criterios;
+
+    }
+
+    public Coleccion() {
 
     }
 

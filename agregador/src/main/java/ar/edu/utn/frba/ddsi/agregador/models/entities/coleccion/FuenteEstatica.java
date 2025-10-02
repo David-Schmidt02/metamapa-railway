@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,14 +22,8 @@ import java.util.List;
 @DiscriminatorValue("estatica")
 public class FuenteEstatica extends Fuente{
 
-    @ManyToMany
-    @JoinColumn(name="fuente_url", referencedColumnName = "url")
-    @JoinTable(
-            name = "archivo_fuente",
-            joinColumns = @JoinColumn(name = "fuente_estatica_id",
-                    referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "archivo_procesado_id", referencedColumnName = "url")
-    )
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name="url_fuente", referencedColumnName = "url")
     private List<ArchivoProcesado> archivosProcesados;
 
     public FuenteEstatica() {}

@@ -2,7 +2,7 @@ package ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="criterios_pertenencia")
