@@ -20,14 +20,14 @@ public class SolicitudesRepository {
         return solicitudes;
     }
 
-    public SolicitudEliminacion findById(UUID id) {
+    public SolicitudEliminacion findById(Integer id) {
         return solicitudes.stream()
                 .filter(solicitud -> solicitud.getId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
 
-    public SolicitudEliminacion findByIdAndUpdate(UUID id, SolicitudEliminacion updatedSolicitud) {
+    public SolicitudEliminacion findByIdAndUpdate(Integer id, SolicitudEliminacion updatedSolicitud) {
         SolicitudEliminacion existingSolicitud = findById(id);
         if (existingSolicitud != null) {
             int index = solicitudes.indexOf(existingSolicitud);

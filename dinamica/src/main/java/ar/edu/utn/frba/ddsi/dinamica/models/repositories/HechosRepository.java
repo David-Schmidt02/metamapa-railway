@@ -16,11 +16,11 @@ public class HechosRepository {
         hechos.add(hecho);
     }
 
-    public Hecho findById(UUID id) {
+    public Hecho findById(Integer id) {
         return hechos.stream().filter(hecho -> hecho.getId().equals(id)).findFirst().orElse(null);
     }
 
-    public Hecho findByIdAndUpdate(UUID id, Hecho updatedHecho) {
+    public Hecho findByIdAndUpdate(Integer id, Hecho updatedHecho) {
         Hecho existingHecho = findById(id);
         if (existingHecho != null) {
             // Logica sin base de datos

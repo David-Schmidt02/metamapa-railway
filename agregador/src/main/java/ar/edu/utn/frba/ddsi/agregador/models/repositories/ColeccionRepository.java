@@ -1,14 +1,20 @@
 package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ColeccionRepository {
+public interface ColeccionRepository extends JpaRepository<Coleccion,Integer> {
 
+    Coleccion findColeccionById(Integer id);
+
+
+
+/*
     private final List<Coleccion> colecciones = new ArrayList<>();
 
 //    public void save(Hecho hecho) {
@@ -49,7 +55,7 @@ public class ColeccionRepository {
         }
 
         return null; //TODO: IMPLEMENTAR
-    }
+    }*/
 }
 
 

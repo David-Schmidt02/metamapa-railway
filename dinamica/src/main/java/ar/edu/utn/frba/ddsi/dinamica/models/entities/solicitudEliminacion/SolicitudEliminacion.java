@@ -2,18 +2,18 @@ package ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.util.Random;
 
-import java.util.UUID;
 @Getter
 public class SolicitudEliminacion {
-    private UUID id;
-    private UUID idHecho;
+    private Integer id;
+    private Integer idHecho;
     private String justificacion;
     @Setter
     private Estado_Solicitud estado;
 
-    public SolicitudEliminacion(UUID idHecho, String justificacion) {
-        this.id = UUID.randomUUID();
+    public SolicitudEliminacion(Integer idHecho, String justificacion) {
+        this.id = new Random().nextInt(1, 100000); // Generar un ID aleatorio entre 1 y 100000
         this.idHecho = idHecho;
         this.justificacion = justificacion;
         this.estado = Estado_Solicitud.PENDIENTE; // Estado inicial por defecto

@@ -10,8 +10,10 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.importador.Importador;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.FuentesRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,27 +28,31 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class AgregadorService {
     private final HechosRepository hechosRepository;
+    private final FuentesRepository fuentesRepository;
     private final SolicitudesRepository solicitudesRepository;
     private final ColeccionRepository coleccionRepository;
-    private final WebClient normalizador;
+    private final Importador importador = new Importador();
+    private LocalDateTime ultimaConsulta;
 
-    public AgregadorService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository) {
+    public AgregadorService(HechosRepository hechosRepository, FuentesRepository fuentesRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository) {
         this.hechosRepository = hechosRepository;
+        this.fuentesRepository = fuentesRepository;
         this.solicitudesRepository = solicitudesRepository;
         this.coleccionRepository = coleccionRepository;
-        this.normalizador = WebClient.builder().baseUrl("http://localhost:8085").build();
     }
 
     /**
      * Gestiona la consulta de hechos por primera vez al iniciar el sistema y,
      * los clasifica inmediatamente.
      */
+
     @PostConstruct
     public void consultarHechosPorPrimeraVez() {
         //System.out.print("Se ejecuta el PostConstruct");
@@ -60,16 +66,27 @@ public class AgregadorService {
     @Scheduled(fixedRate = 60 * 1000, initialDelay = 30000)
     public void consultarHechosPeriodicamente() {
         System.out.println("Consultando hechos de las fuentes...");
-        hechosRepository.importarHechosDesdeFuentes(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
+
+        List<Fuente> fuentes = fuentesRepository.findAll();
+        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta));
+        System.out.print("Ultima consulta: ");
+        System.out.println(ultimaConsulta);
+        this.ultimaConsulta = LocalDateTime.now();
+        fuentes.forEach(fuente -> {
+            hechosRepository.saveAll(fuente.getHechos());
+        }); // TODO: Despues chequear si funciona bien y no guarda repetidos
+
+        hechosRepository.findAll(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
     }
 
     /**
      * Todos los dias a las 3 AM, se ejecuta este metodo para clasificar los hechos
      * ya importados de las fuentes.
      */
+
     @Scheduled(cron = "0 0 3 * * *")
     public void clasificarHechos() {
-        List<Fuente> fuentes = hechosRepository.findAllFuentes();
+        List<Fuente> fuentes = fuentesRepository.findAll();
 
         for (Fuente fuente : fuentes) {
             List<Fuente> fuentesParaEvaluar = fuentes.stream()
@@ -78,11 +95,9 @@ public class AgregadorService {
 
 
             List<Hecho> hechosClasificados = Clasificador.clasificarHechosPorMenciones(fuente.getHechos(), fuentesParaEvaluar);
+            hechosRepository.saveAll(hechosClasificados);
             fuente.setHechos(hechosClasificados);
         }
-
-        hechosRepository.update(fuentes);
-
     }
 
     // <----------------- COLECCIONES ----------------->
@@ -94,7 +109,7 @@ public class AgregadorService {
      */
     public Integer crearColeccion(ColeccionDTO coleccionDTO){
 
-        List<Fuente> fuentes = this.hechosRepository.findFuentes(coleccionDTO.getUrls_fuente());
+        List<Fuente> fuentes = fuentesRepository.findAll();
 
         if (fuentes == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND ,"Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
@@ -142,11 +157,13 @@ public class AgregadorService {
      * Busca todas las colecciones en el repositorio.
      */
     public List<Coleccion> obtenerColecciones() {
-        return this.coleccionRepository.findAll();
+        return coleccionRepository.findAll();
     }
 
     public List<Hecho> obtenerHechosCurados(Integer id, Filtro filtros) {
-        Coleccion coleccion = this.coleccionRepository.findById(id);
+
+        Coleccion coleccion = coleccionRepository.findColeccionById(id);
+
         if (coleccion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
@@ -162,7 +179,7 @@ public class AgregadorService {
             Filtro filtros
     ) {
 
-        Coleccion coleccion = this.coleccionRepository.findById(id);
+        Coleccion coleccion = coleccionRepository.findColeccionById(id);
 
         if (coleccion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
@@ -180,8 +197,8 @@ public class AgregadorService {
     private Double mencionesNecesarias(Algoritmo_Consenso algoritmo) {
         return switch (algoritmo) {
             case MULTIPLES_MENCIONES -> 2.0;
-            case MAYORIA_SIMPLE -> Math.floor(this.hechosRepository.countFuentes() / 2.0);
-            case ABSOLUTA -> Math.ceil(this.hechosRepository.countFuentes());
+            case MAYORIA_SIMPLE -> Math.floor(this.fuentesRepository.count() / 2.0);
+            case ABSOLUTA -> Math.ceil(this.fuentesRepository.count());
             default -> 0.0; // Algoritmo de consenso = 'NINGUNO'
         };
     }
@@ -189,12 +206,12 @@ public class AgregadorService {
     /**
      * Busca una colección por su ID.
      */
-    public Coleccion obtenerColeccion(Integer id){ return this.coleccionRepository.findById(id);}
+    public Coleccion obtenerColeccion(Integer id){ return this.coleccionRepository.findColeccionById(id);}
 
     /**
      * Elimina una colección por su ID.
      */
-    public void eliminarColeccionPorId(Integer id) { this.coleccionRepository.findAndDelete(id);}
+    public void eliminarColeccionPorId(Integer id) { this.coleccionRepository.deleteById(id);}
 
     /**
      * Actualiza una colección existente con los datos del DTO proporcionado.
@@ -205,7 +222,13 @@ public class AgregadorService {
                 .map(this::criterioFromDTO)
                 .toList();
 
-        List<Fuente> fuentes = this.hechosRepository.findFuentes(coleccionDTO.getUrls_fuente());
+        List<Fuente> fuentes = new ArrayList<Fuente>();
+
+        // TODO probar si trae hechos automaticamente o hay q irlos a buscar
+        coleccionDTO.getUrls_fuente().forEach( nombreFuente -> {
+                fuentes.add(fuentesRepository.findFuenteByNombre(nombreFuente));
+            }
+        );
 
         Coleccion coleccionEditada = new Coleccion(
                 coleccionDTO.getTitulo(),
@@ -215,19 +238,19 @@ public class AgregadorService {
                 criterios
         );
 
-        return this.coleccionRepository.findByIdAndUpdate(id, coleccionEditada);
+        return this.coleccionRepository.save(coleccionEditada);
     }
 
     /**
      * Modifica el algoritmo de consenso de una colección existente a partir de su ID.
      */
     public Coleccion modificarAlgoritmoConsenso(Integer id, Algoritmo_Consenso nuevoAlgoritmo){
-        Coleccion coleccionAModificadar = this.coleccionRepository.findById(id);
+        Coleccion coleccionAModificadar = this.coleccionRepository.findColeccionById(id);
         if (coleccionAModificadar == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
         coleccionAModificadar.setAlgoritmo_consenso(nuevoAlgoritmo);
-        return this.coleccionRepository.findByIdAndUpdate(id, coleccionAModificadar);
+        return this.coleccionRepository.save(coleccionAModificadar);
     }
 
     /**
@@ -235,24 +258,27 @@ public class AgregadorService {
      * Recibe una lista de URLs (string) de fuentes y actualiza la colección con las fuentes encontradas.
      */
     public Coleccion modificarListaDeFuentes(Integer id, List<String> urls_fuente) {
-        Coleccion coleccionAModificadar = this.coleccionRepository.findById(id);
+        Coleccion coleccionAModificadar = this.coleccionRepository.findColeccionById(id);
         if (coleccionAModificadar == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
 
-        List<Fuente> fuentes = this.hechosRepository.findFuentes(urls_fuente);
+        List<Fuente> fuentes = new ArrayList<Fuente>();
+
+        urls_fuente.forEach( nombreFuente -> {
+                    fuentes.add(fuentesRepository.findFuenteByNombre(nombreFuente));
+                }
+        );
         
         coleccionAModificadar.setFuentes(fuentes);
 
-        return this.coleccionRepository.findByIdAndUpdate(id, coleccionAModificadar);
+        return this.coleccionRepository.save(coleccionAModificadar);
 
     }
 
-
-
     public SolicitudEliminacion modificarEstadoSolicitud(Integer id, Estado_Solicitud nuevoEstado) {
 
-        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id);
+        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findSolicitudEliminacionById(id);
 
         if (solicitudAEditar == null) {
             throw new IllegalArgumentException("Solicitud no encontrada con ID: " + id);
@@ -260,14 +286,7 @@ public class AgregadorService {
 
         solicitudAEditar.setEstado(nuevoEstado);
 
-        SolicitudEliminacion solicitudActualizada = solicitudesRepository.findByIdAndUpdate(id, solicitudAEditar);
-
-        if (solicitudActualizada == null) {
-            throw new RuntimeException("No se pudo actualizar la solicitud con ID: " + id);
-        }
-
-        return solicitudActualizada;
-
+        return solicitudesRepository.save(solicitudAEditar);
     }
 
     public SolicitudEliminacion crearSolicitudEliminacion(SolicitudDTO solicitudDTO) {
@@ -322,7 +341,6 @@ public class AgregadorService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     public List<Hecho> obtenerTodosLosHechos() {
         return this.hechosRepository.findAll();

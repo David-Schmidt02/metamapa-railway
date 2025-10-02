@@ -14,10 +14,10 @@ import java.util.UUID;
 @JsonTypeName("registrado")
 public class Registrado extends Contribuyente {
 
-    private UUID id;
+    private Integer id;
     private String nombre;
 
-    public Registrado(UUID id, String nombre) {
+    public Registrado(Integer id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }

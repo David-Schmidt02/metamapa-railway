@@ -63,7 +63,7 @@ public class DinamicaController {
     **/
     @PostMapping("/hechos")
     @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
-    public UUID subirHecho(@RequestBody HechoDTO hechoDTO) {
+    public Integer subirHecho(@RequestBody HechoDTO hechoDTO) {
 
         verificarCamposHecho(hechoDTO);
         return dinamicaService.crearHecho(hechoDTO);
@@ -76,7 +76,7 @@ public class DinamicaController {
      * se asume como anonimo). Devuelve el nuevo hecho con la actualizacion.
      **/
     @PutMapping("/hechos/{id}")
-    public Hecho modificarHecho(@PathVariable UUID id, @RequestBody HechoDTO hechoDTO) {
+    public Hecho modificarHecho(@PathVariable Integer id, @RequestBody HechoDTO hechoDTO) {
 
         verificarCamposHecho(hechoDTO);
 
@@ -128,12 +128,12 @@ public class DinamicaController {
 
     @PostMapping("/solicitudes")
     @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
-    public UUID subirSolicitud(@RequestBody SolicitudDTO solicitudDTO) {
+    public Integer subirSolicitud(@RequestBody SolicitudDTO solicitudDTO) {
         return dinamicaService.crearSolicitudEliminacion(solicitudDTO);
     }
 
     @PutMapping("/solicitudes/{id}")
-    public SolicitudEliminacion modificarSolicitud(@PathVariable UUID id, @RequestBody Estado_Solicitud nuevoEstado) {
+    public SolicitudEliminacion modificarSolicitud(@PathVariable Integer id, @RequestBody Estado_Solicitud nuevoEstado) {
         return dinamicaService.modificarEstadoSolicitud(id, nuevoEstado);
     }
 }

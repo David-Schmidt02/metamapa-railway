@@ -34,7 +34,7 @@ public class DinamicaService {
 
     // <---------------------------------- CREACION DE HECHOS ---------------------------------->
 
-    public UUID crearHecho(HechoDTO hechoDTO) {
+    public Integer crearHecho(HechoDTO hechoDTO) {
 
         Hecho hecho = this.hechoFromDTO(hechoDTO);
 
@@ -86,7 +86,7 @@ public class DinamicaService {
 
     // <---------------------------------- ACTUALIZACION DE HECHOS ---------------------------------->
 
-    public Hecho actualizarHecho(UUID id, HechoDTO hechoDTO) {
+    public Hecho actualizarHecho(Integer id, HechoDTO hechoDTO) {
         Hecho hechoAEditar = hechosRepository.findById(id);
 
         if (hechoAEditar == null) {
@@ -105,7 +105,7 @@ public class DinamicaService {
 
     // <---------------------------------- GESTION DE SOLICITUDES DE ELIMINACION ---------------------------------->
 
-    public UUID crearSolicitudEliminacion(SolicitudDTO solicitud) {
+    public Integer crearSolicitudEliminacion(SolicitudDTO solicitud) {
 
         SolicitudEliminacion nuevaSolicitudEliminacion = new SolicitudEliminacion(
             solicitud.getIdHecho(),
@@ -132,7 +132,7 @@ public class DinamicaService {
         return nuevaSolicitudEliminacion.getId();
     }
 
-    public SolicitudEliminacion modificarEstadoSolicitud(UUID id, Estado_Solicitud nuevoEstado) {
+    public SolicitudEliminacion modificarEstadoSolicitud(Integer id, Estado_Solicitud nuevoEstado) {
 
         SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id);
 
@@ -156,7 +156,7 @@ public class DinamicaService {
 
     }
 
-    private void ocultarHecho(UUID idHecho) {
+    private void ocultarHecho(Integer idHecho) {
         Hecho hechoParaOcultar = hechosRepository.findById(idHecho);
 
         if (hechoParaOcultar == null) {
