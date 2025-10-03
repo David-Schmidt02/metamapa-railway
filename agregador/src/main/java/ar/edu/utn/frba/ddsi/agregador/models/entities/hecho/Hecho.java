@@ -30,7 +30,7 @@ public abstract class Hecho {
     private Ubicacion ubicacion;
 
     @ManyToOne
-    @JoinColumn(name = "url_fuente") // la FK
+    @JoinColumn(name = "url_fuente", referencedColumnName = "url") // la FK
     private Fuente fuente;
 
     private LocalDateTime fechaAcontecimiento;

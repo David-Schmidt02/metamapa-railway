@@ -23,8 +23,7 @@ import java.util.List;
 @DiscriminatorColumn(name="tipo")
 public class Fuente {
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name="url_fuente", referencedColumnName = "url")
+    @OneToMany(mappedBy = "fuente", fetch = FetchType.EAGER)
     public List<Hecho> hechos = new ArrayList<>();
 
     @Id
@@ -42,7 +41,10 @@ public class Fuente {
     }
 
     public void agregarHechos(List<Hecho> nuevosHechos) {
-        this.hechos.addAll(nuevosHechos);
+        for (Hecho hecho : nuevosHechos) {
+            hecho.setFuente(this);
+            this.hechos.add(hecho);
+        }
     }
 
     public void setHechos(List<Hecho> nuevosHechos) {
