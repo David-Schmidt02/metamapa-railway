@@ -40,7 +40,7 @@ public abstract class Hecho {
     @JoinColumn(name = "origen_fuente_id")
     private OrigenFuente origenFuente;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id",referencedColumnName = "id")
     private List<Etiqueta> etiquetas;
 
