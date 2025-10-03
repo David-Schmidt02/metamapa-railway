@@ -2,6 +2,7 @@ package ar.edu.utn.frba.ddsi.agregador.services;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Algoritmo_Consenso;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.FuenteEstatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.CriterioDTO;
@@ -58,13 +59,20 @@ public class AgregadorService {
     @PostConstruct
     public void consultarHechosPorPrimeraVez() {
         //System.out.print("Se ejecuta el PostConstruct");
-        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+//        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+//
+//        if (anonimoExistente == null) {
+//            // Crear e insertar el anónimo con ID manual
+//            Anonimo anonimo = Anonimo.getInstance();
+//            contribuyenteRepository.saveAndFlush(anonimo);
+//        }
 
-        if (anonimoExistente == null) {
-            // Crear e insertar el anónimo con ID manual
-            Anonimo anonimo = Anonimo.getInstance();
-            contribuyenteRepository.saveAndFlush(anonimo);
+        Fuente fuenteExistente = fuentesRepository.findFuenteByNombre("estatica");
+        if(fuenteExistente == null){
+            FuenteEstatica fuenteEstatica = new FuenteEstatica( "estatica", "http://localhost:8081/api/estatica/hechos", new ArrayList<>());
+            fuentesRepository.saveAndFlush(fuenteEstatica);
         }
+
 
         this.consultarHechosPeriodicamente();
         this.clasificarHechos();
