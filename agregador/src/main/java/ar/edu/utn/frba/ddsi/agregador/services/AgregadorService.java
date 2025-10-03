@@ -79,6 +79,9 @@ public class AgregadorService {
         System.out.println("Consultando hechos de las fuentes...");
 
         List<Fuente> fuentes = fuentesRepository.findAll();
+
+        fuentes.forEach(fuente -> System.out.println(fuente.hechos));
+
         fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta));
         System.out.print("Ultima consulta: ");
         System.out.println(ultimaConsulta);

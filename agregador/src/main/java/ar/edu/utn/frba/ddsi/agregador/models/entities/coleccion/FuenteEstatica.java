@@ -60,7 +60,7 @@ public class FuenteEstatica extends Fuente{
 
         if (archivosDTO != null) {
             for (ArchivoProcesadoDTO archivoDTO : archivosDTO) {
-                ArchivoProcesado archivoProcesado = new ArchivoProcesado(archivoDTO.getNombre(), archivoDTO.getFechaCarga());
+                ArchivoProcesado archivoProcesado = new ArchivoProcesado(archivoDTO.getNombre(), archivoDTO.getFechaCarga(), this);
                 OrigenFuente origenFuente = new Estatica(archivoProcesado);
                 this.archivosProcesados.add(archivoProcesado);
                 this.agregarHechos(archivoDTO.getHechos().stream().map(h -> conversor.convertirHecho(h, origenFuente)).toList());
