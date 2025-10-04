@@ -59,13 +59,13 @@ public class AgregadorService {
     @PostConstruct
     public void consultarHechosPorPrimeraVez() {
         //System.out.print("Se ejecuta el PostConstruct");
-//        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
-//
-//        if (anonimoExistente == null) {
-//            // Crear e insertar el anónimo con ID manual
-//            Anonimo anonimo = Anonimo.getInstance();
-//            contribuyenteRepository.saveAndFlush(anonimo);
-//        }
+        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+
+        if (anonimoExistente == null) {
+            // Crear e insertar el anónimo con ID manual
+            Anonimo anonimo = Anonimo.getInstance();
+            contribuyenteRepository.saveAndFlush(anonimo);
+        }
 
         Fuente fuenteExistente = fuentesRepository.findFuenteByNombre("estatica");
         if(fuenteExistente == null){

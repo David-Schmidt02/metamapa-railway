@@ -18,6 +18,7 @@ public class Conversor {
 
     public Hecho convertirHecho(HechoDTO hechoDTO, OrigenFuente origen) {
         HechoDTO hechoNormalizado = this.aplicarNormalizacion(hechoDTO);
+        System.out.println("Convirtiendo hecho: " + hechoNormalizado.getTitulo() + " de la fuente: " + hechoDTO.getOrigenFuente());
         Hecho hecho = creacionHecho(hechoNormalizado, origen);
         // Caso fuente estática
         if (origen instanceof Estatica) {
@@ -52,7 +53,7 @@ public class Conversor {
     }
 
     private Hecho crearHechoTextualBase(HechoDTO hechoDTO, OrigenFuente origen) {
-        return new HechoTextual(
+        Hecho hecho =  new HechoTextual(
                 hechoDTO.getId(),
                 hechoDTO.getTitulo(),
                 hechoDTO.getDescripcion(),
@@ -62,13 +63,16 @@ public class Conversor {
                 hechoDTO.getFechaCarga(),
                 origen,
                 hechoDTO.getEtiquetas(),
-                this.instanciarContribuyente(hechoDTO.getContribuyente()),
+                null,
                 hechoDTO.getCuerpo()
         );
+        hecho.setContribuyente(this.instanciarContribuyente(hechoDTO.getContribuyente()));
+
+        return hecho;
     }
 
     public Hecho crearHechoMultimediaBase(HechoDTO hechoDTO, OrigenFuente origen) {
-        return new HechoMultimedia(
+        Hecho hecho = new HechoMultimedia(
                 hechoDTO.getId(),
                 hechoDTO.getTitulo(),
                 hechoDTO.getDescripcion(),
@@ -78,13 +82,16 @@ public class Conversor {
                 hechoDTO.getFechaCarga(),
                 origen,
                 hechoDTO.getEtiquetas(),
-                this.instanciarContribuyente(hechoDTO.getContribuyente()),
+                null,
                 hechoDTO.getContenidoMultimedia()
         );
+        hecho.setContribuyente(this.instanciarContribuyente(hechoDTO.getContribuyente()));
+
+        return hecho;
     }
 
     public Contribuyente instanciarContribuyente(Contribuyente contribuyenteHechoDTO) {
-        if (contribuyenteHechoDTO == null ) {
+        if (contribuyenteHechoDTO == null || contribuyenteHechoDTO instanceof Anonimo) {
             return Anonimo.getInstance();
         } else {
             return new Registrado(contribuyenteHechoDTO.getNombre());

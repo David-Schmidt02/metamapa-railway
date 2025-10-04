@@ -44,7 +44,7 @@ public abstract class Hecho {
     @JoinColumn(name = "hecho_id",referencedColumnName = "id")
     private List<Etiqueta> etiquetas;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "contribuyente_id", referencedColumnName = "id")
     private Contribuyente contribuyente;
 
