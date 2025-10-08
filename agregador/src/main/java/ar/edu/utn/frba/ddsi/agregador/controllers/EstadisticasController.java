@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,5 +38,22 @@ public class EstadisticasController {
     @GetMapping("/hechos/max-categoria")
     public Categoria obtenerCategoriaConMasHechos() {
         return this.estadisticasService.obtenerCategoriaConMasHechos();
+    }
+
+    @GetMapping("/colecciones/{Id}/ubicacionMasFrecuente")
+    public UbicacionDTO obtenerUbicacionMasFrecuenteDeColeccion(@PathVariable Integer Id) {
+        Ubicacion ubicacion = this.estadisticasService.obtenerUbicacionMasFrecuenteDeColeccion(Id);
+        return ubicacion.toDTO();
+    }
+
+    @GetMapping("/categoria/{Id}/ubicacionMasFrecuente")
+    public UbicacionDTO obtenerUbicacionMasFrecuenteDeCategoria(@PathVariable Integer Id) {
+        Ubicacion ubicacion = this.estadisticasService.obtenerUbicacionMasFrecuenteDeCategoria(Id);
+        return ubicacion.toDTO();
+    }
+
+    @GetMapping("/categoria/{Id}/hora")
+    public LocalTime obtenerHoraMasFrecuente(@PathVariable Integer Id) {
+        return this.estadisticasService.obtenerHoraMasFrecuente(Id);
     }
 }

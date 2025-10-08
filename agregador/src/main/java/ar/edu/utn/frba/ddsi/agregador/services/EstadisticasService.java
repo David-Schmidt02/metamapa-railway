@@ -5,6 +5,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.EstadisticasRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,5 +24,18 @@ public class EstadisticasService {
 
     public Categoria obtenerCategoriaConMasHechos() {
         return this.estadisticasRepository.obtenerCategoriaConMasHechos();
+    }
+
+    public Ubicacion obtenerUbicacionMasFrecuenteDeColeccion(Integer idColeccion) {
+        return this.estadisticasRepository.obtenerUbicacionMasFrecuenteDeColeccion(idColeccion);
+    }
+
+    public Ubicacion obtenerUbicacionMasFrecuenteDeCategoria(Integer idCategoria) {
+        return this.estadisticasRepository.obtenerUbicacionMasFrecuenteDeCategoria(idCategoria);
+    }
+
+    public LocalTime obtenerHoraMasFrecuente(Integer Id) {
+        Integer hora =  this.estadisticasRepository.obtenerHoraMasFrecuente(Id);
+        return LocalTime.of(hora,0);
     }
 }

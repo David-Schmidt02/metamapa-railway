@@ -5,6 +5,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,15 +18,17 @@ public class AgregadorClient {
                 .build();
     }
 
-    public String obtenerProvinciaDeColeccion (Integer Id) {
-        String provinciaConMasHechos = webClient.get()
-                .uri("/colecciones/{Id}/provincia-max-hechos", Id)
+    // Trae la ubicacion que esta en la mayor cantidad de hechos de una coleccion
+    public Ubicacion obtenerUbicacionDeColeccion (Integer Id) {
+        Ubicacion ubicacionConMasHechos = webClient.get()
+                .uri("/colecciones/{Id}/ubicacionMasFrecuente", Id)
                 .retrieve()
-                .toString();
-        if(provinciaConMasHechos == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro la provincia buscada");
+                .bodyToMono(Ubicacion.class)
+                .block();
+        if(ubicacionConMasHechos == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro la provincia o la coleccion buscada");
         }
-        return provinciaConMasHechos;
+        return ubicacionConMasHechos;
     }
 
     public Categoria obtenerCategoriaConMasHechos() {
@@ -40,4 +43,40 @@ public class AgregadorClient {
         return categoriaConMasHechos;
     }
 
+    // Trae la ubicacion que esta en la mayor cantidad de hechos de una categoria
+    public Ubicacion obtenerUbicacionDeCategoria (Integer Id) {
+        Ubicacion ubicacionConMasHechos = webClient.get()
+                .uri("/categoria/{Id}/ubicacionMasFrecuente", Id)
+                .retrieve()
+                .bodyToMono(Ubicacion.class)
+                .block();
+        if(ubicacionConMasHechos == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro la provincia o la categoria buscada");
+        }
+        return ubicacionConMasHechos;
+    }
+
+    public LocalTime obtenerHoraMasFrecuenteDeCategoria (Integer Id) {
+        LocalTime horaMasFrecuente = webClient.get()
+                .uri("/categoria/{Id}/hora", Id)
+                .retrieve()
+                .bodyToMono(LocalTime.class)
+                .block();
+        if(horaMasFrecuente == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro la hora buscada");
+        }
+        return horaMasFrecuente;
+    }
+
+    public Integer obtenerCantidadDeSolicitudesSpam() {
+        Integer cantidadSolicitudesSpam = webClient.get()
+                .uri("/solicitudes/spam")
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .block();
+        if(cantidadSolicitudesSpam == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro la cantidad de solicitudes spam");
+        }
+        return cantidadSolicitudesSpam;
+    }
 }
