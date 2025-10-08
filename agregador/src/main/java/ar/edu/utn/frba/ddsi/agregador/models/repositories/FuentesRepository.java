@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface FuentesRepository extends JpaRepository<Fuente, String> {
     Fuente findFuenteByNombre(String nombre);
 
-    
+
+    Fuente findFuenteByUrl(String url);
 }

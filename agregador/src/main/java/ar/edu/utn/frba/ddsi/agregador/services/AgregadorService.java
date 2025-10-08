@@ -160,11 +160,16 @@ public class AgregadorService {
      */
     public Integer crearColeccion(ColeccionDTO coleccionDTO){
 
-        List<Fuente> fuentes = fuentesRepository.findAll();
+        List<Fuente> fuentes = new ArrayList<>();
+        coleccionDTO.getUrls_fuente().forEach( urlFuente -> {
 
-        if (fuentes == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND ,"Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
-        }
+                    fuentes.add(fuentesRepository.findFuenteByUrl(urlFuente));
+                }
+        );
+
+//        if (fuentes == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND ,"Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
+//        }
 
         List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
                 .map(this::criterioFromDTO)
@@ -267,30 +272,38 @@ public class AgregadorService {
     /**
      * Actualiza una colección existente con los datos del DTO proporcionado.
      */
-    public Coleccion actualizarColeccion(Integer id, ColeccionDTO coleccionDTO) {
-
-        List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
-                .map(this::criterioFromDTO)
-                .toList();
-
-        List<Fuente> fuentes = new ArrayList<Fuente>();
-
-        // TODO probar si trae hechos automaticamente o hay q irlos a buscar
-        coleccionDTO.getUrls_fuente().forEach( nombreFuente -> {
-                fuentes.add(fuentesRepository.findFuenteByNombre(nombreFuente));
-            }
-        );
-
-        Coleccion coleccionEditada = new Coleccion(
-                coleccionDTO.getTitulo(),
-                coleccionDTO.getDescripcion(),
-                coleccionDTO.getAlgoritmo_consenso(),
-                fuentes,
-                criterios
-        );
-
-        return this.coleccionRepository.save(coleccionEditada);
-    }
+//    public Coleccion actualizarColeccion(Integer id, ColeccionDTO coleccionDTO) {
+//        // Buscar la colección existente
+//        Coleccion coleccionExistente = coleccionRepository.findColeccionById(id);
+//
+//        if (coleccionExistente == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+//        }
+//
+//        // Actualizar propiedades
+//        coleccionExistente.setTitulo(coleccionDTO.getTitulo());
+//        coleccionExistente.setDescripcion(coleccionDTO.getDescripcion());
+//        coleccionExistente.setAlgoritmo_consenso(coleccionDTO.getAlgoritmo_consenso());
+//
+//        // Actualizar fuentes
+//        List<Fuente> fuentes = new ArrayList<>();
+//        coleccionDTO.getUrls_fuente().forEach(urlFuente -> {
+//            Fuente fuente = fuentesRepository.findFuenteByUrl(urlFuente);
+//            if (fuente != null) {
+//                fuentes.add(fuente);
+//            }
+//        });
+//        coleccionExistente.setFuentes(fuentes);
+//
+//        // Actualizar criterios
+//        List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
+//                .map(this::criterioFromDTO)
+//                .toList();
+//        coleccionExistente.setCriterios(criterios);
+//
+//        // Guardar la colección actualizada
+//        return coleccionRepository.save(coleccionExistente);
+//    }
 
     /**
      * Modifica el algoritmo de consenso de una colección existente a partir de su ID.
@@ -300,6 +313,7 @@ public class AgregadorService {
         if (coleccionAModificadar == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
+
         coleccionAModificadar.setAlgoritmo_consenso(nuevoAlgoritmo);
         return this.coleccionRepository.save(coleccionAModificadar);
     }
@@ -314,17 +328,16 @@ public class AgregadorService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
 
-        List<Fuente> fuentes = new ArrayList<Fuente>();
-
-        urls_fuente.forEach( nombreFuente -> {
-                    fuentes.add(fuentesRepository.findFuenteByNombre(nombreFuente));
-                }
-        );
-        
+        List<Fuente> fuentes = new ArrayList<>();
+        urls_fuente.forEach(urlFuente -> {
+            Fuente fuente = fuentesRepository.findFuenteByUrl(urlFuente);
+            if (fuente != null) {
+                fuentes.add(fuente);
+            }
+        });
         coleccionAModificadar.setFuentes(fuentes);
 
-        return this.coleccionRepository.save(coleccionAModificadar);
-
+        return coleccionRepository.save(coleccionAModificadar);
     }
 
     public SolicitudEliminacion modificarEstadoSolicitud(Integer id, Estado_Solicitud nuevoEstado) {

@@ -69,11 +69,11 @@ public class AgregadorController {
      * Permite modificar una coleccion.
      * Recibe el ID de la coleccion a modificar y un DTO con los nuevos datos.
      */
-    @PutMapping("/colecciones/{id}")
-    @ResponseStatus(org.springframework.http.HttpStatus.OK)
-    public Coleccion modificarColeccion(@PathVariable Integer id, @RequestBody ColeccionDTO coleccionDTO) {
-        return this.agregadorService.actualizarColeccion(id, coleccionDTO);
-    }
+//    @PutMapping("/colecciones/{id}")
+//    @ResponseStatus(org.springframework.http.HttpStatus.OK)
+//    public Coleccion modificarColeccion(@PathVariable Integer id, @RequestBody ColeccionDTO coleccionDTO) {
+//        return this.agregadorService.actualizarColeccion(id, coleccionDTO);
+//    }
 
 
      //Endpoint para modificar algoritmo de consenso de una coleccion
@@ -141,7 +141,7 @@ public class AgregadorController {
 
 
     // Endpoint para generar solicitudes de eliminacion de hechos le pega metamapa
-    @PostMapping("/solicitudes/{id}")
+    @PostMapping("/solicitudes")
     public SolicitudEliminacion generarSolicitudEliminacion(@RequestBody SolicitudDTO solicitudEliminacion) {
         return agregadorService.crearSolicitudEliminacion(solicitudEliminacion);
     }
