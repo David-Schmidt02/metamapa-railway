@@ -34,7 +34,7 @@ public class Coleccion {
     )
     private List<Fuente> fuentes;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "coleccion_id", referencedColumnName = "id")
     private List<CriterioPertenencia> criterios;
 
@@ -52,6 +52,9 @@ public class Coleccion {
     }
 
     public List<Hecho> mostrarHechos() {
+        System.out.println("Criterios: ");
+        this.criterios.forEach(criterio -> System.out.println(criterio));
+
         return this.fuentes.stream()
                 .flatMap(fuente -> fuente.getHechos().stream())
                 .filter(hecho -> this.criterios.stream()
