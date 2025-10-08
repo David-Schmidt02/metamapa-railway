@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,8 +14,6 @@ public interface ColeccionRepository extends JpaRepository<Coleccion,Integer> {
 
     Coleccion findColeccionById(Integer id);
 
-    @Query("SELECT ")
-    String obtenerProvinciaConMasHechos(Integer id);
 
 /*
     private final List<Coleccion> colecciones = new ArrayList<>();
