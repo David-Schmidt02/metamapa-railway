@@ -6,6 +6,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ArchivoProcesadoRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.CategoriaRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ContribuyenteRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.OrigenFuenteRepository;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -66,7 +67,7 @@ public class Fuente {
 
     }
 
-    public void realizarConsulta(URI uri, WebClient webClient, Conversor conversor, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository a, OrigenFuenteRepository o) {
+    public void realizarConsulta(URI uri, WebClient webClient, Conversor conversor, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository a, OrigenFuenteRepository o, CategoriaRepository categoriaRepository) {
         OrigenFuente origenFuente;
         List<HechoDTO> hechos = webClient.get()
                 .uri(uri)
@@ -78,7 +79,7 @@ public class Fuente {
         if (hechos != null) {
             origenFuente = OrigenFuente.getOrigenFuente(this.nombre);
 
-            this.agregarHechos(hechos.stream().map(h -> conversor.convertirHecho(h, origenFuente, contribuyenteRepository)).toList());
+            this.agregarHechos(hechos.stream().map(h -> conversor.convertirHecho(h, origenFuente, contribuyenteRepository, categoriaRepository)).toList());
         }
 
     }

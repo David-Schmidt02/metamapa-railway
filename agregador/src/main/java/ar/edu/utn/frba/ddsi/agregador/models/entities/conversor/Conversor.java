@@ -1,6 +1,7 @@
 package ar.edu.utn.frba.ddsi.agregador.models.entities.conversor;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.HechoTextual;
@@ -9,6 +10,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenF
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Registrado;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.CategoriaRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ContribuyenteRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,10 +19,17 @@ import java.util.ArrayList;
 public class Conversor {
     public Conversor() {}
 
-    public Hecho convertirHecho(HechoDTO hechoDTO, OrigenFuente origen, ContribuyenteRepository contribuyenteRepository) {
+    public Hecho convertirHecho(HechoDTO hechoDTO, OrigenFuente origen, ContribuyenteRepository contribuyenteRepository, CategoriaRepository categoriaRepository) {
         HechoDTO hechoNormalizado = this.aplicarNormalizacion(hechoDTO);
         //System.out.println("Convirtiendo hecho: " + hechoNormalizado.getTitulo() + " de la fuente: " + hechoDTO.getOrigenFuente());
-        Hecho hecho = creacionHecho(hechoNormalizado, origen);
+
+        Categoria categoriaNormalizada = categoriaRepository.findCategoriaByDetalle(hechoNormalizado.getCategoria().getDetalle());
+        if (categoriaNormalizada == null) {
+            categoriaNormalizada = categoriaRepository.saveAndFlush(hechoNormalizado.getCategoria());
+        }
+
+
+        Hecho hecho = creacionHecho(hechoNormalizado, origen, categoriaNormalizada);
         // Caso fuente estática
         if (origen instanceof Estatica) {
             ((HechoTextual) hecho).setCuerpo(hechoDTO.getDescripcion());
@@ -46,21 +55,21 @@ public class Conversor {
     }
 
 
-    public Hecho creacionHecho(HechoDTO hechoDTO, OrigenFuente origen) {
+    public Hecho creacionHecho(HechoDTO hechoDTO, OrigenFuente origen, Categoria categoria) {
 
         if (hechoDTO.getContenidoMultimedia() != null) {
-            return crearHechoMultimediaBase(hechoDTO, origen);
+            return crearHechoMultimediaBase(hechoDTO, origen, categoria);
         } else {
-            return crearHechoTextualBase(hechoDTO, origen);
+            return crearHechoTextualBase(hechoDTO, origen, categoria);
         }
     }
 
-    private Hecho crearHechoTextualBase(HechoDTO hechoDTO, OrigenFuente origen) {
+    private Hecho crearHechoTextualBase(HechoDTO hechoDTO, OrigenFuente origen, Categoria categoria) {
         Hecho hecho =  new HechoTextual(
                 hechoDTO.getId(),
                 hechoDTO.getTitulo(),
                 hechoDTO.getDescripcion(),
-                hechoDTO.getCategoria(),
+                categoria,
                 hechoDTO.getUbicacion(),
                 hechoDTO.getFechaAcontecimiento(),
                 hechoDTO.getFechaCarga(),
@@ -72,12 +81,12 @@ public class Conversor {
         return hecho;
     }
 
-    public Hecho crearHechoMultimediaBase(HechoDTO hechoDTO, OrigenFuente origen) {
+    public Hecho crearHechoMultimediaBase(HechoDTO hechoDTO, OrigenFuente origen, Categoria categoria) {
         Hecho hecho = new HechoMultimedia(
                 hechoDTO.getId(),
                 hechoDTO.getTitulo(),
                 hechoDTO.getDescripcion(),
-                hechoDTO.getCategoria(),
+                categoria,
                 hechoDTO.getUbicacion(),
                 hechoDTO.getFechaAcontecimiento(),
                 hechoDTO.getFechaCarga(),

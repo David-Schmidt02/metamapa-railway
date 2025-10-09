@@ -42,10 +42,11 @@ public class AgregadorService {
     private final ContribuyenteRepository contribuyenteRepository;
     private final ArchivoProcesadoRepository archivoProcesadoRepository;
     private final OrigenFuenteRepository origenFuenteRepository;
+    private final CategoriaRepository categoriaRepository;
     private final Importador importador = new Importador();
     private LocalDateTime ultimaConsulta;
 
-    public AgregadorService(HechosRepository hechosRepository, FuentesRepository fuentesRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository) {
+    public AgregadorService(HechosRepository hechosRepository, FuentesRepository fuentesRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository, CategoriaRepository categoriaRepository) {
         this.hechosRepository = hechosRepository;
         this.fuentesRepository = fuentesRepository;
         this.solicitudesRepository = solicitudesRepository;
@@ -53,6 +54,7 @@ public class AgregadorService {
         this.contribuyenteRepository = contribuyenteRepository;
         this.archivoProcesadoRepository = archivoProcesadoRepository;
         this.origenFuenteRepository = origenFuenteRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     /**
@@ -100,7 +102,7 @@ public class AgregadorService {
 
         //fuentes.forEach(fuente -> System.out.println(fuente.hechos));
 
-        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta, contribuyenteRepository, archivoProcesadoRepository, origenFuenteRepository));
+        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta, contribuyenteRepository, archivoProcesadoRepository, origenFuenteRepository, categoriaRepository));
         System.out.print("Ultima consulta: ");
         System.out.println(ultimaConsulta);
         this.ultimaConsulta = LocalDateTime.now();
@@ -197,7 +199,7 @@ public class AgregadorService {
         return switch (criterioDTO.getTipo()) {
             case "titulo" -> new CriterioTitulo(criterioDTO.getValor());
             case "descripcion" -> new CriterioDescripcion(criterioDTO.getValor());
-            case "categoria" -> new CriterioCategoria(new Categoria(criterioDTO.getValor()));
+            case "categoria" -> new CriterioCategoria(criterioDTO.getValor());
             case "fechaAcontecimientoDesde" -> new CriterioFechaDesde(LocalDateTime.parse(criterioDTO.getValor()));
             case "fechaAcontecimientoHasta" -> new CriterioFechaHasta(LocalDateTime.parse(criterioDTO.getValor()));
             case "ubicacion" -> //chequear

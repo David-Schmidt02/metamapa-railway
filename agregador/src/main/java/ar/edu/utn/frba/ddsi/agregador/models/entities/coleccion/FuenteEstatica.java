@@ -8,6 +8,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.Estatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ArchivoProcesadoRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.CategoriaRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ContribuyenteRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.OrigenFuenteRepository;
 import jakarta.transaction.Transactional;
@@ -56,7 +57,7 @@ public class FuenteEstatica extends Fuente{
 
     @Override
     @Transactional
-    public void realizarConsulta(URI uri, WebClient webClient, Conversor conversor, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository) {
+    public void realizarConsulta(URI uri, WebClient webClient, Conversor conversor, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository, CategoriaRepository categoriaRepository) {
         List<ArchivoProcesadoDTO> archivosDTO = webClient.get()
                 .uri(uri)
                 .retrieve()
@@ -78,7 +79,7 @@ public class FuenteEstatica extends Fuente{
                 // Procesar los hechos con este origen
                 List<Hecho> hechos = new ArrayList<>();
                 for (HechoDTO hechoDTO : archivoDTO.getHechos()) {
-                    Hecho hecho = conversor.convertirHecho(hechoDTO, estatica, contribuyenteRepository);
+                    Hecho hecho = conversor.convertirHecho(hechoDTO, estatica, contribuyenteRepository, categoriaRepository);
                     hechos.add(hecho);
                 }
                 // Agregar a la colección

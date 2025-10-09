@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 @Setter
 
 
-
+@Embeddable
 public class Ubicacion {
 
     @Column

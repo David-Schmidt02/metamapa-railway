@@ -26,6 +26,9 @@ public abstract class Hecho {
 
     private String titulo;
     private String descripcion;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", referencedColumnName = "id")
     private Categoria categoria;
 
     @Embedded

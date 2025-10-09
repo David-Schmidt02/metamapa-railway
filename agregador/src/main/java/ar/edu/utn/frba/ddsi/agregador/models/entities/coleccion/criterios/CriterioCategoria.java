@@ -13,9 +13,9 @@ import lombok.Setter;
 @Entity
 @jakarta.persistence.DiscriminatorValue("categoria")
 public class CriterioCategoria extends CriterioPertenencia{
-    private Categoria categoria;
+    private String categoria;
 
-    public CriterioCategoria(Categoria categoria) {
+    public CriterioCategoria(String categoria) {
         this.categoria = categoria;
     }
 
@@ -25,7 +25,7 @@ public class CriterioCategoria extends CriterioPertenencia{
 
     @Override
     public boolean cumpleConCriterio(Hecho hecho) {
-        return hecho.getCategoria().equals(categoria);
+        return hecho.getCategoria().getDetalle().equals(categoria);
     }
 
 }
