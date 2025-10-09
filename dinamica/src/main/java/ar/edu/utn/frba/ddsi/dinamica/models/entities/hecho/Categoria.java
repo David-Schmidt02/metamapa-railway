@@ -2,13 +2,18 @@ package ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho;
 
 import lombok.Getter;
 import lombok.Setter;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
 
-@Embeddable
+@Entity
 public class Categoria {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+
     @Column
     private String detalle;
 

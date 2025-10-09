@@ -1,21 +1,29 @@
 package ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion;
 
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Random;
+import jakarta.persistence.*;
 
 @Getter
+@Setter
+@Entity
 public class SolicitudEliminacion {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer idHecho;
+
+    @ManyToOne
+    @JoinColumn(name="hecho_id",referencedColumnName = "id")
+    private Hecho hecho;
+
     private String justificacion;
-    @Setter
+
+    @Enumerated(EnumType.STRING)
     private Estado_Solicitud estado;
 
-    public SolicitudEliminacion(Integer idHecho, String justificacion) {
-        this.id = new Random().nextInt(1, 100000); // Generar un ID aleatorio entre 1 y 100000
-        this.idHecho = idHecho;
-        this.justificacion = justificacion;
+
+    public SolicitudEliminacion() {
         this.estado = Estado_Solicitud.PENDIENTE; // Estado inicial por defecto
     }
 

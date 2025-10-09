@@ -2,16 +2,20 @@ package ar.edu.utn.frba.ddsi.dinamica.services;
 
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.dtos.SolicitudDTO;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoMultimedia;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Registrado;
+import ar.edu.utn.frba.ddsi.dinamica.models.repositories.CategoriaRepository;
+import ar.edu.utn.frba.ddsi.dinamica.models.repositories.ContribuyenteRepository;
 import ar.edu.utn.frba.ddsi.dinamica.models.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
@@ -26,10 +30,14 @@ import java.util.stream.Collectors;
 public class DinamicaService {
     private final HechosRepository hechosRepository;
     private final SolicitudesRepository solicitudesRepository;
+    private final ContribuyenteRepository contribuyenteRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public DinamicaService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository) {
+    public DinamicaService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ContribuyenteRepository contribuyenteRepository, CategoriaRepository categoriaRepository) {
         this.hechosRepository = hechosRepository;
         this.solicitudesRepository = solicitudesRepository;
+        this.contribuyenteRepository = contribuyenteRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     // <---------------------------------- CREACION DE HECHOS ---------------------------------->
@@ -38,20 +46,30 @@ public class DinamicaService {
 
         Hecho hecho = this.hechoFromDTO(hechoDTO);
 
-        hechosRepository.save(hecho);
 
-        return hecho.getId();
+        return hechosRepository.save(hecho).getId();
+    }
+
+
+    @PostConstruct
+    private void inicializarContribuyente() {
+        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+
+        if (anonimoExistente == null) {
+            // Crear e insertar el anónimo con ID manual
+            Anonimo anonimo = Anonimo.getInstance();
+            contribuyenteRepository.saveAndFlush(anonimo);
+        }
     }
 
 
     private Contribuyente determinarContribuyente(HechoDTO hechoDTO) {
-        if (hechoDTO.getRegistrado() != null) {
-            return new Registrado(
-                    hechoDTO.getRegistrado().getId(),
-                hechoDTO.getRegistrado().getNombre()
-            );
+        if (hechoDTO.getRegistrado() == null) {
+            return contribuyenteRepository.findById(1).orElse(null);
         } else {
-            return Anonimo.getInstance();
+            Contribuyente nuevoRegistrado = new Registrado(hechoDTO.getRegistrado().getNombre());
+            contribuyenteRepository.saveAndFlush(nuevoRegistrado);
+            return nuevoRegistrado;
         }
     }
 
@@ -60,7 +78,7 @@ public class DinamicaService {
             return new HechoTextual(
                     hechoDTO.getTitulo(),
                     hechoDTO.getDescripcion(),
-                    hechoDTO.getCategoria(),
+                    determinarCategoria(hechoDTO.getCategoria().getDetalle()),
                     hechoDTO.getUbicacion(),
                     hechoDTO.getFechaAcontecimiento(),
                     hechoDTO.getEtiquetas(),
@@ -71,7 +89,7 @@ public class DinamicaService {
             return new HechoMultimedia(
                     hechoDTO.getTitulo(),
                     hechoDTO.getDescripcion(),
-                    hechoDTO.getCategoria(),
+                    determinarCategoria(hechoDTO.getCategoria().getDetalle()),
                     hechoDTO.getUbicacion(),
                     hechoDTO.getFechaAcontecimiento(),
                     hechoDTO.getEtiquetas(),
@@ -83,11 +101,19 @@ public class DinamicaService {
         }
     }
 
+    private Categoria determinarCategoria(String detalle) {
+        Categoria categoria = categoriaRepository.findCategoriaByDetalle(detalle);
+        if (categoria == null) {
+            categoria = categoriaRepository.saveAndFlush(new Categoria(detalle));
+        }
+        return categoria;
+    }
+
 
     // <---------------------------------- ACTUALIZACION DE HECHOS ---------------------------------->
 
     public Hecho actualizarHecho(Integer id, HechoDTO hechoDTO) {
-        Hecho hechoAEditar = hechosRepository.findById(id);
+        Hecho hechoAEditar = hechosRepository.findById(id).orElse(null);
 
         if (hechoAEditar == null) {
             throw new IllegalArgumentException("Hecho no encontrado con ID: " + id);
@@ -100,32 +126,33 @@ public class DinamicaService {
         Hecho nuevoHecho = hechoFromDTO(hechoDTO);
         nuevoHecho.setId(id);
 
-        return hechosRepository.findByIdAndUpdate(id, nuevoHecho);
+        return hechosRepository.save(nuevoHecho);
     }
 
     // <---------------------------------- GESTION DE SOLICITUDES DE ELIMINACION ---------------------------------->
 
-    public Integer crearSolicitudEliminacion(SolicitudDTO solicitud) {
+    public Integer crearSolicitudEliminacion(SolicitudDTO solicitudDTO) {
 
-        SolicitudEliminacion nuevaSolicitudEliminacion = new SolicitudEliminacion(
-            solicitud.getIdHecho(),
-            solicitud.getJustificacion()
-        );
+        SolicitudEliminacion nuevaSolicitudEliminacion = new SolicitudEliminacion();
+
+        nuevaSolicitudEliminacion.setJustificacion(solicitudDTO.getJustificacion());
 
         if(DetectorDeSpam.esSpam(nuevaSolicitudEliminacion.getJustificacion())) {
             nuevaSolicitudEliminacion.setEstado(Estado_Solicitud.RECHAZADA);
         }
 
-        if (!nuevaSolicitudEliminacion.esCorrecta()) {
-            throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
-        }
+//        if (!nuevaSolicitudEliminacion.esCorrecta()) {
+//            throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
+//        }
 
         // Verifico si el hecho existe
-        Hecho hechoAeliminar = hechosRepository.findById(nuevaSolicitudEliminacion.getIdHecho());
+        Hecho hechoAeliminar = hechosRepository.findById(solicitudDTO.getIdHecho()).orElse(null);
 
         if (hechoAeliminar == null) {
-            throw new IllegalArgumentException("Hecho no encontrado con ID: " + nuevaSolicitudEliminacion.getIdHecho());
+            throw new IllegalArgumentException("Hecho no encontrado con ID: " + solicitudDTO.getIdHecho());
         }
+
+        nuevaSolicitudEliminacion.setHecho(hechoAeliminar);
 
         solicitudesRepository.save(nuevaSolicitudEliminacion);
 
@@ -134,7 +161,7 @@ public class DinamicaService {
 
     public SolicitudEliminacion modificarEstadoSolicitud(Integer id, Estado_Solicitud nuevoEstado) {
 
-        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id);
+        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id).orElse(null);
 
         if (solicitudAEditar == null) {
             throw new IllegalArgumentException("Solicitud no encontrada con ID: " + id);
@@ -142,11 +169,8 @@ public class DinamicaService {
 
         solicitudAEditar.setEstado(nuevoEstado);
 
-        SolicitudEliminacion solicitudActualizada = solicitudesRepository.findByIdAndUpdate(id, solicitudAEditar);
+        SolicitudEliminacion solicitudActualizada = solicitudesRepository.save(solicitudAEditar);
 
-        if (solicitudActualizada == null) {
-            throw new RuntimeException("No se pudo actualizar la solicitud con ID: " + id);
-        }
 
 //        if(nuevoEstado == Estado_Solicitud.ACEPTADA) {
 //            this.ocultarHecho(solicitudAEditar.getIdHecho());
@@ -157,7 +181,7 @@ public class DinamicaService {
     }
 
     private void ocultarHecho(Integer idHecho) {
-        Hecho hechoParaOcultar = hechosRepository.findById(idHecho);
+        Hecho hechoParaOcultar = hechosRepository.findById(idHecho).orElse(null);
 
         if (hechoParaOcultar == null) {
             throw new IllegalArgumentException("Hecho no encontrado con ID: " + idHecho);
@@ -165,11 +189,11 @@ public class DinamicaService {
 
         //hechoParaOcultar.setEstaOculto(true);
 
-        Hecho hechoActualizado = hechosRepository.findByIdAndUpdate(idHecho, hechoParaOcultar);
+        hechosRepository.save(hechoParaOcultar);
 
-        if (hechoActualizado == null) {
-            throw new RuntimeException("No se pudo ocultar el hecho con ID: " + idHecho);
-        }
+//        if (hechoActualizado == null) {
+//            throw new RuntimeException("No se pudo ocultar el hecho con ID: " + idHecho);
+//        }
     }
 
 

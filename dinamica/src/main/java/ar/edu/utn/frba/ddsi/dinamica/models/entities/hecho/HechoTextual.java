@@ -4,8 +4,7 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

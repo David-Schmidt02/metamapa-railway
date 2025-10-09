@@ -1,32 +1,31 @@
 package ar.edu.utn.frba.ddsi.dinamica.models.entities.personas;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonTypeName("registrado")
+
+@Entity
+@DiscriminatorValue("REGISTRADO")
 public class Registrado extends Contribuyente {
 
-    private Integer id;
+    // El id debe matchear con el id de la persona en el sistema de usuarios
     private String nombre;
 
-    public Registrado(Integer id, String nombre) {
-        this.id = id;
+    public Registrado(String nombre) {
         this.nombre = nombre;
     }
 
-
-    @JsonProperty("tipo")
-    public String getTipo() {
-        return "registrado";
+    @Override
+    public String getNombre() {
+        return this.nombre;
     }
-
 
 }

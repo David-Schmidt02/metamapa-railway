@@ -1,9 +1,12 @@
 package ar.edu.utn.frba.ddsi.dinamica.models.entities.personas;
 
-import com.fasterxml.jackson.annotation.*;
-
+import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
-
 import lombok.Setter;
 
 
@@ -11,20 +14,25 @@ import lombok.Setter;
 @Setter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonTypeName("anonimo")
+@Entity
+@DiscriminatorValue("ANONIMO")
 public class Anonimo extends Contribuyente {
 
     private static Anonimo instance;
 
-    private Anonimo() {
-        super();
+    public Anonimo(Integer id) {
         // Constructor privado
+        this.id = id;
+    }
+
+    public Anonimo() {
+
     }
 
     @JsonCreator
     public static Anonimo create() {
         return getInstance();
     }
-
 
 
     public static Anonimo getInstance() {
@@ -34,8 +42,14 @@ public class Anonimo extends Contribuyente {
         return instance;
     }
 
-    @JsonProperty("tipo")
-    public String getTipo() {
-        return "anonimo";
+    @Override
+    public String getNombre() {
+        return "Anonimo";
     }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+
 }

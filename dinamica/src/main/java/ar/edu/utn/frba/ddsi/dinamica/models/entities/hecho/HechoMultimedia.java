@@ -8,7 +8,7 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
@@ -28,7 +28,8 @@ public abstract class Hecho {
     private String titulo;
     private String descripcion;
 
-    @Embedded
+    @ManyToOne
+    @JoinColumn(name="categoria_id",referencedColumnName = "id")
     private Categoria categoria;
 
     @Embedded
@@ -40,11 +41,11 @@ public abstract class Hecho {
     @Enumerated(EnumType.STRING)
     private Origen_Fuente origenFuente;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id",referencedColumnName = "id")
     private List<Etiqueta> etiquetas;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="contribuyente_id",referencedColumnName = "id")
     private Contribuyente contribuyente;
 
