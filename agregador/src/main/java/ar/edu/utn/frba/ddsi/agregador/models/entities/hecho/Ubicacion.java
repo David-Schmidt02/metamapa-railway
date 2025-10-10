@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.ddsi.agregador.models.entities.hecho;
 
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.UbicacionDTO;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
@@ -24,4 +25,10 @@ public class Ubicacion {
     }
 
     public Ubicacion() {}
+
+    public UbicacionDTO toDTO() {
+        return new UbicacionDTO(this.latitud, this.longitud);
+    }
+
+
 }
