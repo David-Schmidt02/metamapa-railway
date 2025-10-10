@@ -27,10 +27,11 @@ public interface EstadisticasRepository extends JpaRepository<Hecho, Integer> { 
 
     // La instanciara directo a la categoria?
     @Query( value = """ 
-            SELECT h.detalle
+            SELECT c.id, c.detalle
             FROM Hecho h
-            GROUP BY h.detalle
-            ORDER BY count(h.detalle) DESC LIMIT 1
+            JOIN Categoria c ON h.categoria_id = c.id
+            GROUP BY c.id, c.detalle
+            ORDER BY count(h.categoria_id) DESC LIMIT 1
         """,
             nativeQuery = true)
     Categoria obtenerCategoriaConMasHechos();
