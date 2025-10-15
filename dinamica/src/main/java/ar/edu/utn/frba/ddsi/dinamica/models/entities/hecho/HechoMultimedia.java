@@ -38,4 +38,8 @@ public class HechoMultimedia extends Hecho {
     public HechoMultimedia() {
 
     }
+
+    public void addContenidoMultimedia(String nuevoContenido) {
+        this.contenidoMultimedia.add(nuevoContenido);
+    }
 }

@@ -9,9 +9,7 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.hecho.HechoTextual;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Registrado;
-import ar.edu.utn.frba.ddsi.dinamica.models.repositories.CategoriaRepository;
-import ar.edu.utn.frba.ddsi.dinamica.models.repositories.ContribuyenteRepository;
-import ar.edu.utn.frba.ddsi.dinamica.models.repositories.HechosRepository;
+import ar.edu.utn.frba.ddsi.dinamica.models.repositories.*;
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.Estado_Solicitud;
 
 
@@ -19,7 +17,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import ar.edu.utn.frba.ddsi.dinamica.models.entities.solicitudEliminacion.SolicitudEliminacion;
-import ar.edu.utn.frba.ddsi.dinamica.models.repositories.SolicitudesRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,12 +30,14 @@ public class DinamicaService {
     private final SolicitudesRepository solicitudesRepository;
     private final ContribuyenteRepository contribuyenteRepository;
     private final CategoriaRepository categoriaRepository;
+    private final ImagenesRepository imagenesRepository;
 
-    public DinamicaService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ContribuyenteRepository contribuyenteRepository, CategoriaRepository categoriaRepository) {
+    public DinamicaService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ContribuyenteRepository contribuyenteRepository, CategoriaRepository categoriaRepository, ImagenesRepository imagenesRepository) {
         this.hechosRepository = hechosRepository;
         this.solicitudesRepository = solicitudesRepository;
         this.contribuyenteRepository = contribuyenteRepository;
         this.categoriaRepository = categoriaRepository;
+        this.imagenesRepository = imagenesRepository;
     }
 
     // <---------------------------------- CREACION DE HECHOS ---------------------------------->
@@ -129,6 +129,20 @@ public class DinamicaService {
         return hechosRepository.save(nuevoHecho);
     }
 
+    public void guardarImagen(Integer idHecho, MultipartFile file) {
+        HechoMultimedia hecho = (HechoMultimedia) hechosRepository.findById(idHecho).orElse(null);
+        if (hecho == null) {
+            throw new IllegalArgumentException("Hecho no encontrado con ID: " + idHecho);
+        }
+
+        String nombreArchivo = imagenesRepository.cargarImagenSupabase(file);
+
+        hecho.addContenidoMultimedia(nombreArchivo);
+
+        hechosRepository.save(hecho);
+
+    }
+
     // <---------------------------------- GESTION DE SOLICITUDES DE ELIMINACION ---------------------------------->
 
     public Integer crearSolicitudEliminacion(SolicitudDTO solicitudDTO) {
@@ -180,21 +194,23 @@ public class DinamicaService {
 
     }
 
-    private void ocultarHecho(Integer idHecho) {
-        Hecho hechoParaOcultar = hechosRepository.findById(idHecho).orElse(null);
-
-        if (hechoParaOcultar == null) {
-            throw new IllegalArgumentException("Hecho no encontrado con ID: " + idHecho);
-        }
-
-        //hechoParaOcultar.setEstaOculto(true);
-
-        hechosRepository.save(hechoParaOcultar);
-
-//        if (hechoActualizado == null) {
-//            throw new RuntimeException("No se pudo ocultar el hecho con ID: " + idHecho);
+//    private void ocultarHecho(Integer idHecho) {
+//        Hecho hechoParaOcultar = hechosRepository.findById(idHecho).orElse(null);
+//
+//        if (hechoParaOcultar == null) {
+//            throw new IllegalArgumentException("Hecho no encontrado con ID: " + idHecho);
 //        }
-    }
+//
+//        //hechoParaOcultar.setEstaOculto(true);
+//
+//        hechosRepository.save(hechoParaOcultar);
+//
+////        if (hechoActualizado == null) {
+////            throw new RuntimeException("No se pudo ocultar el hecho con ID: " + idHecho);
+////        }
+//    }
+
+
 
 
     public List<Hecho> encontrarHechosFiltrados(

@@ -12,6 +12,7 @@ import ar.edu.utn.frba.ddsi.dinamica.services.DinamicaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -136,4 +137,10 @@ public class DinamicaController {
     public SolicitudEliminacion modificarSolicitud(@PathVariable Integer id, @RequestBody Estado_Solicitud nuevoEstado) {
         return dinamicaService.modificarEstadoSolicitud(id, nuevoEstado);
     }
+
+    @PostMapping("/upload/{id}")
+    public void cargarImagen(@PathVariable Integer id, @RequestParam MultipartFile file) {
+        dinamicaService.guardarImagen(id, file);
+    }
+
 }
