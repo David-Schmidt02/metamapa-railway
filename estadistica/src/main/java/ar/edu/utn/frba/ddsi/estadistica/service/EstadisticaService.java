@@ -2,6 +2,7 @@ package ar.edu.utn.frba.ddsi.estadistica.service;
 
 import ar.edu.utn.frba.ddsi.estadistica.models.entities.AgregadorClient;
 import ar.edu.utn.frba.ddsi.estadistica.models.entities.Categoria;
+import ar.edu.utn.frba.ddsi.estadistica.models.entities.Coleccion;
 import ar.edu.utn.frba.ddsi.estadistica.models.entities.Ubicacion;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.time.LocalTime;
 import java.util.Map;
@@ -19,27 +21,70 @@ import java.util.stream.Collectors;
 @Service
 public class EstadisticaService {
 
-    private final AgregadorClient agregadorClient = new AgregadorClient("http://localhost:8080/api/agregador/estadisticas");
+    private final AgregadorClient agregadorClient = new AgregadorClient("http://localhost:8080/agregador");
 
-    public String obtenerProvinciaDeColeccion(Integer Id) {
+    public Map<Integer, String> obtenerProvinciaDeColeccion(Integer Id) {
+        Map<Integer, String> respuesta = new HashMap<>();
+        if(Id == null) {
+            List<Coleccion> colecciones = agregadorClient.obtenerTodasLasColecciones();
+            for (Coleccion coleccion : colecciones) {
+                List<Ubicacion> ubicacionesColeccion = agregadorClient.obtenerUbicacionesDeColeccion(coleccion.getId());
+                List<String> provincias = convertirAProvincias(ubicacionesColeccion);
+                String provincia = provinciaMasFrecuente(provincias);
+                respuesta.put(coleccion.getId(), provincia);
+            }
+            return respuesta;
+        }
         List<Ubicacion> ubicacionesColeccion = agregadorClient.obtenerUbicacionesDeColeccion(Id);
         List<String> provincias = convertirAProvincias(ubicacionesColeccion);
-        return provinciaMasFrecuente(provincias);
+        String provincia = provinciaMasFrecuente(provincias);
+        return Map.of(Id, provincia);
     }
+
+//    public String obtenerProvinciaPorColeccion() {
+//        List<Coleccion> colecciones = agregadorClient.obtenerTodasLasColecciones();
+//
+//    }
 
     public Categoria obtenerCategoriaConMasHechos() {
         return this.agregadorClient.obtenerCategoriaConMasHechos();
     }
 
-    public String obtenerProvinciaDeCategoria(Integer id) {
-        List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeCategoria(id);
-        List<String> provincias = convertirAProvincias(ubicacionesCategoria);
+    public Map<Integer, String> obtenerProvinciaDeCategoria(Integer Id) {
+        Map<Integer, String> respuesta = new HashMap<>();
+        if(Id == null){
+            List<Categoria> categorias = agregadorClient.obtenerTodasLasCategorias();
+            for(Categoria categoria : categorias) {
+                List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeCategoria(categoria.getId());
+                List<String> provincias = convertirAProvincias(ubicacionesCategoria);
+                String provincia = provinciaMasFrecuente(provincias);
+                respuesta.put(categoria.getId(), provincia);
+            }
+        }
+        else {
+            List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeCategoria(Id);
+            List<String> provincias = convertirAProvincias(ubicacionesCategoria);
+            String provincia = provinciaMasFrecuente(provincias);
+            respuesta.put(Id, provincia);
+        }
 
-        return provinciaMasFrecuente(provincias);
+        return respuesta;
     }
 
-    public LocalTime obtenerHoraMasFrecuenteDeCategoria(Integer id) {
-        return this.agregadorClient.obtenerHoraMasFrecuenteDeCategoria(id);
+    public Map <Integer, LocalTime> obtenerHoraMasFrecuenteDeCategoria(Integer id) {
+        Map<Integer, LocalTime> respuesta = new HashMap<>();
+        if (id == null){
+            List<Categoria> categorias = agregadorClient.obtenerTodasLasCategorias();
+            for(Categoria categoria : categorias){
+                LocalTime hora = this.agregadorClient.obtenerHoraMasFrecuenteDeCategoria(categoria.getId());
+                respuesta.put(categoria.getId(), hora);
+            }
+        }
+        else{
+            LocalTime hora = this.agregadorClient.obtenerHoraMasFrecuenteDeCategoria(id);
+            respuesta.put(id, hora);
+        }
+        return respuesta;
     }
 
     /* La request deberia tener esto en el body por ejemplo:

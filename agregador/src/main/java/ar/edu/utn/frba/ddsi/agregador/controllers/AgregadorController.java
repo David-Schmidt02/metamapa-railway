@@ -46,7 +46,10 @@ public class AgregadorController {
         return this.agregadorService.obtenerColecciones();
     }
 
-
+    @GetMapping("/categorias")
+    public List<Categoria> obtenerCategorias(){
+        return this.agregadorService.obtenerCategorias();
+    }
     /**
      * Devuelve una coleccion en particular a partir de su ID.
      * Si no se encuentra la coleccion, devuelve un error 404.

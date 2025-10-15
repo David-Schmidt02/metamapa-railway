@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/agregador/estadisticas")
+@RequestMapping("/agregador/estadisticas")
 public class EstadisticasController {
     private final EstadisticasService estadisticasService;
 

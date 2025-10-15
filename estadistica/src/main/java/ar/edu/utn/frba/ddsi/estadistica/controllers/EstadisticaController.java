@@ -1,12 +1,18 @@
 package ar.edu.utn.frba.ddsi.estadistica.controllers;
 
 import ar.edu.utn.frba.ddsi.estadistica.models.entities.Categoria;
+import ar.edu.utn.frba.ddsi.estadistica.service.CSVService;
 import ar.edu.utn.frba.ddsi.estadistica.service.EstadisticaService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalTime;
+import java.util.Map;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -18,37 +24,62 @@ import org.springframework.web.bind.annotation.*;
 public class EstadisticaController {
 
     private final EstadisticaService estadisticaService;
+    private final CSVService csvService;
 
-    public EstadisticaController(EstadisticaService estadisticaService) {
+    public EstadisticaController(EstadisticaService estadisticaService, CSVService csvService) {
         this.estadisticaService = estadisticaService;
+        this.csvService = csvService;
     }
 
     //De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
-    @GetMapping("/colecciones/{Id}/provincia-max-hechos")
+    @GetMapping("/colecciones/provincia-max-hechos")
     @Operation(summary = "en qué provincia se agrupan la mayor cantidad de hechos reportados de una coleccion")
-    public String obtenerProvinciaDeColeccion(@PathVariable Integer Id) {
-        return this.estadisticaService.obtenerProvinciaDeColeccion(Id);
+    public ResponseEntity<?> obtenerProvinciaDeColeccion(@RequestParam(required = false) Integer Id, @RequestParam(required = false) String formato) {
+
+        Map<Integer, String> resultados =  this.estadisticaService.obtenerProvinciaDeColeccion(Id);
+
+        if (formato != null && formato.equalsIgnoreCase("csv")){
+            return this.csvService.convertirACSV(resultados, "provincia_max_hechos-coleccion");
+        }
+        return ResponseEntity.ok(resultados);
     }
 
     //¿Cuál es la categoría con mayor cantidad de hechos reportados?
     @GetMapping("/hechos/max-categoria")
     @Operation(summary = "Categoría con más hechos reportados")
-    public Categoria obtenerCategoriaConMasHechos() {
-        return this.estadisticaService.obtenerCategoriaConMasHechos();
+    public ResponseEntity<?> obtenerCategoriaConMasHechos(@RequestParam(required = false) String formato) {
+        Categoria resultado =  this.estadisticaService.obtenerCategoriaConMasHechos();
+
+        if(formato != null && formato.equalsIgnoreCase("csv")){
+            return this.csvService.convertirACSV(resultado, "categoria-,max-hechos;");
+        }
+
+        return ResponseEntity.ok(resultado);
     }
 
     //¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
-    @GetMapping("/categoria/{id}/provincia-max-hechos")
+    @GetMapping("/categoria/provincia-max-hechos")
     @Operation(summary = "en qué provincia se agrupan la mayor cantidad de hechos reportados de una categoria")
-    public String obtenerProvinciaDeCategoria(@PathVariable Integer id) {
-        return this.estadisticaService.obtenerProvinciaDeCategoria(id);
+    public ResponseEntity<?> obtenerProvinciaDeCategoria(@RequestParam(required = false) Integer Id, @RequestParam(required = false) String formato) {
+
+        Map<Integer,String> resultados = this.estadisticaService.obtenerProvinciaDeCategoria(Id);
+
+        if (formato != null && formato.equalsIgnoreCase("csv")){
+            return this.csvService.convertirACSV(resultados, "provincia_max_hechos-coleccion");
+        }
+
+        return ResponseEntity.ok(resultados);
     }
 
     //¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
-    @GetMapping("/categoria/{id}/hora")
+    @GetMapping("/categoria/hora")
     @Operation(summary = "A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría")
-    public LocalTime obtenerHoraMasFrecuente(@PathVariable Integer id) {
-        return this.estadisticaService.obtenerHoraMasFrecuenteDeCategoria(id);
+    public ResponseEntity<?> obtenerHoraMasFrecuente(@RequestParam(required = false)Integer Id, @RequestParam(required = false) String formato) {
+        Map <Integer, LocalTime> resultados = this.estadisticaService.obtenerHoraMasFrecuenteDeCategoria(Id);
+        if (formato != null && formato.equalsIgnoreCase("csv")) {
+            return this.csvService.convertirHorasACSV(resultados, "hora-hechos-max");
+        }
+        return ResponseEntity.ok(resultados);
     }
 
     //¿Cuántas solicitudes de eliminación son spam?

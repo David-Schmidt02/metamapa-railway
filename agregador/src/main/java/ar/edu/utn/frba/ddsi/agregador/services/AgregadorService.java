@@ -218,6 +218,10 @@ public class AgregadorService {
         return coleccionRepository.findAll();
     }
 
+    public List<Categoria> obtenerCategorias() {
+        return categoriaRepository.findAll();
+    }
+
     public List<Hecho> obtenerHechosCurados(Integer id, Filtro filtros) {
 
         Coleccion coleccion = coleccionRepository.findColeccionById(id);

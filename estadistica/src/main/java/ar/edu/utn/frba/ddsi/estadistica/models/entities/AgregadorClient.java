@@ -22,7 +22,7 @@ public class AgregadorClient {
     // Trae la ubicacion que esta en la mayor cantidad de hechos de una coleccion
     public List<Ubicacion> obtenerUbicacionesDeColeccion (Integer Id) {
         List<Ubicacion> ubicacionesConMasHechos = webClient.get()
-                .uri("/coleccion/{Id}/ubicaciones", Id)
+                .uri("/estadisticas/coleccion/{Id}/ubicaciones", Id)
                 .retrieve()
                 .bodyToFlux(Ubicacion.class)
                 .collectList()
@@ -33,10 +33,23 @@ public class AgregadorClient {
         return ubicacionesConMasHechos;
     }
 
+    public List<Coleccion> obtenerTodasLasColecciones() {
+        List<Coleccion> colecciones = webClient.get()
+                .uri("/colecciones")
+                .retrieve()
+                .bodyToFlux(Coleccion.class)
+                .collectList()
+                .block();
+        if(colecciones == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron colecciones");
+        }
+        return colecciones;
+    }
+
     public Categoria obtenerCategoriaConMasHechos() {
         System.out.println("Llamando a la API de agregador para obtener la categoria con mas hechos...\n");
         Categoria categoriaConMasHechos = webClient.get()
-                                .uri("/hechos/max-categoria")
+                                .uri("/estadisticas/hechos/max-categoria")
                                 .retrieve()
                                 .bodyToMono(Categoria.class)
                                 .block();
@@ -50,7 +63,7 @@ public class AgregadorClient {
     // Trae la ubicacion que esta en la mayor cantidad de hechos de una categoria
     public List<Ubicacion> obtenerUbicacionesDeCategoria (Integer Id) {
         List<Ubicacion> ubicaciones = webClient.get()
-                .uri("/categoria/{Id}/ubicaciones", Id)
+                .uri("/estadisticas/categoria/{Id}/ubicaciones", Id)
                 .retrieve()
                 .bodyToFlux(Ubicacion.class)
                 .collectList()
@@ -61,9 +74,22 @@ public class AgregadorClient {
         return ubicaciones;
     }
 
+    public List<Categoria> obtenerTodasLasCategorias() {
+        List<Categoria> categorias = webClient.get()
+                .uri("/categorias")
+                .retrieve()
+                .bodyToFlux(Categoria.class)
+                .collectList()
+                .block();
+        if(categorias == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontraron categorias");
+        }
+        return categorias;
+    }
+
     public LocalTime obtenerHoraMasFrecuenteDeCategoria (Integer Id) {
         LocalTime horaMasFrecuente = webClient.get()
-                .uri("/categoria/{Id}/hora", Id)
+                .uri("/estadisticas/categoria/{Id}/hora", Id)
                 .retrieve()
                 .bodyToMono(LocalTime.class)
                 .block();
@@ -75,7 +101,7 @@ public class AgregadorClient {
 
     public Integer obtenerCantidadDeSolicitudesSpam() {
         Integer cantidadSolicitudesSpam = webClient.get()
-                .uri("/solicitudes/spam")
+                .uri("/estadisticas/solicitudes/spam")
                 .retrieve()
                 .bodyToMono(Integer.class)
                 .block();
