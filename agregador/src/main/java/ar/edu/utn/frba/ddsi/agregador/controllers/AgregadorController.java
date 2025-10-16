@@ -3,6 +3,7 @@ package ar.edu.utn.frba.ddsi.agregador.controllers;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ActualizacionColeccionDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoSearchDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
@@ -156,8 +157,10 @@ public class AgregadorController {
         return this.agregadorService.obtenerTodosLosHechos();
     }
 
-
-
+    @GetMapping("/search")
+    public List<HechoSearchDTO> busquedaTextoLibre(@RequestParam(required = false) String texto) {
+        return agregadorService.buscarTextoLibre(texto);
+    }
 
 }
 
