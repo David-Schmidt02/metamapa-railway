@@ -6,6 +6,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.FuenteEstatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.CriterioDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoSearchDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
@@ -442,7 +443,10 @@ public class AgregadorService {
     }
 
 
+    public List<HechoSearchDTO> buscarTextoLibre(String texto) {
 
+        return this.hechosRepository.findByTexto(texto);
+    }
 }
 
 
