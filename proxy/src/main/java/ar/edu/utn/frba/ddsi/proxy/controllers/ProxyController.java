@@ -41,12 +41,14 @@ public class ProxyController {
             @RequestParam(required = false) String fecha_reporte_hasta,
             @RequestParam(required = false) String fecha_acontecimiento_desde,
             @RequestParam(required = false) String fecha_acontecimiento_hasta,
-            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String latitud,
+            @RequestParam(required = false) String longitud,
             @RequestParam(required = false) String ultimaConsulta
     ) {
         FiltroRequest filtros = new FiltroRequest(
                 fecha_acontecimiento_hasta,
-                ubicacion,
+                latitud,
+                longitud,
                 fecha_acontecimiento_desde,
                 fecha_reporte_hasta,
                 fecha_reporte_desde,
@@ -65,13 +67,15 @@ public class ProxyController {
             @RequestParam(required = false) String fecha_reporte_hasta,
             @RequestParam(required = false) String fecha_acontecimiento_desde,
             @RequestParam(required = false) String fecha_acontecimiento_hasta,
-            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String latitud,
+            @RequestParam(required = false) String longitud,
             @RequestParam(required = false) String ultimaConsulta ){
 
 
         FiltroRequest filtros = new FiltroRequest(
                 fecha_acontecimiento_hasta,
-                ubicacion,
+                latitud,
+                longitud,
                 fecha_acontecimiento_desde,
                 fecha_reporte_hasta,
                 fecha_reporte_desde,

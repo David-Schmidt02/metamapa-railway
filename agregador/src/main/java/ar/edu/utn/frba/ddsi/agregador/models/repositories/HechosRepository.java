@@ -1,47 +1,44 @@
 package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoSearchDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.importador.Importador;
 
-import lombok.Setter;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+
+import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public class HechosRepository {
+public interface HechosRepository extends JpaRepository<Hecho, Integer> {
+    List<Hecho> findByOrigenFuente(OrigenFuente origenFuente);
+
+    @Query(value = "SELECT id, titulo, descripcion," +
+                    "   MATCH(titulo, descripcion) AGAINST (:texto IN NATURAL LANGUAGE MODE) AS relevancia" +
+                    "   FROM hecho" +
+                    "   WHERE MATCH(titulo, descripcion) AGAINST (:texto IN NATURAL LANGUAGE MODE)" +
+                    "   ORDER BY relevancia DESC", nativeQuery = true)
+    List<HechoSearchDTO> findByTexto(@Param("texto") String texto);
+
+    //List<Hecho> findHechosByFuente(Fuente fuente);
+
 
     /**
      * Por ahora las fuentes se hardcodean aca. Eventualmente se
      * vera si se pueden agregar/sacar usando requests.
      */
-    @Setter
-    private List<Fuente> fuentes = List.of(
-            new Fuente("http://localhost:8082/api/dinamica/hechos", "Dinamica"),
-            new Fuente("http://localhost:8081/api/estatica/hechos", "Estatica"),
-            new Fuente("http://localhost:8083/api/proxy/hechos", "Proxy")
-    );
-
-    private LocalDateTime ultimaConsulta;
-    private final Importador importador = new Importador();
 
 
-    public Hecho findById(UUID id) {
 
-        // Implementacion sin base de datos
-        return fuentes.stream()
-                .flatMap(fuente -> fuente.getHechos().stream())
-                .filter(hecho -> hecho.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-
-    }
-
-    public Hecho findByIdAndUpdate(UUID id, Hecho updatedHecho) {
+/*
+    public Hecho findByIdAndUpdate(Integer id, Hecho updatedHecho) {
         Hecho existingHecho = findById(id);
         if (existingHecho != null) {
             // Logica sin base de datos
@@ -56,35 +53,45 @@ public class HechosRepository {
 
         }
         return updatedHecho;
-    }
+    }*/
 
-    public List<Hecho> findAll() {
-        return fuentes.stream().flatMap(fuente -> fuente.getHechos().stream())
-                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-    }
-
-    public void importarHechosDesdeFuentes() {
-        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta));
-        this.ultimaConsulta = LocalDateTime.now();
-    }
-
-
-    public List<Fuente> findAllFuentes() {
-        return fuentes;
-    }
-
-    public void update(List<Fuente> fuentesNuevas) {
-        this.setFuentes(fuentesNuevas);
-
-    }
-
-    public List<Fuente> findFuentes(List<String> urls) {
-        return fuentes.stream()
-                .filter(fuente -> urls.contains(fuente.getUrl()))
-                .toList();
-    }
-
-    public Long countFuentes() {
-        return fuentes.stream().count();
-    }
+//    public List<Hecho> findAll() {
+//        EntityManager em = BdUtils.getEntityManager();
+//
+//
+//        return fuentes.stream().flatMap(fuente -> fuente.getHechos().stream())
+//                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+//    }
+//
+    /* DESCOMPONER EN EL SERVICE */
+//    public void importarHechosDesdeFuentes() {
+//        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta));
+//        System.out.print("Ultima consulta: ");
+//        System.out.println(ultimaConsulta);
+//        this.ultimaConsulta = LocalDateTime.now();
+//    }
+//
+//
+    /* A FUENTESREPOSITORY */
+//    public List<Fuente> findAllFuentes() {
+//        return fuentes;
+//    }
+//
+    /* A FUENTESREPOSITORY */
+//    public void update(List<Fuente> fuentesNuevas) {
+//        this.setFuentes(fuentesNuevas);
+//
+//    }
+//
+     /* A FUENTESREPOSITORY */
+//    public List<Fuente> findFuentes(List<String> urls) {
+//        return fuentes.stream()
+//                .filter(fuente -> urls.contains(fuente.getUrl()))
+//                .toList();
+//    }
+//
+    /* A FUENTESREPOSITORY */
+//    public Long countFuentes() {
+//        return fuentes.stream().count();
+//    }
 }

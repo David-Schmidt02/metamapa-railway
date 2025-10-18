@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,12 +16,19 @@ import lombok.Setter;
 @Setter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonTypeName("anonimo")
+@Entity
+@DiscriminatorValue("ANONIMO")
 public class Anonimo extends Contribuyente {
 
     private static Anonimo instance;
 
-    private Anonimo() {
+    public Anonimo(Integer id) {
         // Constructor privado
+        this.id = id;
+    }
+
+    public Anonimo() {
+
     }
 
     @JsonCreator
@@ -27,12 +37,21 @@ public class Anonimo extends Contribuyente {
     }
 
 
-
     public static Anonimo getInstance() {
         if (instance == null) {
             instance = new Anonimo();
         }
         return instance;
     }
+
+    @Override
+    public String getNombre() {
+        return "Anonimo";
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
 
 }

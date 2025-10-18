@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.Random;
 
 @SuppressWarnings("removal")
 @SpringBootTest
@@ -54,7 +55,7 @@ class TestingWebApplicationTest {
                 new Ubicacion(34.6037, -58.3816),
                 LocalDateTime.now().minusDays(1),
                 List.of(new Etiqueta("urgente"), new Etiqueta("tránsito")),
-                new Registrado(UUID.randomUUID(), "Juan Pérez"),
+                new Registrado(1, "Juan Pérez"),
                 "Contenido completo de la noticia con todos los detalles del accidente..."
 
         );
@@ -130,11 +131,11 @@ class TestingWebApplicationTest {
                 new Ubicacion(34.6037, -58.3816),
                 LocalDateTime.now().minusDays(1),
                 List.of(new Etiqueta("urgente"), new Etiqueta("tránsito")),
-                new Registrado(UUID.randomUUID(), "Juan Pérez"),
+                new Registrado(1, "Juan Pérez"),
                 "Contenido completo de la noticia con todos los detalles del accidente..."
         );
 
-        UUID idHechoAModificar = hechoOriginal.getId();
+        Integer idHechoAModificar = hechoOriginal.getId();
 
         HechoTextual hechoActualizado = new HechoTextual(
                 nuevoHechoDTO.getTitulo(),
@@ -178,7 +179,7 @@ class TestingWebApplicationTest {
 
     @Test
     void debeRetornarSolicitudes() throws Exception {
-        UUID idHechoRandom = UUID.randomUUID();
+        int idHechoRandom = 1;
 
         SolicitudEliminacion solicitud1 = new SolicitudEliminacion(
                 idHechoRandom,
@@ -203,7 +204,7 @@ class TestingWebApplicationTest {
 
     @Test
     void debeRechazarSolicitudPorFaltaCaracteres() throws Exception {
-        UUID idHechoRandom = UUID.randomUUID();
+        Integer idHechoRandom = new Random().nextInt(1,10000);
 
         SolicitudDTO solicitudDTO = new SolicitudDTO();
         solicitudDTO.setIdHecho(idHechoRandom);
@@ -221,7 +222,7 @@ class TestingWebApplicationTest {
 
     @Test
     void debeCrearSolicitud() throws Exception {
-        UUID idHechoRandom = UUID.randomUUID();
+        Integer idHechoRandom = new Random().nextInt(1,10000);
 
         SolicitudDTO solicitudDTO = new SolicitudDTO();
         solicitudDTO.setIdHecho(idHechoRandom);
@@ -254,7 +255,7 @@ class TestingWebApplicationTest {
 
     @Test
     void debeActualizarSolicitud() throws Exception {
-        UUID idSolicitud = UUID.randomUUID();
+        Integer idSolicitud = new Random().nextInt(1,10000);
         Estado_Solicitud nuevoEstado = Estado_Solicitud.RECHAZADA;
 
         SolicitudEliminacion solicitudOriginal = new SolicitudEliminacion(

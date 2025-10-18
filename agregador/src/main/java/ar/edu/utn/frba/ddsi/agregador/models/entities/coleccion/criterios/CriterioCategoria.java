@@ -2,20 +2,30 @@ package ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
+import jakarta.persistence.Entity;
 import lombok.Getter;
-
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-public class CriterioCategoria implements CriterioPertenencia{
-    private final Categoria categoria;
+@Setter
 
-    public CriterioCategoria(Categoria categoria) {
+@Entity
+@jakarta.persistence.DiscriminatorValue("categoria")
+public class CriterioCategoria extends CriterioPertenencia{
+    private String categoria;
+
+    public CriterioCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public CriterioCategoria() {
+
     }
 
     @Override
     public boolean cumpleConCriterio(Hecho hecho) {
-        return hecho.getCategoria().equals(categoria);
+        return hecho.getCategoria().getDetalle().equals(categoria);
     }
 
 }

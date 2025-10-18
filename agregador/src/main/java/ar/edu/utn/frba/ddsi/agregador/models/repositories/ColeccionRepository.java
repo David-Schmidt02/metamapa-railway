@@ -1,15 +1,21 @@
 package ar.edu.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public class ColeccionRepository {
+public interface ColeccionRepository extends JpaRepository<Coleccion,Integer> {
 
+    Coleccion findColeccionById(Integer id);
+
+
+/*
     private final List<Coleccion> colecciones = new ArrayList<>();
 
 //    public void save(Hecho hecho) {
@@ -20,13 +26,13 @@ public class ColeccionRepository {
         colecciones.add(coleccion);
     }
 
-    public Coleccion findById(UUID id) {
+    public Coleccion findById(Integer id) {
         return colecciones.stream().filter(coleccion -> coleccion.getId().equals(id)).findFirst().orElse(null);
     }
 
 
 
-    public Coleccion findByIdAndUpdate(UUID id, Coleccion updatedColeccion) {
+    public Coleccion findByIdAndUpdate(Integer id, Coleccion updatedColeccion) {
         Coleccion existingColeccion = findById(id);
         if (existingColeccion != null) {
             // Logica sin base de datos
@@ -41,7 +47,7 @@ public class ColeccionRepository {
         return colecciones;
     }
 
-    public Coleccion findAndDelete(UUID id) {
+    public Coleccion findAndDelete(Integer id) {
         Coleccion coleccionEncontrada = findById(id);
 
         if (coleccionEncontrada != null) {
@@ -50,7 +56,9 @@ public class ColeccionRepository {
         }
 
         return null; //TODO: IMPLEMENTAR
-    }
+    }*/
+
+
 }
 
 

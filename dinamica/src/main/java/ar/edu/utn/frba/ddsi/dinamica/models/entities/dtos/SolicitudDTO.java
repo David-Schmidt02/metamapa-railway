@@ -10,10 +10,10 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class SolicitudDTO {
-    private UUID idHecho;
+    private Integer idHecho;
     private String justificacion;
 
-    public SolicitudDTO(UUID id, String justificacion) {
+    public SolicitudDTO(Integer id, String justificacion) {
         this.idHecho = id;
         this.justificacion = justificacion;
     }

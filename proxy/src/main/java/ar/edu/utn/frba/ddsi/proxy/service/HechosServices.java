@@ -36,7 +36,7 @@ public class HechosServices {
     public List<Hecho> findAllHechos(String ultimaConsulta) {
         List<Hecho> hechos = new ArrayList<>(this.hechosRepository.findAll());
         hechos.addAll(this.obtenerHechosMetaMapa(
-                new FiltroRequest(null, null, null, null, null, null, ultimaConsulta)));
+                new FiltroRequest(null, null, null, null, null, null, null, ultimaConsulta)));
 
         return hechos.stream()
                 .filter(hecho -> ultimaConsulta == null ||

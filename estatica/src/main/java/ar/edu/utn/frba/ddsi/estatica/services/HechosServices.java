@@ -1,4 +1,7 @@
 package ar.edu.utn.frba.ddsi.estatica.services;
+import ar.edu.utn.frba.ddsi.estatica.models.entities.ArchivoProcesado.ArchivoProcesado;
+import ar.edu.utn.frba.ddsi.estatica.models.entities.dtos.ArchivoProcesadoDTO;
+import ar.edu.utn.frba.ddsi.estatica.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.estatica.models.repositories.HechosRepository;
 import ar.edu.utn.frba.ddsi.estatica.models.entities.hecho.Hecho;
 import org.springframework.stereotype.Service;
@@ -16,11 +19,27 @@ public class HechosServices {
 
     }
 
-    public List<Hecho> obtenerHechos(String ultimaConsulta) {
-        return this.hechosRepository.findAll()
-                .stream()
-                .filter(hecho -> ultimaConsulta == null ||
-                                hecho.getFechaCarga().isAfter(LocalDateTime.parse(ultimaConsulta)))
+    public List<ArchivoProcesadoDTO> obtenerHechos(List<String> nombresArchivos) {
+
+        this.hechosRepository.importarHechosSin(nombresArchivos);
+
+        List<ArchivoProcesado> archivosProcesados = this.hechosRepository.findAllArchivosProcesados();
+
+        return archivosProcesados.stream()
+                .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    private ArchivoProcesadoDTO toDTO(ArchivoProcesado archivo) {
+        return new ArchivoProcesadoDTO(archivo.getNombre(), LocalDateTime.now(), archivo.getHechos().stream().map(this::toHechoDTO).toList());
+    }
+
+    private HechoDTO toHechoDTO(Hecho hecho) {
+        return new HechoDTO(hecho.getId(), hecho.getTitulo(), hecho.getDescripcion(), hecho.getCategoria(), hecho.getUbicacion(), hecho.getFechaAcontecimiento(), hecho.getFechaCarga(), null, null);
+    }
+
+    // Por si se necesitara en un futuro la fecha de procesamiento
+    private ArchivoProcesado fromDTO(ArchivoProcesadoDTO dto) {
+        return new ArchivoProcesado(dto.getNombre(), dto.getFechaCarga(), List.of());
     }
 }

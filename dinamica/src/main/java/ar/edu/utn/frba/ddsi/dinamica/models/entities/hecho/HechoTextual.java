@@ -4,12 +4,15 @@ import ar.edu.utn.frba.ddsi.dinamica.models.entities.personas.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
+@Entity
+@DiscriminatorValue("TEXTUAL")
 public class HechoTextual extends Hecho {
     private String cuerpo;
     
@@ -24,5 +27,9 @@ public class HechoTextual extends Hecho {
 
         super(titulo, descripcion, categoria, ubicacion, fechaAcontecimiento, etiquetas, contribuyente);
         this.cuerpo = cuerpo;
+    }
+
+    public HechoTextual() {
+
     }
 }

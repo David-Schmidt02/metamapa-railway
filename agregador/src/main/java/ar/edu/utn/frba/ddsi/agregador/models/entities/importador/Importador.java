@@ -1,20 +1,22 @@
 package ar.edu.utn.frba.ddsi.agregador.models.entities.importador;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.conversor.Conversor;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.ArchivoProcesadoRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.CategoriaRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.ContribuyenteRepository;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.OrigenFuenteRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class Importador {
 
     protected WebClient webClient;
-    private final Conversor adaptador = new Conversor();
+    private final Conversor conversor = new Conversor();
 
     public Importador() {
         this.webClient = WebClient.builder()
@@ -23,32 +25,17 @@ public class Importador {
 
     }
 
-    public void importarHechos(Fuente fuente, LocalDateTime ultimaConsulta) {
-        URI uri = aplicarUltimaConsulta(fuente.getUrl(), ultimaConsulta);
-        System.out.println(uri);
-        List<HechoDTO> hechos = webClient.get()
-                .uri(uri)
-                .retrieve()
-                .bodyToFlux(HechoDTO.class)
-                .collectList()
-                .block();
-        if (hechos != null) {
-            fuente.agregarHechos(hechos.stream().map(adaptador::convertirHecho).toList());
-        }
+    public void importarHechos(Fuente fuente, LocalDateTime ultimaConsulta, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository, CategoriaRepository categoriaRepository) {
+        URI uri = aplicarUltimaConsulta(fuente, ultimaConsulta);
 
+        //System.out.println(uri);
+        fuente.realizarConsulta(uri, webClient, conversor, contribuyenteRepository, archivoProcesadoRepository, origenFuenteRepository, categoriaRepository);
 
-        System.out.print("Ultima consulta: ");
-        System.out.println(ultimaConsulta);
     }
 
-    public URI aplicarUltimaConsulta(String url, LocalDateTime ultimaConsulta) {
+    public URI aplicarUltimaConsulta(Fuente fuente, LocalDateTime ultimaConsulta) {
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-
-        if (ultimaConsulta != null) {
-            String ultimaConsultaString = ultimaConsulta.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-            builder.queryParam("ultimaConsulta", ultimaConsultaString);
-        }
+        UriComponentsBuilder builder = fuente.armarParametrosConsulta(ultimaConsulta);
 
         return builder.build().toUri();
     }

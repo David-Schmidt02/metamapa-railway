@@ -2,23 +2,28 @@ package ar.edu.utn.frba.ddsi.agregador.services;
 
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Algoritmo_Consenso;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.FuenteEstatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios.*;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.detectorDeSpam.DetectorDeSpam;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.CriterioDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoSearchDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.importador.Importador;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
+import ar.edu.utn.frba.ddsi.agregador.models.repositories.*;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import ar.edu.utn.frba.ddsi.agregador.models.repositories.HechosRepository;
-import ar.edu.utn.frba.ddsi.agregador.models.repositories.ColeccionRepository;
-import ar.edu.utn.frba.ddsi.agregador.models.repositories.SolicitudesRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.clasificador.Clasificador;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,31 +31,61 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class AgregadorService {
     private final HechosRepository hechosRepository;
+    private final FuentesRepository fuentesRepository;
     private final SolicitudesRepository solicitudesRepository;
     private final ColeccionRepository coleccionRepository;
-    private final WebClient normalizador;
+    private final ContribuyenteRepository contribuyenteRepository;
+    private final ArchivoProcesadoRepository archivoProcesadoRepository;
+    private final OrigenFuenteRepository origenFuenteRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final Importador importador = new Importador();
+    private LocalDateTime ultimaConsulta;
 
-    public AgregadorService(HechosRepository hechosRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository) {
+    public AgregadorService(HechosRepository hechosRepository, FuentesRepository fuentesRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository, CategoriaRepository categoriaRepository) {
         this.hechosRepository = hechosRepository;
+        this.fuentesRepository = fuentesRepository;
         this.solicitudesRepository = solicitudesRepository;
         this.coleccionRepository = coleccionRepository;
-        this.normalizador = WebClient.builder().baseUrl("http://localhost:8085").build();
+        this.contribuyenteRepository = contribuyenteRepository;
+        this.archivoProcesadoRepository = archivoProcesadoRepository;
+        this.origenFuenteRepository = origenFuenteRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     /**
      * Gestiona la consulta de hechos por primera vez al iniciar el sistema y,
      * los clasifica inmediatamente.
      */
+    @Transactional
     @PostConstruct
     public void consultarHechosPorPrimeraVez() {
         //System.out.print("Se ejecuta el PostConstruct");
+        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+
+        if (anonimoExistente == null) {
+            // Crear e insertar el anónimo con ID manual
+            Anonimo anonimo = Anonimo.getInstance();
+            contribuyenteRepository.saveAndFlush(anonimo);
+        }
+
+        Fuente fuenteExistente = fuentesRepository.findFuenteByNombre("estatica");
+        if(fuenteExistente == null){
+            FuenteEstatica fuenteEstatica = new FuenteEstatica( "ESTATICA", "http://localhost:8081/api/estatica/hechos", new ArrayList<>());
+            //Fuente dinamica = new Fuente("http://localhost:8082/api/dinamica/hechos", "DINAMICA");
+            //Fuente proxy = new Fuente("http://localhost:8083/api/proxy/hechos", "PROXY");
+            fuentesRepository.saveAndFlush(fuenteEstatica);
+            //fuentesRepository.saveAndFlush(dinamica);
+            //fuentesRepository.saveAndFlush(proxy);
+        }
+
+
         this.consultarHechosPeriodicamente();
         this.clasificarHechos();
     }
@@ -58,31 +93,66 @@ public class AgregadorService {
     /**
      * Cada una hora, se ejecuta este metodo para consultar los hechos de las fuentes.
      */
-    @Scheduled(fixedRate = 60 * 60 * 1000, initialDelay = 30000)
+    @Transactional
+    @Scheduled(fixedRate = 60 * 1000, initialDelay = 30000)
     public void consultarHechosPeriodicamente() {
         System.out.println("Consultando hechos de las fuentes...");
-        hechosRepository.importarHechosDesdeFuentes(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
+
+        List<Fuente> fuentes = fuentesRepository.findAll();
+
+        Contribuyente anonimoGestionado = contribuyenteRepository.findById(1).orElse(null);
+
+        //fuentes.forEach(fuente -> System.out.println(fuente.hechos));
+
+        fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta, contribuyenteRepository, archivoProcesadoRepository, origenFuenteRepository, categoriaRepository));
+        System.out.print("Ultima consulta: ");
+        System.out.println(ultimaConsulta);
+        this.ultimaConsulta = LocalDateTime.now();
+        fuentes.forEach(fuente -> {
+
+            for (Hecho hecho : fuente.getHechos()) {
+                Contribuyente contribuyente = hecho.getContribuyente();
+                if (contribuyente != null && contribuyente.getId() != null) {
+                    if (contribuyente.getId() == 1) {
+                        hecho.setContribuyente(anonimoGestionado);
+                    } else {
+                        boolean exists = contribuyenteRepository.existsById(contribuyente.getId());
+                        if (!exists) {
+                            contribuyenteRepository.save(contribuyente);
+                        }
+                    }
+                }
+            }
+
+            fuentesRepository.save(fuente);
+
+            //hechosRepository.saveAll(fuente.getHechos());
+        }); // TODO: Despues chequear si funciona bien y no guarda repetidos
+
+        //hechosRepository.findAll(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
     }
 
     /**
      * Todos los dias a las 3 AM, se ejecuta este metodo para clasificar los hechos
      * ya importados de las fuentes.
      */
+
     @Scheduled(cron = "0 0 3 * * *")
     public void clasificarHechos() {
-        List<Fuente> fuentes = hechosRepository.findAllFuentes();
+        System.out.println("Clasificando hechos...");
+        List<Fuente> fuentes = fuentesRepository.findAll();
 
         for (Fuente fuente : fuentes) {
             List<Fuente> fuentesParaEvaluar = fuentes.stream()
                     .filter(f -> !f.equals(fuente))  // excluye la fuente actual de la iteración
                     .collect(Collectors.toList());
 
+            List<Hecho> hechos = fuente.getHechos();
+            Clasificador.clasificarHechosPorMenciones(hechos, fuentesParaEvaluar, hechosRepository);
 
-            List<Hecho> hechosClasificados = Clasificador.clasificarHechosPorMenciones(fuente.getHechos(), fuentesParaEvaluar);
-            fuente.setHechos(hechosClasificados);
+            hechosRepository.saveAll(hechos);
+            fuente.setHechos(hechos);
         }
-
-        hechosRepository.update(fuentes);
     }
 
     // <----------------- COLECCIONES ----------------->
@@ -92,13 +162,18 @@ public class AgregadorService {
      * Crea una nueva colección a partir del DTO recibido.
      * Si se crea correctamente, devuelve el ID de la colección creada.
      */
-    public UUID crearColeccion(ColeccionDTO coleccionDTO){
+    public Integer crearColeccion(ColeccionDTO coleccionDTO){
 
-        List<Fuente> fuentes = this.hechosRepository.findFuentes(coleccionDTO.getUrls_fuente());
+        List<Fuente> fuentes = new ArrayList<>();
+        coleccionDTO.getUrls_fuente().forEach( urlFuente -> {
 
-        if (fuentes == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND ,"Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
-        }
+                    fuentes.add(fuentesRepository.findFuenteByUrl(urlFuente));
+                }
+        );
+
+//        if (fuentes == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND ,"Fuente no encontrada, URL: " + coleccionDTO.getUrls_fuente());
+//        }
 
         List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
                 .map(this::criterioFromDTO)
@@ -126,7 +201,7 @@ public class AgregadorService {
         return switch (criterioDTO.getTipo()) {
             case "titulo" -> new CriterioTitulo(criterioDTO.getValor());
             case "descripcion" -> new CriterioDescripcion(criterioDTO.getValor());
-            case "categoria" -> new CriterioCategoria(new Categoria(criterioDTO.getValor()));
+            case "categoria" -> new CriterioCategoria(criterioDTO.getValor());
             case "fechaAcontecimientoDesde" -> new CriterioFechaDesde(LocalDateTime.parse(criterioDTO.getValor()));
             case "fechaAcontecimientoHasta" -> new CriterioFechaHasta(LocalDateTime.parse(criterioDTO.getValor()));
             case "ubicacion" -> //chequear
@@ -142,11 +217,17 @@ public class AgregadorService {
      * Busca todas las colecciones en el repositorio.
      */
     public List<Coleccion> obtenerColecciones() {
-        return this.coleccionRepository.findAll();
+        return coleccionRepository.findAll();
     }
 
-    public List<Hecho> obtenerHechosCurados(UUID id, Filtro filtros) {
-        Coleccion coleccion = this.coleccionRepository.findById(id);
+    public List<Categoria> obtenerCategorias() {
+        return categoriaRepository.findAll();
+    }
+
+    public List<Hecho> obtenerHechosCurados(Integer id, Filtro filtros) {
+
+        Coleccion coleccion = coleccionRepository.findColeccionById(id);
+
         if (coleccion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
@@ -158,11 +239,11 @@ public class AgregadorService {
     }
 
     public List<Hecho> encontrarHechosPorColeccion(
-            UUID id,
+            Integer id,
             Filtro filtros
     ) {
 
-        Coleccion coleccion = this.coleccionRepository.findById(id);
+        Coleccion coleccion = coleccionRepository.findColeccionById(id);
 
         if (coleccion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
@@ -180,8 +261,8 @@ public class AgregadorService {
     private Double mencionesNecesarias(Algoritmo_Consenso algoritmo) {
         return switch (algoritmo) {
             case MULTIPLES_MENCIONES -> 2.0;
-            case MAYORIA_SIMPLE -> Math.floor(this.hechosRepository.countFuentes() / 2.0);
-            case ABSOLUTA -> Math.ceil(this.hechosRepository.countFuentes());
+            case MAYORIA_SIMPLE -> Math.floor(this.fuentesRepository.count() / 2.0);
+            case ABSOLUTA -> Math.ceil(this.fuentesRepository.count());
             default -> 0.0; // Algoritmo de consenso = 'NINGUNO'
         };
     }
@@ -189,70 +270,119 @@ public class AgregadorService {
     /**
      * Busca una colección por su ID.
      */
-    public Coleccion obtenerColeccion(UUID id){ return this.coleccionRepository.findById(id);}
+    public Coleccion obtenerColeccion(Integer id){ return this.coleccionRepository.findColeccionById(id);}
 
     /**
      * Elimina una colección por su ID.
      */
-    public void eliminarColeccionPorId(UUID id) { this.coleccionRepository.findAndDelete(id);}
+    public void eliminarColeccionPorId(Integer id) { this.coleccionRepository.deleteById(id);}
 
     /**
      * Actualiza una colección existente con los datos del DTO proporcionado.
      */
-    public Coleccion actualizarColeccion(UUID id, ColeccionDTO coleccionDTO) {
-
-        List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
-                .map(this::criterioFromDTO)
-                .toList();
-
-        List<Fuente> fuentes = this.hechosRepository.findFuentes(coleccionDTO.getUrls_fuente());
-
-        Coleccion coleccionEditada = new Coleccion(
-                coleccionDTO.getTitulo(),
-                coleccionDTO.getDescripcion(),
-                coleccionDTO.getAlgoritmo_consenso(),
-                fuentes,
-                criterios
-        );
-
-        return this.coleccionRepository.findByIdAndUpdate(id, coleccionEditada);
-    }
+//    public Coleccion actualizarColeccion(Integer id, ColeccionDTO coleccionDTO) {
+//        // Buscar la colección existente
+//        Coleccion coleccionExistente = coleccionRepository.findColeccionById(id);
+//
+//        if (coleccionExistente == null) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
+//        }
+//
+//        // Actualizar propiedades
+//        coleccionExistente.setTitulo(coleccionDTO.getTitulo());
+//        coleccionExistente.setDescripcion(coleccionDTO.getDescripcion());
+//        coleccionExistente.setAlgoritmo_consenso(coleccionDTO.getAlgoritmo_consenso());
+//
+//        // Actualizar fuentes
+//        List<Fuente> fuentes = new ArrayList<>();
+//        coleccionDTO.getUrls_fuente().forEach(urlFuente -> {
+//            Fuente fuente = fuentesRepository.findFuenteByUrl(urlFuente);
+//            if (fuente != null) {
+//                fuentes.add(fuente);
+//            }
+//        });
+//        coleccionExistente.setFuentes(fuentes);
+//
+//        // Actualizar criterios
+//        List<CriterioPertenencia> criterios = coleccionDTO.getCriterios().stream()
+//                .map(this::criterioFromDTO)
+//                .toList();
+//        coleccionExistente.setCriterios(criterios);
+//
+//        // Guardar la colección actualizada
+//        return coleccionRepository.save(coleccionExistente);
+//    }
 
     /**
      * Modifica el algoritmo de consenso de una colección existente a partir de su ID.
      */
-    public Coleccion modificarAlgoritmoConsenso(UUID id, Algoritmo_Consenso nuevoAlgoritmo){
-        Coleccion coleccionAModificadar = this.coleccionRepository.findById(id);
+    public Coleccion modificarAlgoritmoConsenso(Integer id, Algoritmo_Consenso nuevoAlgoritmo){
+        Coleccion coleccionAModificadar = this.coleccionRepository.findColeccionById(id);
         if (coleccionAModificadar == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
+
         coleccionAModificadar.setAlgoritmo_consenso(nuevoAlgoritmo);
-        return this.coleccionRepository.findByIdAndUpdate(id, coleccionAModificadar);
+        return this.coleccionRepository.save(coleccionAModificadar);
     }
 
     /**
      * Modifica la lista de fuentes de una colección existente a partir de su ID.
      * Recibe una lista de URLs (string) de fuentes y actualiza la colección con las fuentes encontradas.
      */
-    public Coleccion modificarListaDeFuentes(UUID id, List<String> urls_fuente) {
-        Coleccion coleccionAModificadar = this.coleccionRepository.findById(id);
+    public Coleccion modificarListaDeFuentes(Integer id, List<String> urls_fuente) {
+        Coleccion coleccionAModificadar = this.coleccionRepository.findColeccionById(id);
         if (coleccionAModificadar == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con ID: " + id);
         }
 
-        List<Fuente> fuentes = this.hechosRepository.findFuentes(urls_fuente);
-        
+        List<Fuente> fuentes = new ArrayList<>();
+        urls_fuente.forEach(urlFuente -> {
+            Fuente fuente = fuentesRepository.findFuenteByUrl(urlFuente);
+            if (fuente != null) {
+                fuentes.add(fuente);
+            }
+        });
         coleccionAModificadar.setFuentes(fuentes);
 
-        return this.coleccionRepository.findByIdAndUpdate(id, coleccionAModificadar);
-
+        return coleccionRepository.save(coleccionAModificadar);
     }
 
+    public List<SolicitudEliminacion> encontrarSolicitudes() {
+        return this.solicitudesRepository.findAll();
+    }
 
+    public Integer crearSolicitudEliminacion(SolicitudDTO solicitudDTO) {
 
-    public SolicitudEliminacion modificarEstadoSolicitud(UUID id, Estado_Solicitud nuevoEstado) {
+        SolicitudEliminacion nuevaSolicitudEliminacion = new SolicitudEliminacion();
 
-        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id);
+        nuevaSolicitudEliminacion.setJustificacion(solicitudDTO.getJustificacion());
+
+        if(DetectorDeSpam.esSpam(nuevaSolicitudEliminacion.getJustificacion())) {
+            nuevaSolicitudEliminacion.setEstado(Estado_Solicitud.SPAM);
+        }
+
+//        if (!nuevaSolicitudEliminacion.esCorrecta()) {
+//            throw new IllegalArgumentException("La justificación debe tener al menos 500 caracteres.");
+//        }
+
+        // Verifico si el hecho existe
+        Hecho hechoAeliminar = hechosRepository.findById(solicitudDTO.getIdHecho()).orElse(null);
+
+        if (hechoAeliminar == null) {
+            throw new IllegalArgumentException("Hecho no encontrado con ID: " + solicitudDTO.getIdHecho());
+        }
+
+        nuevaSolicitudEliminacion.setHecho(hechoAeliminar);
+
+        solicitudesRepository.save(nuevaSolicitudEliminacion);
+
+        return nuevaSolicitudEliminacion.getId();
+    }
+
+    public SolicitudEliminacion modificarEstadoSolicitud(Integer id, Estado_Solicitud nuevoEstado) {
+
+        SolicitudEliminacion solicitudAEditar = solicitudesRepository.findById(id).orElse(null);
 
         if (solicitudAEditar == null) {
             throw new IllegalArgumentException("Solicitud no encontrada con ID: " + id);
@@ -260,25 +390,15 @@ public class AgregadorService {
 
         solicitudAEditar.setEstado(nuevoEstado);
 
-        SolicitudEliminacion solicitudActualizada = solicitudesRepository.findByIdAndUpdate(id, solicitudAEditar);
+        SolicitudEliminacion solicitudActualizada = solicitudesRepository.save(solicitudAEditar);
 
-        if (solicitudActualizada == null) {
-            throw new RuntimeException("No se pudo actualizar la solicitud con ID: " + id);
-        }
+
+//        if(nuevoEstado == Estado_Solicitud.ACEPTADA) {
+//            this.ocultarHecho(solicitudAEditar.getIdHecho());
+//        }
 
         return solicitudActualizada;
 
-    }
-
-    public SolicitudEliminacion crearSolicitudEliminacion(SolicitudDTO solicitudDTO) {
-            SolicitudEliminacion nuevaSolicitud = new SolicitudEliminacion(
-                    solicitudDTO.getIdHecho(),
-                    solicitudDTO.getJustificacion()
-            );
-
-            this.solicitudesRepository.save(nuevaSolicitud);
-
-        return nuevaSolicitud;
     }
 
     public List<Hecho> hechosFiltrados(List<Hecho> hechos, Filtro filtros) {
@@ -320,14 +440,22 @@ public class AgregadorService {
                     boolean lonOk = longitud == null || hecho.getUbicacion().getLongitud().equals(longitud);
                     return latOk && lonOk;
                 })
+                .filter(hecho -> {
+                     SolicitudEliminacion solicitud = solicitudesRepository.findSolicitudEliminacionByHecho_Id(hecho.getId());
+                        return solicitud == null || solicitud.getEstado() != Estado_Solicitud.ACEPTADA;
+                })
                 .collect(Collectors.toList());
     }
-
 
     public List<Hecho> obtenerTodosLosHechos() {
         return this.hechosRepository.findAll();
     }
 
+
+    public List<HechoSearchDTO> buscarTextoLibre(String texto) {
+
+        return this.hechosRepository.findByTexto(texto);
+    }
 }
 
 

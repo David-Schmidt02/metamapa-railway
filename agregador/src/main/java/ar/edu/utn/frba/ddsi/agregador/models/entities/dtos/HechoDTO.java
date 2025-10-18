@@ -3,7 +3,7 @@ package ar.edu.utn.frba.ddsi.agregador.models.entities.dtos;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Etiqueta;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Origen_Fuente;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Origen_Fuente_VIEJO;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Anonimo;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.personas.Contribuyente;
 import lombok.Getter;
@@ -12,27 +12,26 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 
 public class HechoDTO {
-    private UUID id;
+    private Integer id;
     private String titulo;
     private String descripcion;
     private Categoria categoria;
     private Ubicacion ubicacion;
     private LocalDateTime fechaAcontecimiento;
     private LocalDateTime fechaCarga;
-    private Origen_Fuente origenFuente;
+    private Origen_Fuente_VIEJO origenFuente;
     private List<Etiqueta> etiquetas;
     private List<String> contenidoMultimedia;
     private String cuerpo;
     private Contribuyente contribuyente;
 
-    public HechoDTO(UUID id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente origenFuente, Contribuyente contribuyente) {
+    public HechoDTO(Integer id, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDateTime fechaCarga, List<Etiqueta> etiquetas, List<String> contenidoMultimedia, String cuerpo, Origen_Fuente_VIEJO origenFuente, Contribuyente contribuyente) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
