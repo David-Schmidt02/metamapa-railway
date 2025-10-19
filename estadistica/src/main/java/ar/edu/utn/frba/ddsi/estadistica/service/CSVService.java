@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,20 +18,26 @@ import java.util.Map;
 public class CSVService {
 
 
-    public ResponseEntity<?> convertirACSV(Map<Integer, String> resultados, String nombreArchivo) {
+    public ResponseEntity<?> convertirProvinciasACSV(List<String> resultados, String nombreArchivo) {
         StringBuilder csvBuilder = new StringBuilder();
-        csvBuilder.append("Id,Provincia\n");
-        resultados.forEach((key, value) -> csvBuilder.append(key).append(",").append(value).append("\n"));
+        boolean masDeUnResultado = resultados != null && resultados.size() > 1;
+        csvBuilder.append(masDeUnResultado ? "Provincias\n" : "Provincia\n");
+        for (String provincia : resultados) {
+            csvBuilder.append(provincia).append("\n");
+        }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+nombreArchivo+".csv")
                 .contentType(MediaType.valueOf("text/csv"))
                 .body(csvBuilder.toString());
     }
 
-    public ResponseEntity<?> convertirHorasACSV(Map<Integer, LocalTime > resultados, String nombreArchivo) {
+    public ResponseEntity<?> convertirHorasACSV(List<LocalTime> resultados, String nombreArchivo) {
         StringBuilder csvBuilder = new StringBuilder();
-        csvBuilder.append("idCategoria,Hora\n");
-        resultados.forEach((key, value) -> csvBuilder.append(key).append(",").append(value).append("\n"));
+        csvBuilder.append("Hora/s\n");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        for (LocalTime hora : resultados) {
+            csvBuilder.append(hora.format(formatter)).append("\n");
+        }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+nombreArchivo+".csv")
                 .contentType(MediaType.valueOf("text/csv"))
@@ -51,7 +58,7 @@ public class CSVService {
                 .body(csvBuilder.toString());
     }
 
-    public ResponseEntity<?> convertirACSV(List<SolicitudDTO> resultado, String nombreArchivo) {
+    public ResponseEntity<?> convertirSolicitudesACSV(List<SolicitudDTO> resultado, String nombreArchivo) {
         StringBuilder csvBuilder = new StringBuilder();
         csvBuilder.append("idSolicitud,idHecho,justificacion,estadoSolicitud\n");
         for(SolicitudDTO solicitud : resultado) {

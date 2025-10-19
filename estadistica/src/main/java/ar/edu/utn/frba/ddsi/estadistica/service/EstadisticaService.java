@@ -20,22 +20,13 @@ public class EstadisticaService {
 
     private final AgregadorClient agregadorClient = new AgregadorClient("http://localhost:8080/agregador");
 
-    public Map<Integer, String> obtenerProvinciaDeColeccion(Integer Id) {
-        Map<Integer, String> respuesta = new HashMap<>();
-        if(Id == null) {
-            List<Coleccion> colecciones = agregadorClient.obtenerTodasLasColecciones();
-            for (Coleccion coleccion : colecciones) {
-                List<Ubicacion> ubicacionesColeccion = agregadorClient.obtenerUbicacionesDeColeccion(coleccion.getId());
-                List<String> provincias = convertirAProvincias(ubicacionesColeccion);
-                String provincia = provinciaMasFrecuente(provincias);
-                respuesta.put(coleccion.getId(), provincia);
-            }
-            return respuesta;
+    public List<String> obtenerProvinciaDeColeccion(Integer Id, Integer cantidadProvincias) {
+        if(cantidadProvincias == null) {
+            cantidadProvincias = 1;
         }
-        List<Ubicacion> ubicacionesColeccion = agregadorClient.obtenerUbicacionesDeColeccion(Id);
-        List<String> provincias = convertirAProvincias(ubicacionesColeccion);
-        String provincia = provinciaMasFrecuente(provincias);
-        return Map.of(Id, provincia);
+        List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeColeccion(Id);
+        List<String> provincias = convertirAProvincias(ubicacionesCategoria);
+        return provinciasMasFrecuente(provincias, cantidadProvincias);
     }
 
 //    public String obtenerProvinciaPorColeccion() {
@@ -47,41 +38,20 @@ public class EstadisticaService {
         return this.agregadorClient.obtenerCategoriaConMasHechos();
     }
 
-    public Map<Integer, String> obtenerProvinciaDeCategoria(Integer Id) {
-        Map<Integer, String> respuesta = new HashMap<>();
-        if(Id == null){
-            List<Categoria> categorias = agregadorClient.obtenerTodasLasCategorias();
-            for(Categoria categoria : categorias) {
-                List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeCategoria(categoria.getId());
-                List<String> provincias = convertirAProvincias(ubicacionesCategoria);
-                String provincia = provinciaMasFrecuente(provincias);
-                respuesta.put(categoria.getId(), provincia);
-            }
+    public List<String> obtenerProvinciasDeCategoria(Integer Id, Integer cantidadProvincias) {
+        if(cantidadProvincias == null) {
+            cantidadProvincias = 1;
         }
-        else {
-            List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeCategoria(Id);
-            List<String> provincias = convertirAProvincias(ubicacionesCategoria);
-            String provincia = provinciaMasFrecuente(provincias);
-            respuesta.put(Id, provincia);
-        }
-
-        return respuesta;
+        List<Ubicacion> ubicacionesCategoria = agregadorClient.obtenerUbicacionesDeCategoria(Id);
+        List<String> provincias = convertirAProvincias(ubicacionesCategoria);
+        return provinciasMasFrecuente(provincias, cantidadProvincias);
     }
 
-    public Map <Integer, LocalTime> obtenerHoraMasFrecuenteDeCategoria(Integer id) {
-        Map<Integer, LocalTime> respuesta = new HashMap<>();
-        if (id == null){
-            List<Categoria> categorias = agregadorClient.obtenerTodasLasCategorias();
-            for(Categoria categoria : categorias){
-                LocalTime hora = this.agregadorClient.obtenerHoraMasFrecuenteDeCategoria(categoria.getId());
-                respuesta.put(categoria.getId(), hora);
-            }
+    public List<LocalTime> obtenerHorasMasFrecuentesDeCategoria(Integer Id, Integer cantidadHoras) {
+        if(cantidadHoras == null) {
+            cantidadHoras = 1;
         }
-        else{
-            LocalTime hora = this.agregadorClient.obtenerHoraMasFrecuenteDeCategoria(id);
-            respuesta.put(id, hora);
-        }
-        return respuesta;
+        return this.agregadorClient.obtenerHorasMasFrecuentesDeCategoria(Id, cantidadHoras);
     }
 
     /* La request deberia tener esto en el body por ejemplo:
@@ -154,14 +124,23 @@ public class EstadisticaService {
         return this.agregadorClient.obtenerSolicitudesSpam();
     }
 
-    public String provinciaMasFrecuente(List<String> provincias) {
-        return provincias.stream()
-                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                    .entrySet()
-                    .stream()
-                    .max(Map.Entry.comparingByValue())
-                    .get()
-                    .getKey();
-    }
+    public List<String> provinciasMasFrecuente(List<String> provincias, Integer top) {
+        if (provincias == null || provincias.isEmpty()) {
+            return new ArrayList<>();
+        }
+        int limit = (top == null || top <= 0) ? 1 : Math.min(top, provincias.size());
 
+        return provincias.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .sorted((e1, e2) -> {
+                    int cmp = Long.compare(e2.getValue(), e1.getValue()); // frecuencia descendente
+                    if (cmp != 0) return cmp;
+                    return e1.getKey().compareTo(e2.getKey()); // desempate lexicográfico
+                })
+                .limit(limit)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
 }

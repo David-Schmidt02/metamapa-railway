@@ -87,17 +87,19 @@ public class AgregadorClient {
         return categorias;
     }
 
-    public LocalTime obtenerHoraMasFrecuenteDeCategoria (Integer Id) {
-        LocalTime horaMasFrecuente = webClient.get()
-                .uri("/estadisticas/categoria/{Id}/hora", Id)
+    public List<LocalTime> obtenerHorasMasFrecuentesDeCategoria (Integer Id, Integer cantidadHoras) {
+        List<LocalTime> horasMasFrecuente = webClient.get()
+                .uri("/estadisticas/categoria/{Id}/hora/{cantidadHoras}", Id, cantidadHoras)
                 .retrieve()
-                .bodyToMono(LocalTime.class)
+                .bodyToFlux(LocalTime.class)
+                .collectList()
                 .block();
-        if(horaMasFrecuente == null) {
+        if(horasMasFrecuente == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontro la hora buscada");
         }
-        return horaMasFrecuente;
+        return horasMasFrecuente;
     }
+
 
     public List<SolicitudDTO> obtenerSolicitudesSpam() {
         List <SolicitudDTO> solicitudesSpam = webClient.get()

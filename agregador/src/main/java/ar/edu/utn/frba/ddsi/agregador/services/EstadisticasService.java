@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EstadisticasService {
@@ -40,9 +41,11 @@ public class EstadisticasService {
         return this.estadisticasRepository.obtenerUbicacionesCategoria(idCategoria);
     }
 
-    public LocalTime obtenerHoraMasFrecuente(Integer Id) {
-        Integer hora =  this.estadisticasRepository.obtenerHoraMasFrecuente(Id);
-        return LocalTime.of(hora,0);
+    public List<LocalTime> obtenerHorasMasFrecuente(Integer Id, Integer cantidadHoras) {
+        List<Integer> horas =  this.estadisticasRepository.obtenerHorasMasFrecuente(Id, cantidadHoras);
+        return horas.stream()
+                .map(h -> LocalTime.of(h, 0))
+                .collect(Collectors.toList());
     }
 
     public List<SolicitudDTO> obtenerSolicitudesSpam() {

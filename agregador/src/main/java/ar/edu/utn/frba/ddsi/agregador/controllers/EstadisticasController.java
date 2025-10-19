@@ -55,9 +55,9 @@ public class EstadisticasController {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @GetMapping("/categoria/{Id}/hora")
-    public LocalTime obtenerHoraMasFrecuente(@PathVariable Integer Id) {
-        return this.estadisticasService.obtenerHoraMasFrecuente(Id);
+    @GetMapping("/categoria/{Id}/hora/{cantidadHoras}")
+    public List<LocalTime> obtenerHorasMasFrecuente(@PathVariable Integer Id, @PathVariable Integer cantidadHoras) {
+        return this.estadisticasService.obtenerHorasMasFrecuente(Id, cantidadHoras);
     }
 
     @GetMapping("/solicitudes/spam")

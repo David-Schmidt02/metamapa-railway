@@ -71,12 +71,13 @@ public interface EstadisticasRepository extends JpaRepository<Hecho, Integer> { 
 
     @Query( value = """
            select HOUR(h.fecha_acontecimiento)
-           from hecho h
+           from Hecho h
+           WHERE h.categoria_id = ?1
            group by hour(h.fecha_acontecimiento)
            order by count(*) desc
-           limit 1
+            limit ?2
         """,
             nativeQuery = true)
-    Integer obtenerHoraMasFrecuente(Integer id);
+    List<Integer> obtenerHorasMasFrecuente(Integer id, Integer cantidadHoras);
 
 }
