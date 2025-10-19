@@ -45,13 +45,15 @@ public class CSVService {
     }
 
 
-    public ResponseEntity<?> convertirACSV(Categoria resultado, String nombreArchivo) {
+    public ResponseEntity<?> convertirACSV(List<Categoria> resultado, String nombreArchivo) {
         StringBuilder csvBuilder = new StringBuilder();
         csvBuilder.append("idCategoria,detalle\n");
-        csvBuilder.append(resultado.getId())
-                .append(",")
-                .append(resultado.getDetalle())
-                .append("\n");
+        for(Categoria categoria : resultado) {
+            csvBuilder.append(categoria.getId())
+                    .append(",")
+                    .append(categoria.getDetalle())
+                    .append("\n");
+        }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+nombreArchivo+".csv")
                 .contentType(MediaType.valueOf("text/csv"))

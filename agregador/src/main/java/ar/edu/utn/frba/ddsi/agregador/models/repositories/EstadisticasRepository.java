@@ -32,10 +32,11 @@ public interface EstadisticasRepository extends JpaRepository<Hecho, Integer> { 
             FROM Hecho h
             JOIN Categoria c ON h.categoria_id = c.id
             GROUP BY c.id, c.detalle
-            ORDER BY count(h.categoria_id) DESC LIMIT 1
+            ORDER BY count(h.categoria_id) DESC 
+            Limit ?1
         """,
             nativeQuery = true)
-    Categoria obtenerCategoriaConMasHechos();
+    List<Categoria> obtenerCategoriasConMasHechos(Integer cantidadCategorias);
 
 //    @Query( value = """
 //            SELECT h.latitud, h.longitud

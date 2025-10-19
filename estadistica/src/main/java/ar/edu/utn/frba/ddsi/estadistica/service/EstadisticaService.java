@@ -34,8 +34,11 @@ public class EstadisticaService {
 //
 //    }
 
-    public Categoria obtenerCategoriaConMasHechos() {
-        return this.agregadorClient.obtenerCategoriaConMasHechos();
+    public List<Categoria> obtenerCategoriasConMasHechos(Integer cantidadCategorias) {
+        if (cantidadCategorias == null) {
+            cantidadCategorias = 1;
+        }
+        return this.agregadorClient.obtenerCategoriaConMasHechos(cantidadCategorias);
     }
 
     public List<String> obtenerProvinciasDeCategoria(Integer Id, Integer cantidadProvincias) {

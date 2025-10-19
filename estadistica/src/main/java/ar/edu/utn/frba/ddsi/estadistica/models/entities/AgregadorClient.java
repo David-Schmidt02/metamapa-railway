@@ -46,12 +46,13 @@ public class AgregadorClient {
         return colecciones;
     }
 
-    public Categoria obtenerCategoriaConMasHechos() {
+    public List<Categoria> obtenerCategoriaConMasHechos(Integer cantidadCategorias) {
         System.out.println("Llamando a la API de agregador para obtener la categoria con mas hechos...\n");
-        Categoria categoriaConMasHechos = webClient.get()
-                                .uri("/estadisticas/hechos/max-categoria")
+        List<Categoria> categoriaConMasHechos = webClient.get()
+                                .uri("/estadisticas/hechos/max-categoria/{cantidadCategorias}", cantidadCategorias)
                                 .retrieve()
-                                .bodyToMono(Categoria.class)
+                                .bodyToFlux(Categoria.class)
+                                .collectList()
                                 .block();
                 
         if(categoriaConMasHechos == null) {

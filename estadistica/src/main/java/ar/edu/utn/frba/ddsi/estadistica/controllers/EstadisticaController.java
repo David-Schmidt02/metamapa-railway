@@ -49,14 +49,14 @@ public class EstadisticaController {
     //¿Cuál es la categoría con mayor cantidad de hechos reportados?
     @GetMapping("/hechos/max-categoria")
     @Operation(summary = "Categoría con más hechos reportados")
-    public ResponseEntity<?> obtenerCategoriaConMasHechos(@RequestParam(required = false) String formato) {
-        Categoria resultado =  this.estadisticaService.obtenerCategoriaConMasHechos();
+    public ResponseEntity<?> obtenerCategoriaConMasHechos(@RequestParam(required = false) String formato, @RequestParam(required = false) Integer cantidadCategorias) {
+        List<Categoria> resultados =  this.estadisticaService.obtenerCategoriasConMasHechos(cantidadCategorias);
 
         if(formato != null && formato.equalsIgnoreCase("csv")){
-            return this.csvService.convertirACSV(resultado, "categoria-,max-hechos;");
+            return this.csvService.convertirACSV(resultados, "categoria-,max-hechos;");
         }
 
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(resultados);
     }
 
     //¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?

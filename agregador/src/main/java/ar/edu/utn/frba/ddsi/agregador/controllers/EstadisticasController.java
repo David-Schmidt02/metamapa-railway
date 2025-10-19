@@ -36,9 +36,9 @@ public class EstadisticasController {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @GetMapping("/hechos/max-categoria")
-    public Categoria obtenerCategoriaConMasHechos() {
-        return this.estadisticasService.obtenerCategoriaConMasHechos();
+    @GetMapping("/hechos/max-categoria/{cantidadCategorias}")
+    public List<Categoria> obtenerCategoriasConMasHechos(@PathVariable Integer cantidadCategorias) {
+        return this.estadisticasService.obtenerCategoriasConMasHechos(cantidadCategorias);
     }
 
 //    @GetMapping("/colecciones/{Id}/ubicacionMasFrecuente")

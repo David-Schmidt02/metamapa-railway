@@ -29,8 +29,8 @@ public class EstadisticasService {
         return this.estadisticasRepository.obtenerUbicacionesColeccion(idColeccion);
     }
 
-    public Categoria obtenerCategoriaConMasHechos() {
-        return this.estadisticasRepository.obtenerCategoriaConMasHechos();
+    public List<Categoria> obtenerCategoriasConMasHechos(Integer cantidadCategorias) {
+        return this.estadisticasRepository.obtenerCategoriasConMasHechos(cantidadCategorias);
     }
 
 //    public Ubicacion obtenerUbicacionMasFrecuenteDeColeccion(Integer idColeccion) {
