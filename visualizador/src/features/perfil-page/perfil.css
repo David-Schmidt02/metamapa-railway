@@ -1,0 +1,21 @@
+
+.principal {
+    display: flex;
+    flex-direction: row;
+    background-color: lightblue;
+    height: 100vh;
+    margin: 0 0 0 0 ;
+
+}
+
+.contenedor-botones{
+    margin: 0 0 0 0;
+    background-color: brown ;
+    width: 30%;
+}
+
+
+.contenedor-informacion{
+    margin: 0 0 0 0;
+    background-color: white;
+}
