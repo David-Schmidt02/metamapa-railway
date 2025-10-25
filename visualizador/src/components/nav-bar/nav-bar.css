@@ -1,7 +1,8 @@
+
 [data-bs-theme="prueba"] {
     --bs-navbar-color: #DA9B3C; /* color de texto normal */
     --bs-navbar-hover-color: #DA9B3C;
-    --bs-navbar-active-color: #DA9B3C; /* color de link activo */
+    --bs-navbar-active-color: default; /* color de link activo */
     --bs-navbar-brand-color: #000; /* color del brand */
     --bs-navbar-brand-hover-color: #000;
     --bs-navbar-bg: #2a002a; /* fondo del navbar */
@@ -9,7 +10,26 @@
     background-color: #FFF7BB;
 }
 
+ .sesion {
+    color: #FFF;
+    background-color: #DA9B3C;
+    border-radius: 10px;
+}
+
 [data-bs-theme="prueba"] .nav-link:hover {
     background-color: rgba(218, 155, 60, .29);
 }
+
+[data-bs-theme="prueba"] .sesion:hover {
+    background-color: rgba(218, 155, 60, .60);
+}
+
+[data-bs-theme="prueba"] .sesion .nav-link:hover {
+    background-color: transparent;
+}
+
+[data-bs-theme="prueba"] .nav-item {
+    margin-left: 10px;
+}
+
 
