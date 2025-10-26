@@ -1,12 +1,13 @@
-// 1. Asegúrate de importar Carousel
 import React, { useState, useEffect } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
-import Carousel from 'react-bootstrap/Carousel';
+// 1. Importamos Button
+import { Spinner, Carousel, Row, Col, Badge, Button } from 'react-bootstrap';
 import { hechomockeado } from "./hechomockeado";
+import VentanaFlotante from './components/ventana-flotante/ventana-flotante.jsx';
 
 function DetailPage() {
     const [hecho, setHecho] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
@@ -17,7 +18,6 @@ function DetailPage() {
 
     if (loading) {
         return (
-
             <div className="d-flex justify-content-center mt-5 ">
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Cargando...</span>
@@ -34,56 +34,118 @@ function DetailPage() {
     };
 
 
+    const formatFecha = (fechaISO) => {
+        if (!fechaISO) return 'No especificada';
+        return new Date(fechaISO).toLocaleString();
+    };
+
+    // 2. Reactivé tu función formatOrigen
+    const formatOrigen = (origen) => {
+        if (origen === 'Estatica') return 'Carga Manual';
+        return origen || 'No especificado';
+    };
+
+    const handleSolicitudSubmit = async (data) => {
+        // data = { hechoId: '...', motivo: '...' }
+        console.log("Enviando solicitud:", data);
+
+        // Simula una llamada a la API
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Aquí podrías mostrar un Toast/Alerta de éxito
+        console.log("Solicitud enviada con éxito");
+        // El modal se cierra solo (lo hace el componente hijo)
+    };
+
+
     return (
-        <div className="container my-5">
+        <div className="container-xl my-5 bg-white p-4 p-md-5 rounded shadow-sm">
             <div className="row">
 
                 {/* ============================================= */}
-                {/* COLUMNA IZQUIERDA: SÓLO Información */}
+                {/* COLUMNA IZQUIERDA: Información  */}
                 {/* ============================================= */}
                 <div className="col-md-7">
                     <h1 className="display-5 fw-bold">{hecho.titulo}</h1>
                     <p className="h5 text-muted mb-3">{hecho.categoria?.detalle}</p>
+
+                    <div className="d-flex flex-wrap mb-3">
+                        {hecho.etiquetas?.map((tag) => (
+                            <Badge
+                                key={tag.id}
+                                bg="secondary-subtle"
+                                text="secondary-emphasis"
+                                className="rounded-pill me-2 mb-2 p-2 fs-6"
+                            >
+                                {tag.descripcion}
+                            </Badge>
+                        ))}
+                    </div>
+                    {}
+
                     <p className="lead" style={{ whiteSpace: 'pre-line' }}>
                         {hecho.descripcion}
                     </p>
 
                     <hr className="my-4" />
 
+                    {/* ================================================== */}
+                    {/* --- NUEVA SECCIÓN "INFORMACIÓN ADICIONAL" --- */}
+                    {/* ================================================== */}
                     <div className="mt-2">
-                        <h4>Informacion adicional</h4>
-                        <ul className="list-unstyled fs-5">
-                            <li><strong>Ubicación:</strong> {hecho.ubicacion?.texto || `${hecho.ubicacion?.latitud}, ${hecho.ubicacion?.longitud}`}</li>
-                            <li><strong>Fecha de carga:</strong> {hecho.fechaCarga}</li>
-                            <li><strong>Origen:</strong> {hecho.origen}</li>
-                            <li><strong>Contribuyente:</strong> {hecho.contribuyente}</li>
-                        </ul>
+                        <h4>Detalles del Reporte</h4>
 
-                        <h4 className="mt-4">Etiquetas</h4>
-                        <div className="d-flex flex-wrap">
-                            {hecho.etiquetas?.map((tag) => (
-                                <span
-                                    key={tag.id}
-                                    className="badge bg-secondary-subtle text-secondary-emphasis rounded-pill me-2 mb-2 p-2 fs-6"
-                                >
-                                {tag.descripcion}
-                            </span>
-                            ))}
-                        </div>
+                        <Row className="mt-3">
+                            {/* ... (Col 1 y 2 sin cambios) ... */}
+                            <Col md={6} className="mb-3">
+                                <p className="mb-0 fs-5">
+                                    <span title="Fecha de Carga">📅</span> <strong>Fecha de Carga:</strong>
+                                </p>
+                                <p className="text-muted fs-5">
+                                    {formatFecha(hecho.fechaCarga)}
+                                </p>
+                            </Col>
 
-                        {/* NOTA:
-                      Quitamos el <hr> y la lógica del carousel de aquí.
-                    */}
+                            <Col md={6} className="mb-3">
+                                <p className="mb-0 fs-5">
+                                    <span title="Contribuyente">👤</span> <strong>Reportado por:</strong>
+                                </p>
+                                <p className="text-muted fs-5">
+                                    {hecho.contribuyente || 'No especificado'}
+                                </p>
+                            </Col>
+
+                            {/* Columna 3: Fuente (Origen) */}
+                            <Col md={6} className="mb-3 mt-md-3">
+                                <p className="mb-0 fs-5">
+                                    <span title="Fuente del Reporte">💻</span> <strong>Fuente:</strong>
+                                </p>
+                                {/* 2. (bis) La volví a usar aquí */}
+                                <p className="text-muted fs-5">
+                                    {formatOrigen(hecho.origen)}
+                                </p>
+                            </Col>
+
+                            {/* Columna 4: Ubicación (Texto) */}
+                            <Col md={6} className="mb-3 mt-md-3">
+                                <p className="mb-0 fs-5">
+                                    <span title="Referencia de Ubicación">📍</span> <strong>Ubicación (Ref.):</strong>
+                                </p>
+                                <p className="text-muted fs-5">
+                                    {hecho.ubicacion?.texto || 'Sin descripción textual'}
+                                </p>
+                            </Col>
+                        </Row>
 
                     </div>
                 </div>
 
                 {/* ============================================= */}
-                {/* COLUMNA DERECHA: Mapa */}
+                {/* COLUMNA DERECHA: Mapa + Coordenadas */}
                 {/* ============================================= */}
                 <div className="col-md-5">
+                    {/* ... (contenido del mapa sin cambios) ... */}
                     <h1 className="display-5 fw-bold invisible" aria-hidden="true">
-
                     </h1>
 
                     <h4 className="mt-3">Ubicacion del hecho</h4>
@@ -103,20 +165,25 @@ function DetailPage() {
                             title="Ubicación del hecho"
                         ></iframe>
                     </div>
+
+                    <p className="text-muted text-center mt-2 mb-0 small">
+                        Coordenadas:
+                        <code> {hecho.ubicacion?.latitud}, {hecho.ubicacion?.longitud}</code>
+                    </p>
+
                 </div>
 
-            </div> {/* <-- FIN DE LA PRIMERA FILA (INFO + MAPA) */}
+            </div>
 
 
             {/* ============================================= */}
-            {/* NUEVA FILA: Carousel (centrado) */}
+            {/* NUEVA FILA: Carousel  */}
             {/* ============================================= */}
-            <hr className="my-5" /> {/* Separador que estaba antes */}
+            <hr className="my-5" />
 
             <div className="row">
-                <div className="col-12"> {/* Ocupa todo el ancho del container */}
+                <div className="col-12">
 
-                    {/* --- LÓGICA DE MULTIMEDIA MOVIDA AQUÍ --- */}
                     {hecho.cuerpo ? (
                         <>
                             <h2>Cuerpo</h2>
@@ -148,12 +215,41 @@ function DetailPage() {
                             </>
                         )
                     )}
-                    {/* --- FIN DE LA LÓGICA MOVIDA --- */}
 
                 </div>
             </div>
 
-        </div> /* <-- Fin del container */
+            {/* ============================================= */}
+            {/* 3. Botón de Solicitud */}
+            {/* ============================================= */}
+
+            <hr className="my-5" />
+
+            <div className="row">
+                <div className="col-12 text-center">
+                    <h3>Acciones del Hecho</h3>
+                    <p className="text-muted mb-3">
+                        ¿Consideras que este hecho es incorrecto o viola alguna norma?
+                    </p>
+
+                    <Button
+                        variant="warning"
+                        size="lg"
+                        onClick={() => setShowModal(true)}
+                    >
+                        Solicitar eliminación
+                    </Button>
+                </div>
+            </div>
+
+            <VentanaFlotante
+                show={showModal}
+                handleClose={() => setShowModal(false)}
+                hecho={hecho}
+                onSubmit={handleSolicitudSubmit}
+            />
+
+        </div>
     );
 }
 
