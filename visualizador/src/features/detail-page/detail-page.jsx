@@ -7,10 +7,11 @@ import MapaInteractivo from './components/mapa-interactivo/mapa-interactivo.jsx'
 import ApiAgregador from '../../api/api-agregador.jsx';
 import useUbicacionFromCoords from "./hooks/useUbicacionFromCoords.jsx";
 import Mapa from '../home-page/components/mapa.jsx';
+import {useParams} from "react-router-dom";
 
-function DetailPage( ) {
-
-    const hechoId = 2;
+function DetailPage() {
+    const { hechoId } = useParams()
+    //const hechoId = 1;
     const [hecho, setHecho] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);

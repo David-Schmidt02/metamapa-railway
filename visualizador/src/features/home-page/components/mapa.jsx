@@ -1,11 +1,13 @@
 // visualizador/src/features/home-page/components/mapa.jsx
-import {Card} from "react-bootstrap";
+import {Button, Card} from "react-bootstrap";
 import React from "react";
 import { useEffect, useState } from 'react'
 import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import './mapa.css'
 import L from 'leaflet'
+import {useNavigate} from "react-router-dom";
+import ApiAgregador from "../../../api/api-agregador";
 
 /* fix para que cargue el icono, dsp poner personalizado */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -15,7 +17,16 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+
+
+
 function Mapa ({hechosMapa}) {
+    const navigate = useNavigate()
+
+    const navigateToHecho = (hechoId) => {
+        navigate(`/hecho/${hechoId}`);
+    }
+
     const center = hechosMapa[0]
         ? { lat: hechosMapa[0].latitud, lng: hechosMapa[0].longitud }
         : { lat: -34.37049232747865, lng: -58.90407374255551 };
@@ -36,7 +47,10 @@ function Mapa ({hechosMapa}) {
                             lat: unHecho.latitud,
                             lng: unHecho.longitud
                         }}> {/* icono no carga, ver esto */}
-                            <Popup>{unHecho.descripcion}</Popup>
+                            <Popup>
+                                <p>{unHecho.descripcion}</p>
+                                <Button onClick={() => navigateToHecho(unHecho.id)}> Ver mas </Button>
+                            </Popup>
                         </Marker>
                     )}
                 </MapContainer>

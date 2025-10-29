@@ -28,37 +28,37 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-                // 1. Configura el validador de JWT para que use los roles de Keycloak con la conversion a los de Spring
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtSpec ->
-                        jwtSpec.jwtAuthenticationConverter(jwtAuthenticationConverter())
-                ))
+            // 1. Configura el validador de JWT para que use los roles de Keycloak con la conversion a los de Spring
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtSpec ->
+                    jwtSpec.jwtAuthenticationConverter(jwtAuthenticationConverter())
+            ))
 
                 // 2. Definir las reglas de autorización (BASADO EN TU CONTROLLER)
                 .authorizeExchange(exchanges ->
-                        exchanges
+                    exchanges
 
-                                // --- REGLAS PÚBLICAS (permitAll) ---
-                                // Todos los GET que consultan datos
-                                .pathMatchers(HttpMethod.GET, "/agregador/colecciones").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/agregador/colecciones/**").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/agregador/categorias").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/agregador/hechos").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/agregador/hechos/**").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/agregador/search").permitAll()
+                      // --- REGLAS PÚBLICAS (permitAll) ---
+                      // Todos los GET que consultan datos
+                      .pathMatchers(HttpMethod.GET, "/agregador/colecciones").permitAll()
+                      .pathMatchers(HttpMethod.GET, "/agregador/colecciones/**").permitAll()
+                      .pathMatchers(HttpMethod.GET, "/agregador/categorias").permitAll()
+                      .pathMatchers(HttpMethod.GET, "/agregador/hechos").permitAll()
+                      .pathMatchers(HttpMethod.GET, "/agregador/hechos/**").permitAll()
+                      .pathMatchers(HttpMethod.GET, "/agregador/search").permitAll()
 
-                                // --- REGLAS DE "ADMIN" (hasRole) ---
-                                .pathMatchers(HttpMethod.POST, "/agregador/colecciones").hasRole("ADMIN")
-                                .pathMatchers(HttpMethod.PATCH, "/agregador/colecciones/{id}").hasRole("ADMIN")
-                                .pathMatchers(HttpMethod.DELETE, "/agregador/colecciones/{id}").hasRole("ADMIN")
-                                .pathMatchers(HttpMethod.GET, "/agregador/solicitudes").hasRole("ADMIN")
-                                .pathMatchers(HttpMethod.PUT, "/agregador/solicitudes/{id}").hasRole("ADMIN")
+                      // --- REGLAS DE "ADMIN" (hasRole) ---
+                      .pathMatchers(HttpMethod.POST, "/agregador/colecciones").hasRole("ADMIN")
+                      .pathMatchers(HttpMethod.PATCH, "/agregador/colecciones/{id}").hasRole("ADMIN")
+                      .pathMatchers(HttpMethod.DELETE, "/agregador/colecciones/{id}").hasRole("ADMIN")
+                      .pathMatchers(HttpMethod.GET, "/agregador/solicitudes").hasRole("ADMIN")
+                      .pathMatchers(HttpMethod.PUT, "/agregador/solicitudes/{id}").hasRole("ADMIN")
 
-                                // --- REGLAS DE USUARIO AUTENTICADO (authenticated) ---
-                                .pathMatchers(HttpMethod.POST, "/agregador/solicitudes").authenticated() // Un usuario logueado crea una solicitud
-                                .pathMatchers("/perfil/**").authenticated()
+                      // --- REGLAS DE USUARIO AUTENTICADO (authenticated) ---
+                      .pathMatchers(HttpMethod.POST, "/agregador/solicitudes").authenticated() // Un usuario logueado crea una solicitud
+                      .pathMatchers("/perfil/**").authenticated()
 
-                                // --- REGLA FINAL (Catch-All) ---
-                                .anyExchange().authenticated()
+                      // --- REGLA FINAL (Catch-All) ---
+                      .anyExchange().authenticated()
                 )
 
                 .csrf(ServerHttpSecurity.CsrfSpec::disable); // Deshabilitar CSRF para APIs

@@ -19,12 +19,12 @@ function HomePage() {
 
     useEffect(() => {
         ApiAgregador.obtenerUbicaciones()
-            .then((data) => {
-                    setHechosMapa(data)
-                    setLoadingHechos(false)
-                    console.log(data)
-                }
-            )
+                .then((data) => {
+                        setHechosMapa(data)
+                        setLoadingHechos(false)
+                        console.log(data)
+                    }
+                )
     }, [])
 
     useEffect(() => {

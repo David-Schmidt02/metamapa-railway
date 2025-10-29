@@ -28,7 +28,7 @@ function NavBar() {
                             <Nav.Link href="/estadisticas" >Estadisticas</Nav.Link>
                         </Nav.Item>
                         <Nav.Item className='sesion'>
-                            <Nav.Link href="/home" >Iniciar Sesion</Nav.Link>
+                            <Nav.Link href="/login" >Iniciar Sesion</Nav.Link>
                         </Nav.Item>
                     </Nav>
                 </Navbar.Collapse>

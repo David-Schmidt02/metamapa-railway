@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// Todos tus imports de páginas
 import HomePage from "./features/home-page/home-page.jsx";
 import Layout from "./features/layout/layout.jsx";
 import Perfil from "./features/perfil-page/perfil.jsx";
@@ -9,30 +10,41 @@ import RegistrarHecho from "./features/registrar-hecho/registrar-hecho.jsx";
 import './App.css';
 import Estadisticas from "./features/estadisticas-page/estadisticas";
 import CrearColeccion from "./features/crear-coleccion/crear-coleccion.jsx";
+import RequireAuth from "./RequireAuth.jsx";
+
+// Importa el Provider Y el Hook
+import { KeycloakProvider, useKeycloak } from "./KeycloakProvider.jsx";
+
 
 function App() {
-
-  return (
-      <BrowserRouter>
-        <Routes>
+    return (
+        <BrowserRouter>
+            <Routes>
             <Route path="/" element={<Layout/>}>
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="*" element={<Navigate to="/home" replace />} />
-                <Route path="/hecho" element={<DetailPage />} />
-                <Route path="/perfil" element={<Perfil />} />
-                <Route path="perfil/solicitudes" element={<Perfil mostrarEnPantalla={'solicitudes'} />}/>
-                <Route path="perfil/colecciones" element={<Perfil mostrarEnPantalla={'colecciones'} />}/>
-                <Route path="/login" element={<Login />} />
-                <Route path="/busqueda" element={<Busqueda />} />
-                <Route path="/registrar-hecho" element={<RegistrarHecho/>} />
-                <Route path="/estadisticas" element={<Estadisticas/>} />
-                <Route path="/crear-coleccion" element={<CrearColeccion/>} />
-            </Route>
+                <Route path="/home" element={<HomePage />} />
+                <Route path="/" element={<Navigate to="/home" replace />} />
+                <Route path="*" element={<Navigate to="/home" replace />} />
+                <Route path="/login" element={<Login/>} />
 
-        </Routes>
-      </BrowserRouter>
-  );
+                <Route element={<RequireAuth/>} >
+                    <Route path="/perfil" element={<Perfil/> } />
+                    <Route path="perfil/solicitudes" element={<Perfil mostrarEnPantalla={'solicitudes'} /> }/>
+                    <Route path="perfil/colecciones" element={<Perfil mostrarEnPantalla={'colecciones'}/> } />
+                    <Route path="/registrar-hecho" element={<RegistrarHecho/>} />
+                    <Route path="/crear-coleccion" element={<CrearColeccion/>} />
+                </Route>
+
+                {/* Rutas publicas */}
+                <Route path="/hecho/:hechoId" element={<DetailPage />} />
+                <Route path="/busqueda" element={<Busqueda />} />
+                <Route path="/estadisticas" element={<Estadisticas/>} />
+            </Route>
+            </Routes>
+        </BrowserRouter>
+
+    );
 }
+
+
 
 export default App;
