@@ -46,15 +46,12 @@ function DetailPage() {
     };
 
     const handleSolicitudSubmit = async (data) => {
-        // data = { hechoId: '...', motivo: '...' }
-        console.log("Enviando solicitud:", data);
+
 
         // Simula una llamada a la API
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Aquí podrías mostrar un Toast/Alerta de éxito
-        console.log("Solicitud enviada con éxito");
-        // El modal se cierra solo (lo hace el componente hijo)
+
     };
 
 
