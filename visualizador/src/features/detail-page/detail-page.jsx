@@ -79,7 +79,7 @@ function DetailPage() {
                 </div>
 
                 {/* ============================================= */}
-                {/* COLUMNA DERECHA: Mapa */}
+                {/* COLUMNA DERECHA: Filters */}
                 {/* ============================================= */}
                 <div className="col-md-5">
                     <h1 className="display-5 fw-bold invisible" aria-hidden="true">

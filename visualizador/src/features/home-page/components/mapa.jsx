@@ -1,4 +1,4 @@
-// visualizador/src/features/home-page/components/mapa.jsx
+// visualizador/src/features/home-page/components/filters.jsx
 import {Card} from "react-bootstrap";
 import React from "react";
 import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
