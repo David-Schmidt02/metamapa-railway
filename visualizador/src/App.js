@@ -20,6 +20,8 @@ function App() {
               <Route path="*" element={<Navigate to="/home" replace />} />
                 <Route path="/hecho" element={<DetailPage />} />
                 <Route path="/perfil" element={<Perfil />} />
+                <Route path="perfil/solicitudes" element={<Perfil mostrarEnPantalla={'solicitudes'} />}/>
+                <Route path="perfil/colecciones" element={<Perfil mostrarEnPantalla={'colecciones'} />}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/busqueda" element={<Busqueda />} />
                 <Route path="/registrar-hecho" element={<RegistrarHecho/>} />

@@ -2,20 +2,101 @@
 .principal {
     display: flex;
     flex-direction: row;
-    background-color: lightblue;
+    background-color: white;
     height: 100vh;
-    margin: 0 0 0 0 ;
-
+    padding: 0;
 }
 
-.contenedor-botones{
-    margin: 0 0 0 0;
-    background-color: brown ;
-    width: 30%;
+
+
+.contenedor-botones {
+    display: flex;
+    flex-direction: column;
+    background-color: white ;
+    max-width: 30%;
+    align-items: center;
 }
 
 
 .contenedor-informacion{
     margin: 0 0 0 0;
     background-color: white;
+    align-items: center;
+    justify-content: center;
 }
+
+
+.contenedor-botoness{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin: 3% 0 3%;
+    gap:12px;
+}
+
+.contenedor-botones-coleccion{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin: 3% 0 3%;
+    gap: 12px;
+}
+
+
+
+
+.contenedor-tarjeta{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px;
+    width: 50%;
+    background-color: #E8E8E8;
+    border-color: #E8E8E8;
+}
+
+
+
+
+
+
+
+.contenedor-tarjeta-coleccion{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px;
+    width: 70%;
+    background-color: #E8E8E8;
+    border-color: #E8E8E8;
+}
+
+.contenedor-tarjeta-solicitud{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px;
+    width: 70%;
+    background-color: #E8E8E8;
+    border-color: #E8E8E8;
+}
+
+.contenedor-tarjetas{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+
+
+
