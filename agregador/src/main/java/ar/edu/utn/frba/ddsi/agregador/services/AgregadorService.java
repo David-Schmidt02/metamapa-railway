@@ -5,10 +5,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Fuente;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.FuenteEstatica;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.detectorDeSpam.DetectorDeSpam;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.CriterioDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoSearchDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
@@ -457,7 +454,7 @@ public class AgregadorService {
         return this.hechosRepository.findByTexto(texto);
     }
 
-    public List<Ubicacion> obtenerUbicaciones() {
+    public List<UbicacionParaMapaDTO> obtenerUbicaciones() {
         return this.hechosRepository.obtenerUbicaciones();
     }
 }

@@ -46,3 +46,5 @@ class ApiAgregador {
 
 
 }
+const api = new ApiAgregador()
+export default api

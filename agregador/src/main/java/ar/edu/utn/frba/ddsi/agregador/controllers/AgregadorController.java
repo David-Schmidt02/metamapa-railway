@@ -169,12 +169,11 @@ public class AgregadorController {
     }
 
     /* Ubicaciones para mapa front */
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/hechos/ubicaciones")
-    public List<UbicacionDTO> obtenerUbicaciones() {
-        List<Ubicacion> ubicaciones = this.agregadorService.obtenerUbicaciones();
-        return ubicaciones.stream()
-                .map(Ubicacion::toDTO)
-                .collect(Collectors.toCollection(ArrayList::new));
+    public List<UbicacionParaMapaDTO> obtenerUbicaciones() {
+        return this.agregadorService.obtenerUbicaciones();
     }
+
 }
 
