@@ -456,6 +456,10 @@ public class AgregadorService {
 
         return this.hechosRepository.findByTexto(texto);
     }
+
+    public List<Ubicacion> obtenerUbicaciones() {
+        return this.hechosRepository.obtenerUbicaciones();
+    }
 }
 
 
