@@ -1,33 +1,107 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// Todos tus imports de páginas
 import HomePage from "./features/home-page/home-page.jsx";
 import Layout from "./features/layout/layout.jsx";
 import Perfil from "./features/perfil-page/perfil.jsx";
-import Login from "./features/login-page/log-in.jsx";
-import ColeccionHechosPage from './features/viewHechos-page/coleccion-page.jsx';
 import DetailPage from "./features/detail-page/detail-page.jsx";
 import Busqueda from "./features/busqueda-page/busqueda.jsx";
+import RegistrarHecho from "./features/registrar-hecho/registrar-hecho.jsx";
 import './App.css';
+import Estadisticas from "./features/estadisticas-page/estadisticas";
+import CrearColeccion from "./features/crear-coleccion/crear-coleccion.jsx";
+import RequireAuth from "./RequireAuth.jsx";
+import RequireAdmin from "./RequireAdmin.jsx";
+
+// --- CAMBIOS EN IMPORTS ---
+import Keycloak from "keycloak-js";
+// Importa 'useKeycloak'
+import { ReactKeycloakProvider, useKeycloak } from "@react-keycloak/web";
+// Importa tu API (asegúrate que la ruta sea correcta)
+import ApiAgregador from "./api/api-agregador";
+import { useEffect } from "react";
+// --- FIN CAMBIOS ---
 
 
+const kcConfig = {
+    url: "http://localhost:9090/",
+    realm: "MetaMapa",
+    clientId: "metamapa-frontend"
+};
+
+export const kc = new Keycloak(kcConfig);
+
+
+function AppRouter() {
+    const { keycloak, initialized } = useKeycloak();
+
+    useEffect(() => {
+        if (initialized && keycloak.authenticated) {
+
+            ApiAgregador.setToken(keycloak.token);
+
+            keycloak.onTokenExpired = () => {
+                console.log("Token expirado, intentando refrescar...");
+                keycloak.updateToken(5)
+                    .then(refreshed => {
+                        if (refreshed) {
+                            console.log("Token refrescado con éxito.");
+                            // Pasa el NUEVO token a tu API
+                            ApiAgregador.setToken(keycloak.token);
+                        }
+                    })
+                    .catch(() => {
+                        console.error("Fallo al refrescar el token.");
+                    });
+            }
+        }
+    }, [initialized, keycloak, keycloak.authenticated, keycloak.token]);
+
+
+    // 5. No renderizar la app hasta que Keycloak esté listo
+    if (!initialized) {
+        return <div>Cargando Keycloak...</div>;
+    }
+
+    // 6. Una vez listo, renderiza todas tus rutas
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout/>}>
+                    {/* rutas públicas */}
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/" element={<Navigate to="/home" replace />} />
+                    <Route path="*" element={<Navigate to="/home" replace />} />
+                    <Route path="/hecho/:hechoId" element={<DetailPage />} />
+                    <Route path="/busqueda" element={<Busqueda />} />
+                    <Route path="/registrar-hecho" element={<RegistrarHecho/>} />
+
+                    {/* rutas usuario */}
+                    <Route element={<RequireAuth/>} >
+                        <Route path="/perfil" element={<Perfil/> } />
+                        <Route path="perfil/solicitudes" element={<Perfil mostrarEnPantalla={'solicitudes'} /> }/>
+                        <Route path="perfil/colecciones" element={<Perfil mostrarEnPantalla={'colecciones'}/> } />
+                    </Route>
+
+                    {/* rutas admin */}
+                    <Route element={<RequireAdmin/>} >
+                        <Route path="/crear-coleccion" element={<CrearColeccion/>} />
+                        <Route path="/estadisticas" element={<Estadisticas/>} />
+                    </Route>
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
+}
+
+
+// --- COMPONENTE APP MODIFICADO ---
+// Tu 'App' ahora solo se encarga de renderizar el Provider
 function App() {
-
-  return (
-      <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<Layout/>}>
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="*" element={<Navigate to="/home" replace />} />
-                <Route path="/hecho" element={<DetailPage />} />
-                <Route path="/coleccion/:id/hechos" element={<ColeccionHechosPage />} />
-                <Route path="/perfil" element={<Perfil />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/busqueda" element={<Busqueda />} />
-            </Route>
-
-        </Routes>
-      </BrowserRouter>
-  );
+    return (
+        <ReactKeycloakProvider authClient={kc}>
+            <AppRouter /> {/* <-- Renderiza el nuevo componente que tiene la lógica */}
+        </ReactKeycloakProvider>
+    );
 }
 
 export default App;

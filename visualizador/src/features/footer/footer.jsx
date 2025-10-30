@@ -1,10 +1,8 @@
 import React from 'react';
 
-//import 'bootstrap-icons/font/bootstrap-icons.css' from
-
 const Footer = () => {
     const customBgColor = {
-        backgroundColor: '#335C67' // Tu color verde oscuro
+        backgroundColor: '#335C67'
     };
 
     return (
@@ -12,7 +10,7 @@ const Footer = () => {
             <div className="container">
                 <div className="row">
 
-                    <div className="col-md-4 mb-3">
+                    <div className="col-md-4 mb-3 text-center">
                         <h5>MetaMapa</h5>
                         <ul className="list-unstyled">
                             <li>
@@ -33,7 +31,7 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    <div className="col-md-4 mb-3">
+                    <div className="col-md-4 mb-3 text-center">
                         <h5>Soporte</h5>
                         <ul className="list-unstyled">
                             <li>
@@ -54,8 +52,7 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Columna 3: Legal */}
-                    <div className="col-md-4 mb-3">
+                    <div className="col-md-4 mb-3 text-center">
                         <h5>Legal</h5>
                         <ul className="list-unstyled">
                             <li>
@@ -75,30 +72,11 @@ const Footer = () => {
 
                 <hr className="opacity-100" />
 
-                {/* Línea inferior: Copyright y Redes Sociales */}
                 <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center pt-3">
                     <p className="small mb-2 mb-sm-0">
                         &copy; {new Date().getFullYear()} MetaMapa. Todos los derechos reservados.
                     </p>
 
-                    {/* Íconos de Redes Sociales (Ejemplo) */}
-                    <ul className="list-inline mb-0">
-                        <li className="list-inline-item">
-                            <a href="https://twitter.com" className="text-white fs-4 opacity-75">
-                                <i className="bi bi-twitter-x"></i>
-                            </a>
-                        </li>
-                        <li className="list-inline-item ms-2">
-                            <a href="https://facebook.com" className="text-white fs-4 opacity-75">
-                                <i className="bi bi-facebook"></i>
-                            </a>
-                        </li>
-                        <li className="list-inline-item ms-2">
-                            <a href="https://instagram.com" className="text-white fs-4 opacity-75">
-                                <i className="bi bi-instagram"></i>
-                            </a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </footer>
