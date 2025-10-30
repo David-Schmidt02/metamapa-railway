@@ -137,7 +137,7 @@
 .fondo-mapa {
     background-color: #ffffff;
     width: 100%;
-    padding: 80px 0;
+    padding: 40px 0;
 }
 
 .titulo-mapa {
@@ -149,5 +149,4 @@
 
 .seccion-mapa {
     padding-top: 20px;
-    padding-bottom: 80px;
 }

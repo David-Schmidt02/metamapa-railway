@@ -4,7 +4,7 @@ import {FaMapMarkedAlt, FaSearch} from "react-icons/fa";
 import "./busqueda.css";
 import Mapa from "../home-page/components/mapa.jsx";
 import ApiAgregador from "../../api/api-agregador";
-import HechoCard from "../viewHechos-page/components/hecho-card/HechoCard";
+import MiniHechoCard from "./components/MiniHechoCard";
 
 function Busqueda() {
     const [busqueda, setBusqueda] = useState("");
@@ -17,12 +17,20 @@ function Busqueda() {
         mapaRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const sectionRef = useRef(null);
+
+    const irAResultados = () => {
+        sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
     const [hechosObtenido, setHechosObtenidos] = useState([]);
 
     const buscar = async () => {
         try {
             const resultados = await ApiAgregador.buscarPorTextoLibre(busqueda)
             setHechosObtenidos(resultados)
+            irAResultados()
+            console.log(resultados)
         } catch (error) {
 
         }
@@ -92,12 +100,14 @@ function Busqueda() {
                 </Container>
             </section>
 
-            <section>
-                <div style={{ maxWidth: 900, margin: '2rem auto 1.5rem auto', background: '#FFF9D6', borderRadius: 10, boxShadow: '0 2px 8px #99A88C', padding: '1.5rem 2rem' }}>
-                    {hechosObtenido.map((aHecho) => (
-
-                    <HechoCard key={aHecho.id} hecho={aHecho}/>))}
-                </div>
+            <section ref={sectionRef}>
+                {hechosObtenido.length > 0 ?
+                    <div  style={{ maxWidth: 900, margin: '2rem auto 1.5rem auto', background: '#FFF9D6', borderRadius: 10, boxShadow: '0 2px 8px #99A88C', padding: '1.5rem 2rem' }}>
+                    <h3>Resultados de la busqueda...</h3>
+                        {hechosObtenido.map((aHecho) => (
+                        <MiniHechoCard key={aHecho.id} hecho={aHecho}/>))}
+                </div> : loading ? <Spinner></Spinner> : <></>
+                }
             </section>
 
         </>
