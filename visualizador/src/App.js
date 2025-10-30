@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-// Todos tus imports de páginas
 import HomePage from "./features/home-page/home-page.jsx";
 import Layout from "./features/layout/layout.jsx";
 import Perfil from "./features/perfil-page/perfil.jsx";
@@ -11,15 +10,13 @@ import Estadisticas from "./features/estadisticas-page/estadisticas";
 import CrearColeccion from "./features/crear-coleccion/crear-coleccion.jsx";
 import RequireAuth from "./RequireAuth.jsx";
 import RequireAdmin from "./RequireAdmin.jsx";
-
-// --- CAMBIOS EN IMPORTS ---
 import Keycloak from "keycloak-js";
 import { ReactKeycloakProvider, useKeycloak } from "@react-keycloak/web";
 import ApiAgregador from "./api/api-agregador";
-import { useEffect, useState } from "react"; // 'useState' ya estaba
+import { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
-// --- FIN CAMBIOS ---
-
+import ColeccionesPage  from "./features/colecciones/ColeccionesPage";
+import ColeccionesHechoPage from "./features/viewHechos-page/coleccion-page.jsx";
 
 const kcConfig = {
     url: "http://localhost:9090/",
@@ -66,12 +63,8 @@ function AppRouter() {
     }, [initialized]);
 
 
-    // --- MODIFICACIÓN DEL RETURN ---
-    // Ahora renderizamos ambos (loader y app) y el CSS se encarga
-    // de superponer el loader.
     return (
         <>
-            {/* 1. El Loader (se queda en el DOM hasta que termina la anim) */}
             {showLoader && (
                 <div className={`loader-container ${isFadingOut ? 'fade-out' : ''}`}>
                     <Spinner animation="grow" variant="primary" className="loader-spinner"/>
@@ -79,8 +72,6 @@ function AppRouter() {
                 </div>
             )}
 
-            {/* 2. El Contenido de la App (se renderiza tan pronto 'initialized' es true) */}
-            {/* El loader se mostrará encima gracias al z-index del CSS */}
             {initialized && (
                 <BrowserRouter>
                     <Routes>
@@ -92,6 +83,9 @@ function AppRouter() {
                             <Route path="/hecho/:hechoId" element={<DetailPage />} />
                             <Route path="/busqueda" element={<Busqueda />} />
                             <Route path="/registrar-hecho" element={<RegistrarHecho/>} />
+                            <Route path="/colecciones" element={<ColeccionesPage/>} />
+                            <Route path="/hechos" element={<ColeccionesHechoPage/>}/>
+                            <Route path="/colecciones/:id/hechos" element={<ColeccionesHechoPage/>} />
 
                             {/* rutas usuario */}
                             <Route element={<RequireAuth/>} >
@@ -111,7 +105,6 @@ function AppRouter() {
             )}
         </>
     );
-    // --- FIN MODIFICACIÓN ---
 }
 
 
