@@ -1,13 +1,42 @@
 import axios from 'axios'
 import { data } from 'react-router'
 import qs from 'qs'
+import kc from "../App.js"
 
 class ApiEstadistica {
     constructor() {
-        this.tokenAuth = null
+        // 1. Inicializa tu token como null
+        this.tokenAuth = null;
+
         this.axiosInstance = axios.create({
-            baseURL: process.env.REACT_APP_IP_BACK || 'http://localhost:8088/api/estadisticas',
-        })
+            baseURL: process.env.REACT_APP_IP_BACK || 'http://localhost:8089/api/estadisticas',
+        });
+
+        // --- 2. AÑADE EL INTERCEPTOR DE PETICIONES ---
+        // Esto se ejecutará ANTES de cada petición (get, post, etc.)
+        this.axiosInstance.interceptors.request.use(
+            (config) => {
+                // Si el token existe, lo adjunta a la cabecera
+                if (this.tokenAuth) {
+                    config.headers['Authorization'] = `Bearer ${this.tokenAuth}`;
+                }
+                return config;
+            },
+            (error) => {
+                // Maneja errores de la petición
+                return Promise.reject(error);
+            }
+        );
+    }
+
+    /**
+     * --- 3. AÑADE ESTE MÉTODO ---
+     * Un método público para que tu componente de React (Estadisticas.js)
+     * pueda inyectar el token de Keycloak en esta instancia.
+     * @param {string} token El token JWT
+     */
+    setToken(token) {
+        this.tokenAuth = token;
     }
 
 

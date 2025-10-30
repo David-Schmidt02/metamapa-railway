@@ -34,7 +34,6 @@ public class EstadisticaController {
     }
 
     //De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/colecciones/provincia-max-hechos")
     @Operation(summary = "en qué provincia se agrupan la mayor cantidad de hechos reportados de una coleccion")
     public ResponseEntity<?> obtenerProvinciaDeColeccion(@RequestParam(required = false) Integer Id, @RequestParam(required = false) String formato, @RequestParam Integer cantidadProvincias) {
@@ -48,7 +47,6 @@ public class EstadisticaController {
     }
 
     //¿Cuál es la categoría con mayor cantidad de hechos reportados?
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/hechos/max-categoria")
     @Operation(summary = "Categoría con más hechos reportados")
     public ResponseEntity<?> obtenerCategoriaConMasHechos(@RequestParam(required = false) String formato, @RequestParam(required = false) Integer cantidadCategorias) {
@@ -62,7 +60,6 @@ public class EstadisticaController {
     }
 
     //¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/categoria/provincia-max-hechos")
     @Operation(summary = "en qué provincia se agrupan la mayor cantidad de hechos reportados de una categoria")
     public ResponseEntity<?> obtenerProvinciasDeCategoria(@RequestParam(required = false) Integer Id, @RequestParam(required = false) String formato, @RequestParam(required = false) Integer cantidadProvincias) {
@@ -77,7 +74,6 @@ public class EstadisticaController {
     }
 
     //¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/categoria/hora")
     @Operation(summary = "A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría")
     public ResponseEntity<?> obtenerHoraMasFrecuente(@RequestParam(required = false)Integer Id, @RequestParam(required = false) String formato, @RequestParam(required = false) Integer cantidadHoras) {
@@ -90,7 +86,6 @@ public class EstadisticaController {
 
 
     //¿Cuántas solicitudes de eliminación son spam?
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/solicitudes/spam" )
     @Operation(summary = "Cuantas solicitudes de eliminacion son spam")
     public ResponseEntity<?> obtenerCantidadDeSolicitudesSpam(@RequestParam(required = false, defaultValue = "false") boolean mostrar, @RequestParam(required = false) String formato) {

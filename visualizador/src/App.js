@@ -20,7 +20,7 @@ const kcConfig = {
     clientId: "metamapa-frontend"
 }
 
-const kc = new Keycloak(kcConfig);
+export const kc = new Keycloak(kcConfig);
 
 
 function App() {

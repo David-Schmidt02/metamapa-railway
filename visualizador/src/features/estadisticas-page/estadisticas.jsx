@@ -5,6 +5,8 @@ import ContadorElementos from "./contadorElementos.jsx";
 import "./estadisticas.css";
 import ApiEstadistica from "../../api/api-estadistica.jsx";
 import ApiAgregador from "../../api/api-agregador";
+import { useKeycloak } from '@react-keycloak/web';
+
 function Estadisticas() {
     const [seleccionada, setSeleccionada] = useState(null);
     const [busqueda, setBusqueda] = useState("");
@@ -15,7 +17,7 @@ function Estadisticas() {
     const [resultados, setResultados] = useState([]);
     const [categorias, setCategorias] = useState([])
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
-
+    const { keycloak, initialized } = useKeycloak();
     const idColeccion = 1;
     const idCategoria = 4;
 
@@ -89,6 +91,22 @@ function Estadisticas() {
     const handleCantidadChange = (id, nuevaCantidad) => {
         setCantidades(prev => ({ ...prev, [id]: nuevaCantidad }));
     };
+    useEffect(() => {
+        // Se ejecuta cuando Keycloak está inicializado Y ya tenemos un token
+        if (initialized && keycloak.token) {
+
+            // ¡ESTA ES LA LÍNEA CLAVE!
+            // Inyecta el token en tu instancia de ApiEstadistica.
+            // (Esto asume que ya modificaste api-estadistica.jsx
+            // para que tenga el método setToken() y el interceptor)
+            ApiEstadistica.setToken(keycloak.token);
+
+            // Si ApiAgregador también necesita token, hazlo aquí
+            // if (ApiAgregador.setToken) {
+            //     ApiAgregador.setToken(keycloak.token);
+            // }
+        }
+    }, [initialized, keycloak.token]);
 
     const handleConsultar = async (id) => {
         const cantidad = cantidades[id] || 5;
