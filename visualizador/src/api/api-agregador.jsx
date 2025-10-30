@@ -6,8 +6,12 @@ class ApiAgregador {
     constructor() {
         this.tokenAuth = null
         this.axiosInstance = axios.create({
-            baseURL: process.env.REACT_APP_IP_BACK || 'http://localhost:8080/agregador',
+            baseURL: process.env.REACT_APP_IP_BACK || 'http://localhost:8089/agregador',
         })
+    }
+
+    setToken(token){
+        this.tokenAuth = token
     }
 
 
@@ -17,6 +21,17 @@ class ApiAgregador {
             return response.data
         } catch (error) {
             console.error('Error al obtener el hecho:', error)
+            throw error
+        }
+    }
+
+    async obtenerCategorias() {
+        try {
+            const response = await this.axiosInstance.get('/categorias')
+            console.log("Categorias obtenidas:", response.data)
+            return response.data
+        } catch(error) {
+            console.error('Error al buscar categorias:', error)
             throw error
         }
     }
@@ -34,16 +49,6 @@ class ApiAgregador {
         }
     }
 
-    async obtenerUbicaciones() {
-        try {
-            const response = await this.axiosInstance.get('/hechos/ubicaciones')
-            return response.data
-        } catch(error) {
-            console.error('Error al buscar ubicaciones de hechos:', error)
-            throw error
-        }
-    }
-
     async obtenerColecciones() {
         try {
             const response = await this.axiosInstance.get('/colecciones')
@@ -54,6 +59,15 @@ class ApiAgregador {
         }
     }
 
+    async obtenerUbicaciones() {
+        try {
+            const response = await this.axiosInstance.get('/hechos/ubicaciones')
+            return response.data
+        } catch(error) {
+            console.error('Error al buscar ubicaciones de hechos:', error)
+            throw error
+        }
+    }
 
     async eliminarColeccion(id){
         try {
@@ -65,8 +79,6 @@ class ApiAgregador {
         }
     }
 
-
-
     async obtenerSolicitudes(){
         try {
             const response = await this.axiosInstance.get('/solicitudes/pendientes')
@@ -76,6 +88,7 @@ class ApiAgregador {
             throw error
         }
     }
+
 
     async eliminarSolicitud(id) {
         try {
@@ -107,19 +120,6 @@ class ApiAgregador {
         }
     }
 
-
-    async actualizarAlgoritmoColeccion(id, algoritmo){
-        try {
-            const body = { algoritmo_consenso: algoritmo }
-            const response = await this.axiosInstance.patch(`/colecciones/${id}`, body, { headers: { 'Content-Type': 'application/json' }})
-            return response.data
-        } catch (error) {
-            console.error('Error al actualizar algoritmo de colección:', error)
-            throw error
-        }
-    }
-
-
     // Nuevo: actualizar solo fuentes (lista de URLs)
     async actualizarColeccion(id, urls, algoritmo){
         try {
@@ -135,6 +135,99 @@ class ApiAgregador {
         }
     }
 
+    async crearColeccion(data) {
+        try {
+            const response = await this.axiosInstance.post('/colecciones', data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.tokenAuth}`,
+                }
+            })
+            return response.data
+        } catch (error) {
+            if (error.response) {
+                console.error('Error al crear la colección:', error)
+            }
+        }
+    }
+
+    async enviarSolicitudEliminacion(data) {
+        try {
+            const response = await this.axiosInstance.post(`/solicitudes`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.tokenAuth}`,
+                }
+            })
+            return response.data
+        } catch (error) {
+            if (error.response) {
+                console.error('Error al enviar la solicitud de eliminación:', error)
+            }
+        }
+    }
+
+    async getHechosPorColeccion(id, filtros, consenso) {
+
+        // --- INICIO DE LA CORRECCIÓN ---
+
+        // 1. Crear un objeto de filtros limpios
+        const cleanFiltros = {};
+
+        // 2. Recorrer el objeto 'filtros' y copiar solo las
+        //    claves que tengan un valor real (no '', null, o undefined)
+        for (const key in filtros) {
+            const value = filtros[key];
+            if (value !== null && value !== undefined && value !== '') {
+                cleanFiltros[key] = value;
+            }
+        }
+
+        // 3. Construir los parámetros con los filtros limpios
+        const params = {
+            ...cleanFiltros, // <-- Usamos el objeto limpio
+            tipoNavegacion: consenso ? 'curada' : 'irrestricta'
+        };
+        // --- FIN DE LA CORRECCIÓN ---
+
+        // Log de depuración: mira lo que realmente se envía
+        console.log("Enviando parámetros a la API:", params);
+
+        try {
+            // Usamos this.axiosInstance y paramsSerializer por consistencia
+            const res = await this.axiosInstance.get(`/colecciones/${id}/hechos`, {
+                params,
+                paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' })
+            });
+            return res.data;
+        } catch (error) {
+            console.error('Error al obtener hechos por colección:', error);
+            throw new Error('Error al obtener hechos');
+        }
+    }
+
+    async obtenerColeccion(id) {
+        try {
+            const response = await this.axiosInstance.get(`/colecciones/${id}`)
+            return response.data
+        } catch(error) {
+            console.error('Error al obtener la colección:', error)
+            throw error
+        }
+    }
+
+    async buscarPorTextoLibre(texto) {
+        try {
+            const response = await this.axiosInstance.get(`/search`, {
+                params: {texto: texto}
+            })
+            return response.data
+        } catch (error) {
+            if (error.response) {
+                console.error('Error al buscar los hechos:', error)
+            }
+        }
+    }
 
 }
 const api = new ApiAgregador()

@@ -1,14 +1,40 @@
-import React, { useState, useEffect} from "react";
-import { Container } from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
+import React, {useState, useEffect, useRef} from "react";
+import {Button, Col, Container, Row, Spinner} from "react-bootstrap";
+import {FaMapMarkedAlt, FaSearch} from "react-icons/fa";
 import "./busqueda.css";
 import Mapa from "../home-page/components/mapa.jsx";
 import ApiAgregador from "../../api/api-agregador";
+import MiniHechoCard from "./components/MiniHechoCard";
 
 function Busqueda() {
     const [busqueda, setBusqueda] = useState("");
     const [hechos, setHechos] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const mapaRef = useRef(null);
+
+    const irAlMapa = () => {
+        mapaRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const sectionRef = useRef(null);
+
+    const irAResultados = () => {
+        sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const [hechosObtenido, setHechosObtenidos] = useState([]);
+
+    const buscar = async () => {
+        try {
+            const resultados = await ApiAgregador.buscarPorTextoLibre(busqueda)
+            setHechosObtenidos(resultados)
+            irAResultados()
+            console.log(resultados)
+        } catch (error) {
+
+        }
+    }
 
     useEffect(() => {
         const fetchUbicaciones = async () => {
@@ -29,30 +55,61 @@ function Busqueda() {
         <>
             <section className="fondo-busqueda">
                 <Container className="text-center contenido-busqueda">
-                    <h2>Encontrá los hechos que te interesen</h2>
+                    <FaMapMarkedAlt
+                        className="icono-mapa-principal"
+                        onClick={irAlMapa}
+                        style={{ cursor: "pointer" }}
+                    />
+                    <h2 className="titulo-animado">
+                        Encontrá los hechos que te interesen
+                    </h2>
 
-                    <div className="caja-busqueda">
+                    <div className="caja-busqueda animacion-busqueda">
                         <FaSearch className="icono-busqueda" />
                         <input
                             type="text"
                             className="input-busqueda"
-                            placeholder="Buscar hechos..."
+                            placeholder="Buscar hechos por palabra clave, categoría o lugar..."
                             value={busqueda}
                             onChange={(e) => setBusqueda(e.target.value)}
                         />
+                        <Button onClick={() => buscar()} >Buscar</Button>
                     </div>
                 </Container>
             </section>
 
-            <section className="fondo-mapa">
-                <Container style={{ paddingTop: "50px", paddingBottom: "50px" }}>
+            <section className="fondo-mapa" ref={mapaRef}>
+                <Container className="seccion-mapa">
                     {loading ? (
-                        <p className="text-center">Cargando hechos...</p>
+                        <div className="text-center mt-5">
+                            <Spinner animation="border" role="status" />
+                            <p className="mt-3">Cargando hechos...</p>
+                        </div>
                     ) : (
-                        <Mapa hechosMapa={hechos} />
+                        <>
+                            <Row className="justify-content-center mb-4">
+                                <Col xs="auto">
+                                    <h3 className="titulo-mapa">
+                                        Resultados en el mapa
+                                    </h3>
+                                </Col>
+                            </Row>
+                            <Mapa hechosMapa={hechos} />
+                        </>
                     )}
                 </Container>
             </section>
+
+            <section ref={sectionRef}>
+                {hechosObtenido.length > 0 ?
+                    <div  style={{ maxWidth: 900, margin: '2rem auto 1.5rem auto', background: '#FFF9D6', borderRadius: 10, boxShadow: '0 2px 8px #99A88C', padding: '1.5rem 2rem' }}>
+                    <h3>Resultados de la busqueda...</h3>
+                        {hechosObtenido.map((aHecho) => (
+                        <MiniHechoCard key={aHecho.id} hecho={aHecho}/>))}
+                </div> : loading ? <Spinner></Spinner> : <></>
+                }
+            </section>
+
         </>
     );
 }

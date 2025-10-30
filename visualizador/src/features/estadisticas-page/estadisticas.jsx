@@ -3,6 +3,9 @@ import { Container, Card, Button, Form, ListGroup } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import ContadorElementos from "./contadorElementos.jsx";
 import "./estadisticas.css";
+import ApiEstadistica from "../../api/api-estadistica.jsx";
+import ApiAgregador from "../../api/api-agregador";
+import { useKeycloak } from '@react-keycloak/web';
 
 function Estadisticas() {
     const [seleccionada, setSeleccionada] = useState(null);
@@ -10,22 +13,17 @@ function Estadisticas() {
     const [sugerencias, setSugerencias] = useState([]);
     const [campoSeleccionado, setCampoSeleccionado] = useState("");
     const contenedorRef = useRef(null);
+    const [cantidades, setCantidades] = useState({});
+    const [resultados, setResultados] = useState([]);
+    const [categorias, setCategorias] = useState([])
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
+    const { keycloak, initialized } = useKeycloak();
+    const idColeccion = 1;
+    const idCategoria = 4;
+    const [colecciones, setColecciones] = useState([])
+    const [coleccionSeleccionada, setColeccionSeleccionada] = useState(null);
 
-    const colecciones = [
-        "Hechos ambientales 2024",
-        "Violencia de género",
-        "Deforestación Chaco",
-        "Contaminación del Riachuelo",
-        "Emergencias urbanas"
-    ];
 
-    const categorias = [
-        "Contaminación",
-        "Violencia",
-        "Transporte",
-        "Seguridad",
-        "Incendios"
-    ];
 
     const estadisticas = [
         { id: 1, titulo: "Provincia con más hechos reportados", descripcion: "De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?" },
@@ -35,6 +33,30 @@ function Estadisticas() {
         { id: 5, titulo: "Solicitudes de eliminación spam", descripcion: "¿Cuántas solicitudes de eliminación son spam?" }
     ];
 
+    useEffect(() => {
+        const cargarCategorias = async () => {
+            try {
+                const data = await ApiAgregador.obtenerCategorias()
+                setCategorias(data)
+            } catch (error) {
+                console.error("Error al cargar categorías:", error)
+            }
+        }
+        cargarCategorias()
+    }, [])
+
+    useEffect(() => {
+        const cargarColecciones = async () => {
+            try {
+                const data = await ApiAgregador.obtenerColecciones();
+                setColecciones(data);
+            } catch (error) {
+                console.error("Error al cargar colecciones:", error);
+            }
+        }
+        cargarColecciones()
+    }, [])
+
     const handleBusqueda = (valor, tipo) => {
         setBusqueda(valor);
         setCampoSeleccionado(tipo);
@@ -42,18 +64,29 @@ function Estadisticas() {
         let listaFiltrada = [];
         if (tipo === "coleccion") {
             listaFiltrada = colecciones.filter(c =>
-                c.toLowerCase().includes(valor.toLowerCase())
+                c.titulo.toLowerCase().includes(valor.toLowerCase())
             );
         } else if (tipo === "categoria") {
-            listaFiltrada = categorias.filter(c =>
-                c.toLowerCase().includes(valor.toLowerCase())
+            listaFiltrada = categorias.filter(cat =>
+                cat.detalle.toLowerCase().includes(valor.toLowerCase())
             );
         }
+
         setSugerencias(listaFiltrada);
     };
 
     const seleccionarSugerencia = (item) => {
-        setBusqueda(item);
+        if (typeof item === "object" && item.id) {
+            if (campoSeleccionado === "categoria") {
+                setCategoriaSeleccionada(item);
+                setBusqueda(item.detalle || "");
+            } else if (campoSeleccionado === "coleccion") {
+                setColeccionSeleccionada(item);
+                setBusqueda(item.titulo || "");
+            }
+        } else {
+            setBusqueda(item);
+        }
         setSugerencias([]);
     };
 
@@ -67,87 +100,178 @@ function Estadisticas() {
         return () => document.removeEventListener("mousedown", manejarClickFuera);
     }, []);
 
-    const renderFormulario = (id) => {
+    const handleCantidadChange = (id, nuevaCantidad) => {
+        setCantidades(prev => ({ ...prev, [id]: nuevaCantidad }));
+    };
+    useEffect(() => {
+        if (initialized && keycloak.token) {
+            ApiEstadistica.setToken(keycloak.token);
+        }
+    }, [initialized, keycloak.token]);
+
+    const handleConsultar = async (id) => {
+        const cantidad = cantidades[id] || 5;
+        let datos = [];
+        try {
+            switch (id) {
+                case 1:
+                    datos = await ApiEstadistica.obtenerProvinciaPorColeccion({ id: coleccionSeleccionada.id, formato: null, cantidadProvincias: cantidad });
+                    break;
+                case 2:
+                    datos = await ApiEstadistica.obtenerCategoriaMaxHechos({formato: null, cantidadCategorias: cantidad});
+                    break;
+                case 3:
+                    datos = await ApiEstadistica.obtenerProvinciaPorCategoria({ id: categoriaSeleccionada.id, formato: null, cantidadProvincias: cantidad });
+                    break;
+                case 4:
+                    datos = await ApiEstadistica.obtenerHoraMaxHechos({ id: categoriaSeleccionada.id, cantidadHoras: cantidad });
+                    break;
+                case 5:
+                    datos = await ApiEstadistica.obtenerSolicitudesSpam({ mostrar:null, formato: null });
+                    break;
+                default:
+                    break;
+            }
+            setResultados(datos);
+            console.log("Resultados:", datos);
+        } catch (error) {
+            console.error("Error al consultar la estadística:", error);
+        }
+    };
+
+    const apiCallMap = {
+        1: ApiEstadistica.obtenerProvinciaPorColeccion,
+        2: ApiEstadistica.obtenerCategoriaMaxHechos,
+        3: ApiEstadistica.obtenerProvinciaPorCategoria,
+        4: ApiEstadistica.obtenerHoraMaxHechos,
+        5: ApiEstadistica.obtenerSolicitudesSpam,
+    };
+
+    const getQueryParams = (id, format = null) => {
+        const cantidad = cantidades[id] || 5;
+        let params = {};
+
+        if (format) params.formato = format;
+
         switch (id) {
             case 1:
-                return (
-                    <Form ref={contenedorRef}>
-                        <Form.Group style={{ position: "relative", overflow: "visible" }}>
-                            <Form.Label>Seleccioná la colección:</Form.Label>
-                            <div className="input-con-icono">
-                                <FaSearch className="icono-formulario" />
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Buscar o seleccionar una colección"
-                                    value={campoSeleccionado === "coleccion" ? busqueda : ""}
-                                    onChange={(e) => handleBusqueda(e.target.value, "coleccion")}
-                                />
-                            </div>
-                            {sugerencias.length > 0 && (
-                                <ListGroup className="sugerencias-lista">
-                                    {sugerencias.map((sug, index) => (
-                                        <ListGroup.Item
-                                            key={index}
-                                            action
-                                            onClick={() => seleccionarSugerencia(sug)}
-                                        >
-                                            {sug}
-                                        </ListGroup.Item>
-                                    ))}
-                                </ListGroup>
-                            )}
-                        </Form.Group>
-
-                        <ContadorElementos />
-
-                        <Button variant="primary" className="mt-3">Consultar</Button>
-                    </Form>
-                );
-
+                if (!coleccionSeleccionada?.id)
+                    throw new Error("Debe seleccionar una colección.");
+                params.id = coleccionSeleccionada.id;
+                params.cantidadProvincias = cantidad;
+                break;
+            case 2:
+                params.cantidadCategorias = cantidad;
+                break;
             case 3:
+                if (!categoriaSeleccionada?.id)
+                    throw new Error("Debe seleccionar una categoría.");
+                params.id = categoriaSeleccionada.id;
+                params.cantidadProvincias = cantidad;
+                break;
             case 4:
-                return (
-                    <Form ref={contenedorRef}>
-                        <Form.Group style={{ position: "relative", overflow: "visible" }}>
-                            <Form.Label>Categoría:</Form.Label>
-                            <div className="input-con-icono">
-                                <FaSearch className="icono-formulario" />
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Buscar o seleccionar una categoría"
-                                    value={campoSeleccionado === "categoria" ? busqueda : ""}
-                                    onChange={(e) => handleBusqueda(e.target.value, "categoria")}
-                                />
-                            </div>
-                            {sugerencias.length > 0 && (
-                                <ListGroup className="sugerencias-lista">
-                                    {sugerencias.map((sug, index) => (
-                                        <ListGroup.Item
-                                            key={index}
-                                            action
-                                            onClick={() => seleccionarSugerencia(sug)}
-                                        >
-                                            {sug}
-                                        </ListGroup.Item>
-                                    ))}
-                                </ListGroup>
-                            )}
-                        </Form.Group>
-
-                        <ContadorElementos />
-
-                        <Button variant="primary" className="mt-3">Consultar</Button>
-                    </Form>
-                );
-
+                if (!categoriaSeleccionada?.id)
+                    throw new Error("Debe seleccionar una categoría.");
+                params.id = categoriaSeleccionada.id;
+                params.cantidadHoras = cantidad;
+                break;
+            case 5:
+                params.mostrar = null;
+                break;
             default:
-                return (
-                    <div className="text-center mt-3">
-                        <ContadorElementos />
-                        <Button variant="primary" className="mt-3">Consultar</Button>
-                    </div>
-                );
+                throw new Error("Estadística no válida.");
         }
+        return params;
+    };
+
+    const descargarCSV = async (id) => {
+        try {
+            const params = getQueryParams(id, "csv");
+            const apiCall = apiCallMap[id];
+
+            if (!apiCall) throw new Error("No hay endpoint para este ID.");
+
+            // Hacemos la misma llamada, pero pidiendo CSV
+            const response = await apiCall.call(ApiEstadistica, params);
+
+            // Si el backend devuelve un blob, ya se descarga directo.
+            // Pero si devuelve texto CSV, lo transformamos:
+            const blob =
+                response instanceof Blob
+                    ? response
+                    : new Blob([response], { type: "text/csv" });
+
+            // Crear enlace de descarga
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+
+            // Nombre de archivo según tipo
+            const nombres = {
+                1: "provincia_por_coleccion.csv",
+                2: "categoria_max_hechos.csv",
+                3: "provincia_por_categoria.csv",
+                4: "hora_max_hechos.csv",
+                5: "solicitudes_spam.csv",
+            };
+            link.setAttribute("download", nombres[id] || "estadistica.csv");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error al descargar CSV:", error);
+        }
+    };
+
+
+    const renderFormulario = (id) => {
+        return (
+            <Form ref={contenedorRef}>
+                {(id === 1 || id === 3 || id === 4) && (
+                    <Form.Group style={{ position: "relative", overflow: "visible" }}>
+                        <Form.Label>{id === 1 ? "Seleccioná la colección:" : "Categoría:"}</Form.Label>
+                        <div className="input-con-icono">
+                            <FaSearch className="icono-formulario" />
+                            <Form.Control
+                                type="text"
+                                placeholder={id === 1 ? "Buscar o seleccionar una colección" : "Buscar o seleccionar una categoría"}
+                                value={campoSeleccionado === (id === 1 ? "coleccion" : "categoria") ? busqueda : ""}
+                                onChange={(e) => handleBusqueda(e.target.value, id === 1 ? "coleccion" : "categoria")}
+                            />
+                        </div>
+                        {sugerencias.length > 0 && (
+                            <ListGroup className="sugerencias-lista">
+                                {sugerencias.map((item) => (
+                                    <ListGroup.Item
+                                        key={item.id}
+                                        action
+                                        onClick={() => seleccionarSugerencia(item)}
+                                    >
+                                        {campoSeleccionado === "coleccion"
+                                            ? item.titulo
+                                            : item.detalle}
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
+                        )}
+                    </Form.Group>
+                )}
+
+                {(id !== 5) && (
+                    <ContadorElementos
+                        cantidadInicial={cantidades[id] || 5}
+                        onChange={(nuevaCantidad) => handleCantidadChange(id, nuevaCantidad)}
+                    />
+                )}
+
+                <div className={id === 5 ? "text-center mt-3" : "mt-3"}>
+                    <Button variant="primary" onClick={() => handleConsultar(id)}>
+                        Consultar
+                    </Button>
+                </div>
+            </Form>
+        );
     };
 
     return (
@@ -157,16 +281,24 @@ function Estadisticas() {
 
                 <div className="lista-estadisticas">
                     {estadisticas.map((item) => (
-                        <Card key={item.id} className={`card-estadistica shadow-sm ${seleccionada === item.id ? 'activa' : ''}`}>
+                        <Card key={item.id} className={`card-estadistica shadow-sm ${seleccionada === item.id ? 'activa' : ''}`}
+                              style={item.id === 5 ? { marginBottom: "3rem" } : {}}>
                             <Card.Body>
                                 <Card.Title>{item.titulo}</Card.Title>
                                 <Card.Text>{item.descripcion}</Card.Text>
 
                                 <Button
                                     variant={seleccionada === item.id ? "secondary" : "outline-primary"}
-                                    onClick={() =>
-                                        setSeleccionada(seleccionada === item.id ? null : item.id)
-                                    }
+                                    onClick={() => {
+                                        if (seleccionada === item.id) {
+                                            setSeleccionada(null);
+                                            setResultados([]);
+                                        } else {
+                                            setSeleccionada(item.id);
+                                            setResultados([]);
+                                            setCantidades(prev => ({ ...prev, [item.id]: prev[item.id] || 5 }));
+                                        }
+                                    }}
                                     className="me-2"
                                 >
                                     {seleccionada === item.id ? "Cerrar" : "Ver más"}
@@ -178,13 +310,60 @@ function Estadisticas() {
                                             {renderFormulario(item.id)}
                                         </div>
 
-                                        <Button
-                                            variant="outline-secondary"
-                                            className="mt-2"
-                                            onClick={() => console.log(`Generando CSV de la estadística ${item.id}`)}
-                                        >
-                                            Generar CSV
-                                        </Button>
+                                        {resultados.length > 0 && (
+                                            <Card className="mt-3 shadow-sm border-0">
+                                                <Card.Header className="bg-light fw-semibold">
+                                                    Resultados obtenidos
+                                                </Card.Header>
+                                                <Card.Body>
+                                                    <ListGroup variant="flush">
+                                                        {resultados.map((resultado, index) => (
+                                                            <ListGroup.Item key={index} className="px-3 py-2">
+                                                                {seleccionada === 2 ? (
+                                                                    <>
+                                                                        {index + 1}. <strong>Categoría:</strong> {resultado.detalle}
+                                                                    </>
+                                                                ) : seleccionada === 1 || seleccionada === 3 ? (
+                                                                    // Para estadística 1 y 3 (provincias)
+                                                                    <>
+                                                                        {index + 1}. <strong>Provincia:</strong> {resultado.provincia || resultado}
+                                                                    </>
+                                                                ) : seleccionada === 4 ? (
+                                                                        <>
+                                                                            {index + 1}. <strong>Hora: </strong>{resultado.split(":")[0]}:00
+                                                                        </>
+                                                                    ) :
+                                                                    seleccionada === 5 ? (
+                                                                        <>
+                                                                            {index + 1}. <strong>Cantidad de solicitudes spam: </strong>{resultado.split(":")[0]}:00
+                                                                        </>
+                                                                    ) : (
+                                                                        typeof resultado === "object" ? (
+                                                                            <div>
+                                                                                {index + 1}.{" "}
+                                                                                {Object.entries(resultado).map(([k, v]) => (
+                                                                                    <div key={k}>
+                                                                                        <strong>{k}: </strong>{v}
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        ) : (
+                                                                            `${index + 1}. ${resultado}`
+                                                                        )
+                                                                    )}
+                                                            </ListGroup.Item>
+                                                        ))}
+                                                    </ListGroup>
+
+                                                    <Button
+                                                        variant="outline-primary"
+                                                        onClick={() => descargarCSV(item.id)}
+                                                    >
+                                                        Descargar CSV
+                                                    </Button>
+                                                </Card.Body>
+                                            </Card>
+                                        )}
                                     </>
                                 )}
                             </Card.Body>

@@ -12,6 +12,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +22,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
@@ -27,38 +31,59 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-            // 1. Configura el validador de JWT para que use los roles de Keycloak con la conversion a los de Spring
+        http.cors(cors -> {})
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtSpec ->
                     jwtSpec.jwtAuthenticationConverter(jwtAuthenticationConverter())
             ))
+
+                // sin esto no puedo hacer post a los endpoints que requieren roles especificos
+                .cors(cors -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", config);
+                    cors.configurationSource(source);
+                })
+
 
                 // 2. Definir las reglas de autorización (BASADO EN TU CONTROLLER)
                 .authorizeExchange(exchanges ->
                     exchanges
 
-                      // --- REGLAS PÚBLICAS (permitAll) ---
-                      // Todos los GET que consultan datos
-                      .pathMatchers(HttpMethod.GET, "/agregador/colecciones").permitAll()
-                      .pathMatchers(HttpMethod.GET, "/agregador/colecciones/**").permitAll()
-                      .pathMatchers(HttpMethod.GET, "/agregador/categorias").permitAll()
-                      .pathMatchers(HttpMethod.GET, "/agregador/hechos").permitAll()
-                      .pathMatchers(HttpMethod.GET, "/agregador/hechos/**").permitAll()
-                      .pathMatchers(HttpMethod.GET, "/agregador/search").permitAll()
+                    .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                        // --- REGLAS PÚBLICAS (permitAll) ---
+                        .pathMatchers(HttpMethod.GET, "/agregador/colecciones").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/agregador/colecciones/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/agregador/categorias").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/agregador/hechos").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/agregador/hechos/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/agregador/search").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/dinamica/hechos").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/dinamica/upload/{id}").permitAll()
+                            .pathMatchers(HttpMethod.POST, "/agregador/solicitudes").permitAll()
+                            .pathMatchers(HttpMethod.GET, "/agregador/colecciones/{id}/hechos").permitAll()
+                            .pathMatchers(HttpMethod.GET, "/agregador/colecciones/{id}").permitAll()
+                        // --- REGLAS DE "ADMIN" (hasRole) ---
+                        .pathMatchers(HttpMethod.POST, "/agregador/colecciones").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.PATCH, "/agregador/colecciones/{id}").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.DELETE, "/agregador/colecciones/{id}").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/agregador/solicitudes").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/agregador/solicitudes/{id}").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/estadisticas/categorias").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/estadisticas/colecciones/provincia-max-hechos").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/estadisticas/hechos/max-categoria").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/estadisticas/categoria/provincia-max-hechos").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/estadisticas/categoria/hora").hasRole("ADMIN")
+                        .pathMatchers(HttpMethod.GET, "/api/estadisticas/solicitudes/spam").hasRole("ADMIN")
 
-                      // --- REGLAS DE "ADMIN" (hasRole) ---
-                      .pathMatchers(HttpMethod.POST, "/agregador/colecciones").hasRole("ADMIN")
-                      .pathMatchers(HttpMethod.PATCH, "/agregador/colecciones/{id}").hasRole("ADMIN")
-                      .pathMatchers(HttpMethod.DELETE, "/agregador/colecciones/{id}").hasRole("ADMIN")
-                      .pathMatchers(HttpMethod.GET, "/agregador/solicitudes").hasRole("ADMIN")
-                      .pathMatchers(HttpMethod.PUT, "/agregador/solicitudes/{id}").hasRole("ADMIN")
+                        // --- REGLAS DE USUARIO AUTENTICADO (authenticated) ---
+                        .pathMatchers(HttpMethod.POST, "/agregador/solicitudes").authenticated() // Un usuario logueado crea una solicitud
+                        .pathMatchers("/perfil/**").authenticated()
 
-                      // --- REGLAS DE USUARIO AUTENTICADO (authenticated) ---
-                      .pathMatchers(HttpMethod.POST, "/agregador/solicitudes").authenticated() // Un usuario logueado crea una solicitud
-                      .pathMatchers("/perfil/**").authenticated()
-
-                      // --- REGLA FINAL (Catch-All) ---
-                      .anyExchange().authenticated()
+                    // --- REGLA FINAL (Catch-All) ---
+                    .anyExchange().authenticated()
                 )
 
                 .csrf(ServerHttpSecurity.CsrfSpec::disable); // Deshabilitar CSRF para APIs

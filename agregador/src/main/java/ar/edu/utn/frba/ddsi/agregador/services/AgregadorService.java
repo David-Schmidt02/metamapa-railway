@@ -7,6 +7,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.criterios.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.detectorDeSpam.DetectorDeSpam;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
@@ -25,6 +26,8 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.clasificador.Clasificador;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -64,13 +67,18 @@ public class AgregadorService {
     @PostConstruct
     public void consultarHechosPorPrimeraVez() {
         //System.out.print("Se ejecuta el PostConstruct");
-        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+//        Contribuyente anonimoExistente = contribuyenteRepository.findById(1).orElse(null);
+//
+//        if (anonimoExistente == null) {
+//            // Crear e insertar el anónimo con ID manual
+//            Anonimo anonimo = Anonimo.getInstance();
+//            contribuyenteRepository.saveAndFlush(anonimo);
+//        }
 
-        if (anonimoExistente == null) {
-            // Crear e insertar el anónimo con ID manual
-            Anonimo anonimo = Anonimo.getInstance();
-            contribuyenteRepository.saveAndFlush(anonimo);
-        }
+        Dinamica origenDinamica = new Dinamica();
+        Proxy origenProxy = new Proxy();
+        origenFuenteRepository.saveAndFlush(origenDinamica);
+        origenFuenteRepository.saveAndFlush(origenProxy);
 
         Fuente fuenteExistente = fuentesRepository.findFuenteByNombre("estatica");
         if(fuenteExistente == null){
@@ -91,15 +99,15 @@ public class AgregadorService {
      * Cada una hora, se ejecuta este metodo para consultar los hechos de las fuentes.
      */
     @Transactional
-    @Scheduled(fixedRate = 60 * 1000, initialDelay = 30000)
+    @Scheduled(fixedRate = 60 * 1000, initialDelay = 360000)
     public void consultarHechosPeriodicamente() {
         System.out.println("Consultando hechos de las fuentes...");
 
         List<Fuente> fuentes = fuentesRepository.findAll();
 
-        Contribuyente anonimoGestionado = contribuyenteRepository.findById(1).orElse(null);
+        //Contribuyente anonimoGestionado = contribuyenteRepository.findById(1).orElse(null);
 
-        //fuentes.forEach(fuente -> System.out.println(fuente.hechos));
+        fuentes.forEach(fuente -> System.out.println(fuente.getUrl()));
 
         fuentes.forEach(fuente -> importador.importarHechos(fuente, this.ultimaConsulta, contribuyenteRepository, archivoProcesadoRepository, origenFuenteRepository, categoriaRepository));
         System.out.print("Ultima consulta: ");
@@ -107,24 +115,10 @@ public class AgregadorService {
         this.ultimaConsulta = LocalDateTime.now();
         fuentes.forEach(fuente -> {
 
-            for (Hecho hecho : fuente.getHechos()) {
-                Contribuyente contribuyente = hecho.getContribuyente();
-                if (contribuyente != null && contribuyente.getId() != null) {
-                    if (contribuyente.getId() == 1) {
-                        hecho.setContribuyente(anonimoGestionado);
-                    } else {
-                        boolean exists = contribuyenteRepository.existsById(contribuyente.getId());
-                        if (!exists) {
-                            contribuyenteRepository.save(contribuyente);
-                        }
-                    }
-                }
-            }
-
             fuentesRepository.save(fuente);
 
-            //hechosRepository.saveAll(fuente.getHechos());
-        }); // TODO: Despues chequear si funciona bien y no guarda repetidos
+           // hechosRepository.saveAll(fuente.getHechos());
+        });
 
         //hechosRepository.findAll(); // Se conecta a las otras API's y pone los hechos en instancias de las fuentes
     }
@@ -133,7 +127,7 @@ public class AgregadorService {
      * Todos los dias a las 3 AM, se ejecuta este metodo para clasificar los hechos
      * ya importados de las fuentes.
      */
-
+    @Transactional
     @Scheduled(cron = "0 0 3 * * *")
     public void clasificarHechos() {
         System.out.println("Clasificando hechos...");
@@ -199,8 +193,8 @@ public class AgregadorService {
             case "titulo" -> new CriterioTitulo(criterioDTO.getValor());
             case "descripcion" -> new CriterioDescripcion(criterioDTO.getValor());
             case "categoria" -> new CriterioCategoria(criterioDTO.getValor());
-            case "fechaAcontecimientoDesde" -> new CriterioFechaDesde(LocalDateTime.parse(criterioDTO.getValor()));
-            case "fechaAcontecimientoHasta" -> new CriterioFechaHasta(LocalDateTime.parse(criterioDTO.getValor()));
+            case "fecha_desde" -> new CriterioFechaDesde(LocalDate.parse(criterioDTO.getValor()).atStartOfDay());
+            case "fecha_hasta" -> new CriterioFechaHasta(LocalDate.parse(criterioDTO.getValor()).atTime(23, 59, 59));
             case "ubicacion" -> //chequear
                     new CriterioUbicacion(new Ubicacion(
                             Double.parseDouble(criterioDTO.getValor().split(",")[0]),
