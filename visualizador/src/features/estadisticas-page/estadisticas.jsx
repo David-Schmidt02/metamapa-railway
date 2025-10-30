@@ -108,7 +108,7 @@ function Estadisticas() {
                     datos = await ApiEstadistica.obtenerHoraMaxHechos({ id: idCategoria, cantidadHoras: cantidad });
                     break;
                 case 5:
-                    datos = await ApiEstadistica.obtenerSolicitudesSpam({ mostrar:null, cantidadSolicitudes: cantidad });
+                    datos = await ApiEstadistica.obtenerSolicitudesSpam({ mostrar:null, formato: null });
                     break;
                 default:
                     break;
@@ -141,11 +141,11 @@ function Estadisticas() {
                             <ListGroup className="sugerencias-lista">
                                 {sugerencias.map((cat) => (
                                     <ListGroup.Item
-                                        key={cat.id || cat}
+                                        key={cat.id}
                                         action
                                         onClick={() => seleccionarSugerencia(cat)}
                                     >
-                                        {cat.detalle || cat}
+                                        {cat.detalle}
                                     </ListGroup.Item>
                                 ))}
                             </ListGroup>
@@ -153,14 +153,18 @@ function Estadisticas() {
                     </Form.Group>
                 )}
 
-                <ContadorElementos
-                    cantidadInicial={cantidades[id] || 5}
-                    onChange={(nuevaCantidad) => handleCantidadChange(id, nuevaCantidad)}
-                />
+                {(id !== 5) && (
+                    <ContadorElementos
+                        cantidadInicial={cantidades[id] || 5}
+                        onChange={(nuevaCantidad) => handleCantidadChange(id, nuevaCantidad)}
+                    />
+                )}
 
-                <Button variant="primary" className="mt-3" onClick={() => handleConsultar(id)}>
-                    Consultar
-                </Button>
+                <div className={id === 5 ? "text-center mt-3" : "mt-3"}>
+                    <Button variant="primary" onClick={() => handleConsultar(id)}>
+                        Consultar
+                    </Button>
+                </div>
             </Form>
         );
     };
@@ -172,7 +176,8 @@ function Estadisticas() {
 
                 <div className="lista-estadisticas">
                     {estadisticas.map((item) => (
-                        <Card key={item.id} className={`card-estadistica shadow-sm ${seleccionada === item.id ? 'activa' : ''}`}>
+                        <Card key={item.id} className={`card-estadistica shadow-sm ${seleccionada === item.id ? 'activa' : ''}`}
+                              style={item.id === 5 ? { marginBottom: "3rem" } : {}}>
                             <Card.Body>
                                 <Card.Title>{item.titulo}</Card.Title>
                                 <Card.Text>{item.descripcion}</Card.Text>
@@ -222,7 +227,12 @@ function Estadisticas() {
                                                                     <>
                                                                         {index + 1}. <strong>Hora: </strong>{resultado.split(":")[0]}:00
                                                                     </>
-                                                                ) :(
+                                                                ) :
+                                                                    seleccionada === 5 ? (
+                                                                        <>
+                                                                            {index + 1}. <strong>Cantidad de solicitudes spam: </strong>{resultado.split(":")[0]}:00
+                                                                        </>
+                                                                    ) : (
                                                                     typeof resultado === "object" ? (
                                                                         <div>
                                                                             {index + 1}.{" "}
