@@ -5,6 +5,8 @@ import Perfil from "./features/perfil-page/perfil.jsx";
 import DetailPage from "./features/detail-page/detail-page.jsx";
 import Busqueda from "./features/busqueda-page/busqueda.jsx";
 import RegistrarHecho from "./features/registrar-hecho/registrar-hecho.jsx";
+import ColeccionesPage  from "./features/colecciones/ColeccionesPage";
+import ColeccionesHechoPage from "./features/viewHechos-page/coleccion-page.jsx";
 import './App.css';
 import Estadisticas from "./features/estadisticas-page/estadisticas";
 import CrearColeccion from "./features/crear-coleccion/crear-coleccion.jsx";
@@ -15,6 +17,7 @@ import { ReactKeycloakProvider, useKeycloak } from "@react-keycloak/web";
 import ApiAgregador from "./api/api-agregador";
 import { useEffect, useState } from "react"; // 'useState' ya estaba
 import { Spinner } from "react-bootstrap";
+import { useEffect } from "react";
 
 
 const kcConfig = {
@@ -82,6 +85,19 @@ function AppRouter() {
                             <Route path="/hecho/:hechoId" element={<DetailPage />} />
                             <Route path="/busqueda" element={<Busqueda />} />
                             <Route path="/registrar-hecho" element={<RegistrarHecho/>} />
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout/>}>
+                    {/* rutas públicas */}
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/" element={<Navigate to="/home" replace />} />
+                    <Route path="*" element={<Navigate to="/home" replace />} />
+                    <Route path="/hecho/:hechoId" element={<DetailPage />} />
+                    <Route path="/busqueda" element={<Busqueda />} />
+                    <Route path="/registrar-hecho" element={<RegistrarHecho/>} />
+                    <Route path="/colecciones" element={<ColeccionesPage/>} />
+                    <Route path="/hechos" element={<ColeccionesHechoPage/>}/>
+                    <Route path="/colecciones/:id/hechos" element={<ColeccionesHechoPage/>} />
 
                             {/* rutas usuario */}
                             <Route element={<RequireAuth/>} >
