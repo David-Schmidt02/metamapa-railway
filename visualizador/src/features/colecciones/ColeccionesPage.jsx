@@ -1,72 +1,9 @@
-import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-// Importamos un ícono para "colección" y el hook de navegación
+import React, {useEffect} from 'react';
+import {Container, Row, Col, Card, Button, Spinner} from 'react-bootstrap';
 import { FaLayerGroup } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
-// 1. Datos de ejemplo. Eventualmente vendrán de tu API.
-const mockColecciones = [
-    {
-        id: 1,
-        titulo: "Incendios Forestales 2024",
-        descripcion: "Seguimiento de todos los incendios reportados en la región patagónica durante el verano de 2024."
-    },
-    {
-        id: 2,
-        titulo: "Reportes de Vandalismo CABA",
-        descripcion: "Colección de reportes de vandalismo y daños a la propiedad pública en la Ciudad de Buenos Aires."
-    },
-    {
-        id: 3,
-        titulo: "Problemas de Infraestructura",
-        descripcion: "Seguimiento de cortes de luz, agua y problemas de infraestructura vial reportados por la comunidad."
-    },
-    {
-        id: 4,
-        titulo: "Eventos Comunitarios",
-        descripcion: "Todos los hechos relacionados con festivales, ferias y actividades comunitarias positivas."
-    },
-    {
-        id: 1,
-        titulo: "Incendios Forestales 2024",
-        descripcion: "Seguimiento de todos los incendios reportados en la región patagónica durante el verano de 2024."
-    },
-    {
-        id: 2,
-        titulo: "Reportes de Vandalismo CABA",
-        descripcion: "Colección de reportes de vandalismo y daños a la propiedad pública en la Ciudad de Buenos Aires."
-    },
-    {
-        id: 3,
-        titulo: "Problemas de Infraestructura",
-        descripcion: "Seguimiento de cortes de luz, agua y problemas de infraestructura vial reportados por la comunidad."
-    },
-    {
-        id: 4,
-        titulo: "Eventos Comunitarios",
-        descripcion: "Todos los hechos relacionados con festivales, ferias y actividades comunitarias positivas."
-    },
-    {
-        id: 1,
-        titulo: "Incendios Forestales 2024",
-        descripcion: "Seguimiento de todos los incendios reportados en la región patagónica durante el verano de 2024."
-    },
-    {
-        id: 2,
-        titulo: "Reportes de Vandalismo CABA",
-        descripcion: "Colección de reportes de vandalismo y daños a la propiedad pública en la Ciudad de Buenos Aires."
-    },
-    {
-        id: 3,
-        titulo: "Problemas de Infraestructura",
-        descripcion: "Seguimiento de cortes de luz, agua y problemas de infraestructura vial reportados por la comunidad."
-    },
-    {
-        id: 4,
-        titulo: "Eventos Comunitarios",
-        descripcion: "Todos los hechos relacionados con festivales, ferias y actividades comunitarias positivas."
-    }
-];
+import { useState } from 'react';
+import ApiAgregador from "../../api/api-agregador.jsx";
 
 // Estilo para el ícono (reemplaza tu "Image cap")
 const cardIconStyle = {
@@ -79,8 +16,10 @@ const cardIconStyle = {
 };
 
 function ColeccionesPage() {
-    // 2. Hook para manejar la navegación
     const navigate = useNavigate();
+
+    const [colecciones, setColecciones] = useState([]);
+    const [error, setError] = useState(null);
 
     // 3. Función que se llama al hacer clic en el botón
     const handleVerHechos = (coleccionId) => {
@@ -88,6 +27,25 @@ function ColeccionesPage() {
         // (Asegúrate de tener esta ruta definida en tu Router)
         navigate(`/colecciones/${coleccionId}/hechos`);
     };
+
+    useEffect(() => {
+        const fetchColecciones = async () => {
+            try {
+                setError(null);
+
+                const data = await ApiAgregador.obtenerColecciones();
+
+                setColecciones(data);
+
+            } catch (error) {
+                setError(error);
+            } finally {
+            }
+        }
+
+        fetchColecciones();
+    }, []);
+
 
     return (
         // Usamos el fondo verde pálido de tu imagen
@@ -97,7 +55,7 @@ function ColeccionesPage() {
 
                 {/* 4. Grilla responsiva. Se ajustará a 2 columnas en pantallas medianas */}
                 <Row xs={1} md={2} className="g-4">
-                    {mockColecciones.map((coleccion) => (
+                    {colecciones.map((coleccion) => (
                         <Col key={coleccion.id}>
                             <Card className="shadow-sm h-100">
                                 {/* 5. El ícono reemplaza a la imagen */}
