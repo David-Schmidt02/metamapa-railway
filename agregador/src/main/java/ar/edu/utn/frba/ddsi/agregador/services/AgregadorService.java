@@ -26,6 +26,8 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.clasificador.Clasificador;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -191,8 +193,8 @@ public class AgregadorService {
             case "titulo" -> new CriterioTitulo(criterioDTO.getValor());
             case "descripcion" -> new CriterioDescripcion(criterioDTO.getValor());
             case "categoria" -> new CriterioCategoria(criterioDTO.getValor());
-            case "fechaAcontecimientoDesde" -> new CriterioFechaDesde(LocalDateTime.parse(criterioDTO.getValor()));
-            case "fechaAcontecimientoHasta" -> new CriterioFechaHasta(LocalDateTime.parse(criterioDTO.getValor()));
+            case "fecha_desde" -> new CriterioFechaDesde(LocalDate.parse(criterioDTO.getValor()).atStartOfDay());
+            case "fecha_hasta" -> new CriterioFechaHasta(LocalDate.parse(criterioDTO.getValor()).atTime(23, 59, 59));
             case "ubicacion" -> //chequear
                     new CriterioUbicacion(new Ubicacion(
                             Double.parseDouble(criterioDTO.getValor().split(",")[0]),
