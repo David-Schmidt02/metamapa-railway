@@ -6,7 +6,7 @@ class ApiAgregador {
     constructor() {
         this.tokenAuth = null
         this.axiosInstance = axios.create({
-            baseURL: process.env.REACT_APP_IP_BACK || 'http://localhost:8080/agregador',
+            baseURL: process.env.REACT_APP_IP_BACK || 'http://localhost:8089/agregador',
         })
     }
 

@@ -1,25 +1,26 @@
-import React from 'react';
-import { LoginHandler, useKeycloak } from '../../KeycloakProvider'; // Ajusta la ruta
+// En tu archivo Login.jsx
+import { useEffect } from 'react';
+import { useKeycloak } from '@react-keycloak/web';
 import {Navigate} from "react-router-dom";
-const Login = () => {
-    const { isAuthenticated } = useKeycloak();
 
-    // Si el usuario ya está autenticado, redirigir al home o a donde sea necesario
-    if (isAuthenticated) {
-        console.log("Usuario ya autenticado, redirigiendo a /home");
+const Login = () => {
+    const { keycloak } = useKeycloak();
+
+    useEffect(() => {
+        // Cuando este componente se monte,
+        // si no estamos autenticados, iniciamos el login.
+        if (!keycloak.authenticated) {
+            keycloak.login();
+        }
+    }, [keycloak]);
+
+    // Opcional: si ya está autenticado, redirigir a home
+    if (keycloak.authenticated) {
         return <Navigate to="/home" replace />;
     }
 
-    // 1. Usar el LoginHandler para forzar la redirección a Keycloak
-    return (
-        <div>
-            <h1>Iniciando Sesión...</h1>
-            <p>Serás redirigido a la página de login segura.</p>
-
-            {/* Componente que ejecuta keycloak.login() al montarse */}
-            <LoginHandler redirectPath="/home" />
-        </div>
-    );
+    // Muestra un "cargando" mientras se produce la redirección
+    return <div>Redirigiendo a la página de login...</div>;
 };
 
 export default Login;
