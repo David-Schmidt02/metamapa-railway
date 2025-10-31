@@ -7,7 +7,7 @@ import MapaInteractivo from './components/mapa-interactivo/mapa-interactivo.jsx'
 import ApiAgregador from '../../api/api-agregador.jsx';
 import useUbicacionFromCoords from "./hooks/useUbicacionFromCoords.jsx";
 import Mapa from '../home-page/components/mapa.jsx';
-import {useParams} from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 
 function DetailPage() {
     const { hechoId } = useParams()
@@ -15,7 +15,8 @@ function DetailPage() {
     const [hecho, setHecho] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-
+    const location = useLocation();
+    const coleccionState = location.state;
     useEffect(() => {
         const fetchHecho = async () => {
             try {
@@ -74,6 +75,14 @@ function DetailPage() {
         <div className="container-xl my-5 bg-white p-4 p-md-5 rounded shadow-sm">
             <div className="row">
                 <div className="col-md-7">
+                    {coleccionState && coleccionState.coleccionId && (
+                        <Link
+                            to={`/colecciones/${coleccionState.coleccionId}/hechos`}
+                            className="d-block mb-3 text-muted text-decoration-none"
+                        >
+                            &larr; Volver a {coleccionState.coleccionNombre || 'la colección'}
+                        </Link>
+                    )}
                     <h1 className="display-5 fw-bold">{hecho.titulo}</h1>
                     <p className="h5 text-muted mb-3">{hecho.categoria?.detalle}</p>
 
