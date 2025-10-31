@@ -58,10 +58,14 @@ function NavBar() {
                                     id="basic-nav-dropdown"
                                     align="end"
                                 >
-                                    <NavDropdown.Item onClick={() => navigate('/perfil')}>
-                                        Mi Perfil
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Divider />
+                                    {esAdmin && (
+                                    <>
+                                        <NavDropdown.Item onClick={() => navigate('/panel-control')}>
+                                            Panel de control
+                                            </NavDropdown.Item>
+                                        <NavDropdown.Divider />
+                                    </>)}
+
                                     <NavDropdown.Item onClick={() => keycloak.logout()}>
                                         Cerrar Sesión
                                     </NavDropdown.Item>

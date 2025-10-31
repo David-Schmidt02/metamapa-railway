@@ -6,6 +6,7 @@ const VentanaEmergente = ({ mensaje, onConfirm, onCancel, setMotivo }) => {
     const cerrarVentana = () => {
         onCancel();
     }
+
     return (
         <div className="ventana-flotante-confirmacion-overlay">
             <div className="ventana-flotante-confirmacion">
@@ -20,13 +21,19 @@ const VentanaEmergente = ({ mensaje, onConfirm, onCancel, setMotivo }) => {
                     />
                     */}
                 </div>
-                <button className="boton-confirmar-reserva" onClick={onConfirm}>
-                    CONFIRMAR
-                </button>
-                <button className="boton-cerrar-ventana" onClick={cerrarVentana}
-                >
-                    CANCELAR
-                </button>
+
+                {/* --- MODIFICACIÓN AQUÍ --- */}
+                <div className="ventana-botones-confirmacion">
+                    <button className="boton-confirmar-reserva" onClick={onConfirm}>
+                        CONFIRMAR
+                    </button>
+                    <button className="boton-cerrar-ventana" onClick={cerrarVentana}
+                    >
+                        CANCELAR
+                    </button>
+                </div>
+                {/* --- FIN DE LA MODIFICACIÓN --- */}
+
             </div>
         </div>
     )

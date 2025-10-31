@@ -1,56 +1,72 @@
-.contenedor-tarjeta-coleccion {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* centra horizontalmente */
-    justify-content: center; /* centra verticalmente */
-    text-align: center;
-    padding: 18px;
-    gap: 8px;
+/* 1. La Tarjeta (Contenedor principal)
+  - Fondo blanco limpio, no gris.
+  - El borde izquierdo usa el color primario de tu tema MetaMapa.
+  - Transición suave y una sombra que se levanta al pasar el mouse.
+*/
+.coleccion-card {
+    width: 100%;
+    max-width: 900px;
+    background-color: #ffffff; /* Fondo blanco */
+    border: 1px solid #e9ecef; /* Borde sutil (Bootstrap 'card-border-color') */
+    border-left: 5px solid #DA9B3C; /* <-- ACENTO DE TU TEMA */
     border-radius: 8px;
-    background: #E8E8E8;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-    word-break: break-word;
-    width: 100%;
-    max-width: 900px; /* controla ancho de la card */
-    margin: 0; /* el espaciado entre tarjetas lo maneja el contenedor padre */
+    transition: all 0.2s ease-in-out;
 }
 
-/* Título principal - más grande */
+/* Efecto hover sutil para interactividad */
+.coleccion-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important; /* Sombra más pronunciada */
+    border-color: #DA9B3C;
+}
+
+/* 2. Título (Ajusta el Card.Title de Bootstrap)
+  - Controlamos el tamaño de fuente.
+*/
 .coleccion-titulo {
-    margin: 0;
-    font-weight: 700;
-    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
-    line-height: 1.2;
-    color: #111827;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #212529;
 }
 
-/* Descripción - centrada y más chica */
+/* 3. Descripción (Ajusta el Card.Text de Bootstrap)
+  - La hacemos un poco más pequeña y nos aseguramos de que no tenga margen inferior.
+*/
 .coleccion-descripcion {
-    margin: 0;
-    font-weight: 500;
-    font-size: clamp(0.9rem, 1.6vw, 1rem);
-    line-height: 1.3;
-    color: #6b7280;
-    white-space: pre-line;
-    max-width: 92%;
+    font-size: 0.9rem;
+    margin-bottom: 0;
 }
 
-/* Asegura que los botones no rompan el centrado */
-.contenedor-botones-coleccion {
-    display: flex;
-    gap: 12px;
-    margin-top: 12px;
+/* 4. Contenedor de Acciones (Botones)
+  - 'flex-shrink: 0' evita que los botones se "aplasten" o pasen a la línea de abajo.
+  - 'margin-left' da espacio entre el texto y los botones.
+*/
+.coleccion-acciones {
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+/* 5. Ajuste de botones
+  - Centra verticalmente el icono y el texto (si está visible).
+*/
+.coleccion-acciones .btn {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    width: 100%;
 }
 
-
+/* 6. Contenedor Padre (fondo-gris)
+  - ¡IMPORTANTE! Le quitamos el fondo gris para que herede el fondo de la
+    página de perfil (que ya es blanco o amarillo pálido).
+  - Solo lo usamos para apilar las tarjetas con un espacio (gap).
+*/
 .fondo-gris {
     display: flex;
-    flex-direction: column; /* apila una coleccion debajo de la otra */
-    align-items: center;     /* centra las cards horizontalmente */
+    flex-direction: column;
+    align-items: center;
     justify-content: flex-start;
-    gap: 20px;               /* espacio entre colecciones */
+    gap: 1rem; /* Espacio entre tarjetas */
     width: 100%;
-    padding: 16px;
+    padding: 0; /* El 'perfil-content' ya tiene padding */
+    background-color: transparent; /* <-- CLAVE: sin fondo */
 }

@@ -86,7 +86,7 @@ class ApiAgregador {
 
     async obtenerSolicitudes(){
         try {
-            const response = await this.axiosInstance.get('/solicitudes/pendientes', {
+            const response = await this.axiosInstance.get('/solicitudes', {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.tokenAuth}`

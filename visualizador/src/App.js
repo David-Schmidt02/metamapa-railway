@@ -89,13 +89,13 @@ function AppRouter() {
 
                             {/* rutas usuario */}
                             <Route element={<RequireAuth/>} >
-                                <Route path="/perfil" element={<Perfil/> } />
                                 <Route path="perfil/solicitudes" element={<Perfil mostrarEnPantalla={'solicitudes'} /> }/>
                                 <Route path="perfil/colecciones" element={<Perfil mostrarEnPantalla={'colecciones'}/> } />
                             </Route>
 
                             {/* rutas admin */}
                             <Route element={<RequireAdmin/>} >
+                                <Route path="/panel-control" element={<Perfil/> } />
                                 <Route path="/crear-coleccion" element={<CrearColeccion/>} />
                                 <Route path="/estadisticas" element={<Estadisticas/>} />
                             </Route>
