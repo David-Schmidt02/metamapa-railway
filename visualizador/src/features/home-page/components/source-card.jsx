@@ -31,7 +31,7 @@ function SourceCard({ text, alignRight, scrollOffset, delay, icon }) {
 
     const iconWrapperStyle = {
         backgroundColor: 'transparent', // El ícono ya tiene color
-        borderRadius: '50%',
+        borderRadius: '70%',
         width: '80px',
         height: '80px',
         flexShrink: 0,
@@ -46,7 +46,9 @@ function SourceCard({ text, alignRight, scrollOffset, delay, icon }) {
             style={{ ...transitionStyle, transitionDelay: `${delay}s` }}
             className="col-12 col-md-8 mx-auto"
         >
-
+            <div style={iconWrapperStyle}>
+                {icon}
+            </div>
             <div className="text-start">{text}</div>
         </div>
     );

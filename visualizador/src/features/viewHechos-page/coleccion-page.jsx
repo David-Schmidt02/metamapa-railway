@@ -66,13 +66,22 @@ export default function ColeccionHechosPage() {
   // Este es el "corazón" de la página.
   // Se ejecuta al inicio Y CADA VEZ que 'id', 'mostrarConsensuados' o 'filtros' cambian.
   useEffect(() => {
-    // Definimos la función de búsqueda DENTRO del useEffect
+    // --- INICIO DE LA CORRECCIÓN ---
+
+    // 1. Condición de Salida:
+    // Si estamos en modo colección, PERO la info de la colección aún no ha cargado (es null),
+    // no hagas nada. Este efecto se volverá a ejecutar cuando 'coleccion' cambie.
+    if (isModoColeccion && !coleccion) {
+      return; // Salir temprano
+    }
+    // --- FIN DE LA CORRECCIÓN ---
+
+
     const buscarHechos = async () => {
       try {
         let data;
         if (isModoColeccion) {
-          // --- MODO COLECCIÓN ---
-          // Llama a la API con los estados actuales
+          // Ahora, cuando este código se ejecute, 'coleccion' ya no será null
           data = await api.getHechosPorColeccion(id, filtros, mostrarConsensuados);
         } else {
           // --- MODO GENERAL ---
@@ -89,10 +98,10 @@ export default function ColeccionHechosPage() {
       }
     };
 
-    buscarHechos(); // Ejecutamos la búsqueda
+    buscarHechos();
 
-    // Estas son las dependencias: si alguna de estas cambia, el efecto se vuelve a ejecutar.
-  }, [id, isModoColeccion, mostrarConsensuados, filtros]);
+    // 2. Añadir 'coleccion' al array de dependencias
+  }, [id, isModoColeccion, mostrarConsensuados, filtros, coleccion]);
 
   return (
       <div style={{ background: '#E8E8E8', minHeight: '100vh' }}>
@@ -119,7 +128,7 @@ export default function ColeccionHechosPage() {
           )}
 
           {hechos.map(hecho => (
-              <HechoCard key={hecho.id} hecho={hecho} />
+              <HechoCard key={hecho.id} hecho={hecho} coleccion={isModoColeccion ? coleccion : null} />
           ))}
 
           {/* <Paginacion /> */} {/* --- PAGINACIÓN ELIMINADA --- */}

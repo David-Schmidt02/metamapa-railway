@@ -1,26 +1,33 @@
-// visualizador/src/features/home-page/components/mapa.jsx
-import {Button, Card} from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import React from "react";
-import { useEffect, useState } from 'react'
-import {MapContainer, TileLayer, Marker, Popup, CircleMarker} from 'react-leaflet'
+import { MapContainer, TileLayer, Popup, CircleMarker } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import './mapa.css'
 import L from 'leaflet'
-import {useNavigate} from "react-router-dom";
-import ApiAgregador from "../../../api/api-agregador";
+import { useNavigate } from "react-router-dom";
+import './mapa.css'
+
+// Importaciones para Marker Cluster
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
+// --- INICIO: Fix para íconos de Leaflet ---
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
 /* fix para que cargue el icono, dsp poner personalizado */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+    iconRetinaUrl: iconRetinaUrl,
+    iconUrl: iconUrl,
+    shadowUrl: shadowUrl
 });
+// --- FIN: Fix para íconos de Leaflet ---
 
 const myRenderer = L.canvas({ padding: 0.5 });
 
-
-function Mapa ({hechosMapa}) {
+function Mapa({ hechosMapa }) {
     const navigate = useNavigate()
 
     const navigateToHecho = (hechoId) => {
@@ -31,10 +38,10 @@ function Mapa ({hechosMapa}) {
         ? { lat: hechosMapa[0].latitud, lng: hechosMapa[0].longitud }
         : { lat: -34.37049232747865, lng: -58.90407374255551 };
 
-    return(<Card className="shadow-lg" style={{marginTop: '50px', marginBottom: '50px'}}>
-        <Card.Body style={{padding: '0px'}}>
+    return (<Card className="shadow-lg" style={{ marginTop: '50px', marginBottom: '50px' }}>
+        <Card.Body style={{ padding: '0px' }}>
             <h4 className="text-center pt-3 pb-3 mb-0">Mapa de hechos registrados</h4>
-            <div style={{height: '450px', width: '100%'}}>
+            <div style={{ height: '450px', width: '100%' }}>
                 <MapContainer
                     preferCanvas={true}
                     renderer={myRenderer}
@@ -45,17 +52,22 @@ function Mapa ({hechosMapa}) {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
 
-                    {hechosMapa.map(unHecho =>
-                        <CircleMarker center={{
-                            lat: unHecho.latitud,
-                            lng: unHecho.longitud
-                        }}> {/* icono no carga, ver esto */}
-                            <Popup>
-                                <p></p>
-                                <Button onClick={() => navigateToHecho(unHecho.id)}> Ver mas </Button>
-                            </Popup>
-                        </CircleMarker>
-                    )}
+                    <MarkerClusterGroup>
+                        {hechosMapa.map(unHecho =>
+                            <CircleMarker
+                                key={unHecho.id}
+                                center={{
+                                    lat: unHecho.latitud,
+                                    lng: unHecho.longitud
+                                }}
+                            >
+                                <Popup>
+                                    <p>{unHecho.titulo}</p>
+                                    <Button onClick={() => navigateToHecho(unHecho.id)}> Ver mas </Button>
+                                </Popup>
+                            </CircleMarker>
+                        )}
+                    </MarkerClusterGroup>
 
                 </MapContainer>
             </div>
@@ -64,3 +76,4 @@ function Mapa ({hechosMapa}) {
 };
 
 export default Mapa;
+

@@ -79,3 +79,27 @@
   font-weight: 600;
   box-shadow: 0 1px 4px #0001;
 }
+
+.hecho-card-link-wrapper {
+  text-decoration: none; /* Quita el subrayado */
+  color: inherit;      /* Hereda el color del texto (no lo pone azul) */
+  display: block;      /* Hace que el link ocupe todo el ancho */
+  margin-bottom: 1rem; /* Opcional: añade un espacio entre cards */
+}
+
+/* Opcional: un efecto hover para toda la card */
+.hecho-card-link-wrapper:hover .hecho-card {
+  /* Esto simula el efecto hover que tenías en el título,
+     pero ahora en toda la card */
+  border-color: #999;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Asegúrate de que el título ya no tenga estilos de link
+  (si los tenía antes, como un 'text-decoration' propio)
+*/
+.hecho-card-title {
+  /* Probablemente ya lo tenías así, pero por si acaso */
+  text-decoration: none;
+  color: #333; /* O tu color de título principal */
+}
