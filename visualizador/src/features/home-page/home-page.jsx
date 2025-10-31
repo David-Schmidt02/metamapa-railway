@@ -7,60 +7,33 @@ import ApiAgregador from "../../api/api-agregador";
 import { FaDatabase, FaUsers, FaNetworkWired } from "react-icons/fa";
 
 function HomePage() {
-    const [scale, setScale] = useState(1);
-    const [mapOpacity, setMapOpacity] = useState(0);
-
-    const [sourceScrollOffset, setSourceScrollOffset] = useState(0);
-    const sourcesSectionRef = React.useRef(null);
+    // --- Estados de animación eliminados (scale, mapOpacity, sourceScrollOffset) ---
+    // --- Ref de scroll eliminada (sourcesSectionRef) ---
 
     const overlayColor = 'rgba(217,210,181,0.45)';
 
     const [hechosMapa, setHechosMapa] = useState([])
     const [loadingHechos, setLoadingHechos] = useState(true)
 
+    // Hook para cargar los datos del mapa (se mantiene)
     useEffect(() => {
         ApiAgregador.obtenerUbicaciones()
-                .then((data) => {
-                        setHechosMapa(data)
-                    }
-                ).finally( () => {
+            .then((data) => {
+                    setHechosMapa(data)
+                }
+            ).finally( () => {
             setLoadingHechos(false);
             console.log('done')
         })
     }, [])
 
+    // Hook para ir al inicio de la página al cargar (se mantiene)
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollPosition = window.scrollY;
-            const maxScroll = 400;
+    // --- useEffect de handleScroll eliminado completamente ---
 
-            const newScale = Math.max(0.8, 1 - scrollPosition / maxScroll * 0.2);
-            setScale(newScale);
-            const newOpacity = Math.min(1, scrollPosition / maxScroll);
-            setMapOpacity(newOpacity);
-
-            if (sourcesSectionRef.current) {
-                const sectionTop = sourcesSectionRef.current.getBoundingClientRect().top;
-                const triggerPoint = window.innerHeight - 200;
-                const scrollDistance = Math.min(150, Math.max(0, triggerPoint - sectionTop));
-                setSourceScrollOffset(scrollDistance);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
-
-    // TODO: Reemplazar con datos de fuentes
-    // ... tu código ...
 
     // TODO: Reemplazar con datos de fuentes
     const sourceData = [
@@ -150,9 +123,7 @@ function HomePage() {
                         padding: '20px 40px',
                         borderRadius: '10px',
                         backdropFilter: 'blur(3px)',
-                        transform: `scale(${scale})`,
-                        transition: 'transform 0.1s ease-out',
-                        transformOrigin: 'top center',
+                        // --- Estilos de animación eliminados (transform, transition, transformOrigin) ---
                     }}
                 >
                     <h1 style={{ color: '#F5F5DC', fontWeight: 'bold' }}>
@@ -165,17 +136,20 @@ function HomePage() {
             </div>
 
             {/* --- SECCIÓN 2: MAPA --- */}
-            <Container style={{ opacity: mapOpacity, transition: 'opacity 0.5s ease-in' }}>
+            {/* Estilos de animación eliminados (opacity, transition) */}
+            <Container>
                 {loadingHechos ?
                     <div className="text-center mt-5">
                         <Spinner animation="border" role="status" />
                         <p className="mt-3">Cargando hechos...</p>
                     </div>
+                    // Renderiza el mapa directamente cuando loadingHechos es false
                     : <Mapa hechosMapa={hechosMapa} />}
             </Container>
 
             {/* --- SECCIÓN 3: FUENTES --- */}
-            <div ref={sourcesSectionRef} style={{ backgroundColor: 'white', padding: '60px 0' }}>
+            {/* Ref eliminada del div */}
+            <div style={{ backgroundColor: 'white', padding: '60px 0' }}>
                 <h2 className="text-center mb-5" style={{ color: '#9d3b48', fontWeight: 'bold' }}>
                     ¿De que fuentes obtenemos los hechos?
                 </h2>
@@ -186,9 +160,9 @@ function HomePage() {
                                 key={index}
                                 text={data.text}
                                 alignRight={data.alignRight}
-                                scrollOffset={sourceScrollOffset}
-                                delay={data.delay}
+                                delay={data.delay} // El 'delay' de SourceCard (si es de CSS) puede seguir funcionando
                                 icon={data.icon}
+                                // --- Prop 'scrollOffset' eliminada ---
                             />
                         ))}
                     </div>
