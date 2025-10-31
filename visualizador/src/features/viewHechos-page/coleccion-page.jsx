@@ -71,15 +71,11 @@ export default function ColeccionHechosPage() {
     // 1. Condición de Salida:
     // Si estamos en modo colección, PERO la info de la colección aún no ha cargado (es null),
     // no hagas nada. Este efecto se volverá a ejecutar cuando 'coleccion' cambie.
-    if (isModoColeccion && !coleccion) {
-      return; // Salir temprano
-    }
     // --- FIN DE LA CORRECCIÓN ---
-
-
     const buscarHechos = async () => {
       try {
         let data;
+
         if (isModoColeccion) {
           // Ahora, cuando este código se ejecute, 'coleccion' ya no será null
           data = await api.getHechosPorColeccion(id, filtros, mostrarConsensuados);

@@ -38,8 +38,13 @@ class ApiAgregador {
 
     async obtenerHechos(filtros) {
         try {
+
+            const filtrosLimpios = Object.fromEntries(
+                Object.entries(filtros).filter(([key, value]) => value != null && value !== '')
+            );
+
             const response = await this.axiosInstance.get('/hechos', {
-                    params: filtros,
+                    params: filtrosLimpios,
                     paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
                 })
             return response.data

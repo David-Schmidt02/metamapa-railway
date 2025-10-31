@@ -420,18 +420,18 @@ public class AgregadorService {
                     if (fechaReporteDesde == null && fechaReporteHasta == null) return true;
                     if (hecho.getFechaCarga() == null) return false;
                     boolean desde = fechaReporteDesde == null ||
-                            !hecho.getFechaCarga().isBefore(LocalDateTime.parse(fechaReporteDesde));
+                            !hecho.getFechaCarga().isBefore(LocalDate.parse(fechaReporteDesde).atStartOfDay());
                     boolean hasta = fechaReporteHasta == null ||
-                            !hecho.getFechaCarga().isAfter(LocalDateTime.parse(fechaReporteHasta));
+                            !hecho.getFechaCarga().isAfter(LocalDate.parse(fechaReporteHasta).atStartOfDay());
                     return desde && hasta;
                 })
                 .filter(hecho -> {
                     if (fechaAcontecimientoDesde == null && fechaAcontecimientoHasta == null) return true;
                     if (hecho.getFechaAcontecimiento() == null) return false;
                     boolean desde = fechaAcontecimientoDesde == null ||
-                            !hecho.getFechaAcontecimiento().isBefore(LocalDateTime.parse(fechaAcontecimientoDesde));
+                            !hecho.getFechaAcontecimiento().isBefore(LocalDate.parse(fechaAcontecimientoDesde).atStartOfDay());
                     boolean hasta = fechaAcontecimientoHasta == null ||
-                            !hecho.getFechaAcontecimiento().isAfter(LocalDateTime.parse(fechaAcontecimientoHasta));
+                            !hecho.getFechaAcontecimiento().isAfter(LocalDate.parse(fechaAcontecimientoHasta).atStartOfDay());
                     return desde && hasta;
                 })
                 .filter(hecho -> {

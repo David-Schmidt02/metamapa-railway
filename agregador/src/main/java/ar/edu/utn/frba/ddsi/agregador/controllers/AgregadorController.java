@@ -175,8 +175,27 @@ public class AgregadorController {
 
 
     @GetMapping("/hechos")
-    public List<Hecho> obtenerTodosLosHechos() {
-        return this.agregadorService.obtenerTodosLosHechos();
+    public List<Hecho> obtenerTodosLosHechos(@RequestParam(required = false) String categoria,
+                                             @RequestParam(required = false) String fecha_reporte_desde,
+                                             @RequestParam(required = false) String fecha_reporte_hasta,
+                                             @RequestParam(required = false) String fecha_acontecimiento_desde,
+                                             @RequestParam(required = false) String fecha_acontecimiento_hasta,
+                                             @RequestParam(required = false) Double latitud,
+                                             @RequestParam(required = false) Double longitud
+                                             ) {
+
+        var filtros = new Filtro(
+                categoria,
+                fecha_reporte_desde,
+                fecha_reporte_hasta,
+                fecha_acontecimiento_desde,
+                fecha_acontecimiento_hasta,
+                latitud,
+                longitud
+        );
+
+        List<Hecho> unosHechos = this.agregadorService.obtenerTodosLosHechos();
+        return this.agregadorService.hechosFiltrados(unosHechos, filtros);
     }
 
     @GetMapping("/search")
