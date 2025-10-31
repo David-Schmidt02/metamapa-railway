@@ -64,16 +64,22 @@ function Busqueda() {
                         Encontrá los hechos que te interesen
                     </h2>
 
-                    <div className="caja-busqueda animacion-busqueda">
+                    <div className="caja-busqueda animacion-busqueda d-flex justify-content-center align-items-center">
                         <FaSearch className="icono-busqueda" />
+
                         <input
                             type="text"
-                            className="input-busqueda"
+                            className="input-busqueda form-control flex-grow-1"
                             placeholder="Buscar hechos por palabra clave, categoría o lugar..."
                             value={busqueda}
                             onChange={(e) => setBusqueda(e.target.value)}
                         />
-                        <Button onClick={() => buscar()} >Buscar</Button>
+                        <Button
+                            onClick={() => buscar()}
+                            className="ms-2"
+                        >
+                            Buscar
+                        </Button>
                     </div>
                 </Container>
             </section>

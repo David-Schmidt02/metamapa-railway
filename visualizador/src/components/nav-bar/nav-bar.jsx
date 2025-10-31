@@ -9,6 +9,8 @@ function NavBar() {
     const navigate = useNavigate();
     const { keycloak } = useKeycloak();
 
+    const esAdmin = keycloak.authenticated && keycloak.hasRealmRole('admin');
+
     return (
         <Navbar
             expand="lg"
@@ -26,8 +28,8 @@ function NavBar() {
                         navbarScroll
                         onSelect={(selectedKey) => navigate(`${selectedKey}`)}
                     >
+                        {esAdmin && (<Nav.Link href="/estadisticas" className="nav-link-metamapa">Estadisticas</Nav.Link>)}
                         <Nav.Link href="/colecciones" className="nav-link-metamapa">Colecciones</Nav.Link>
-                        <Nav.Link href="/estadisticas" className="nav-link-metamapa">Estadisticas</Nav.Link>
                         <Nav.Link href="/busqueda" className="nav-link-metamapa">Buscar</Nav.Link>
                         <Nav.Link href="/hechos" className="nav-link-metamapa">Navegar Hechos</Nav.Link>
                         <Nav.Link

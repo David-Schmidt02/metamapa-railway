@@ -8,15 +8,17 @@ import {
     Button,
     Tabs,
     Tab,
-    Spinner
+    Spinner,
+    Modal
 } from 'react-bootstrap';
 import MapaInteractivo from "../detail-page/components/mapa-interactivo/mapa-interactivo";
 import {useKeycloak} from "@react-keycloak/web";
+import { useNavigate } from 'react-router-dom';
 import apiDinamica  from "../../api/api-dinamica";
 import api from "../../api/api-agregador";
 
 function RegistrarHecho() {
-
+    const navigate = useNavigate();
     const {keycloak, initialized} = useKeycloak();
     const [anonimo, setAnonimo] = useState(false)
 
@@ -41,14 +43,25 @@ function RegistrarHecho() {
     const [activeTab, setActiveTab] = useState('multimedia');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // ... (handleChange, handleFileChange, handleSubmit, mockCategorias sin cambios) ...
-    // ...
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({
             ...prevData,
             [name]: value
         }));
+    };
+
+    const handleVolverAHome = () => {
+        setShowModal(false);
+        if (nuevoIdHecho) {
+            navigate(`/home`);
+        }
+    }
+
+    const handleCrearOtro = () => {
+        setShowModal(false);
+        setFormData(estadoInicialForm);
+        setActiveTab('multimedia');
     };
 
     const handleFileChange = (e) => {
@@ -151,9 +164,12 @@ function RegistrarHecho() {
             // y que la respuesta contiene el hecho creado con su ID
             const response = await apiDinamica.crearHecho(hechoData);
 
-            const nuevoIdHecho = response; // <-- AJUSTA ESTO según la respuesta de tu API
+            console.log(response);
+            const idHechoCreado  = response;
+            setNuevoIdHecho(idHechoCreado);
 
-            console.log("Hecho registrado con éxito. ID:", nuevoIdHecho);
+            console.log("Hecho registrado con éxito. ID:", idHechoCreado);
+            setShowModal(true);
 
             // --- PASO 2: Subir las imágenes (si existen) ---
             if (formData.contenidoMultimedia.length > 0) {
@@ -445,6 +461,22 @@ function RegistrarHecho() {
                     </Col>
                 </Row>
             </Container>
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Hecho registrado con éxito</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    El hecho se registró correctamente.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCrearOtro}>
+                        Crear otro hecho
+                    </Button>
+                    <Button variant="primary" onClick={handleVolverAHome}>
+                        Volver a Home
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

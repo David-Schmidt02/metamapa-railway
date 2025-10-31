@@ -7,7 +7,6 @@ import 'leaflet/dist/leaflet.css'
 import './mapa.css'
 import L from 'leaflet'
 import {useNavigate} from "react-router-dom";
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import ApiAgregador from "../../../api/api-agregador";
 
 /* fix para que cargue el icono, dsp poner personalizado */
@@ -45,7 +44,7 @@ function Mapa ({hechosMapa}) {
                         url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
-                    <MarkerClusterGroup chunkedLoading>
+
                     {hechosMapa.map(unHecho =>
                         <CircleMarker center={{
                             lat: unHecho.latitud,
@@ -57,7 +56,7 @@ function Mapa ({hechosMapa}) {
                             </Popup>
                         </CircleMarker>
                     )}
-                        </MarkerClusterGroup>
+
                 </MapContainer>
             </div>
         </Card.Body>

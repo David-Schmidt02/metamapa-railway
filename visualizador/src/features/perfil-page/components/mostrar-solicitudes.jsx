@@ -2,6 +2,7 @@ import SolicitudCard from "./solicitud-card/solicitud-card"
 import { useEffect, useState } from 'react'
 import api from "../../../api/api-agregador";
 import './solicitud-card/solicitud-card.css'
+import { Inbox } from 'react-bootstrap-icons'; // <--- 1. IMPORTAR EL ICONO
 
 const MostrarSolicitudes = () => {
     const [solicitudes, setSolicitudes] = useState([])
