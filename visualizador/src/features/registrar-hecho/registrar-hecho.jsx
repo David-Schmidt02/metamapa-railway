@@ -183,7 +183,7 @@ function RegistrarHecho() {
 
                     // Añadimos la promesa de subida al array
                     promesasDeSubida.push(
-                        apiDinamica.cargarImagen(nuevoIdHecho, file)
+                        apiDinamica.cargarImagen(idHechoCreado, file)
                     );
                 }
 

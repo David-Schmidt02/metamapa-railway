@@ -26,7 +26,7 @@ public class HechosServices {
     @PostConstruct
     public void inicializarInstancias() {
         //this.instanciasMetaMapa.add(new MetaMapaClient("http://localhost:8081"));
-        this.instanciasMetaMapa.add(new MetaMapaClient("http://localhost:8085"));
+        this.instanciasMetaMapa.add(new MetaMapaClient("http://localhost:8092"));
     }
 
     public HechosServices(HechosRepository hechosRepository) {
