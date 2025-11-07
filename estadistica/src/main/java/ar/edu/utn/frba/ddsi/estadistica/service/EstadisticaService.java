@@ -167,10 +167,10 @@ public class EstadisticaService {
 
         List<SolicitudDTO> solicitudes = this.agregadorClient.obtenerSolicitudesSpam();
 
-        solicitudes.forEach(solicitud -> {
-            Solicitud_Cantidad nuevaSolicitud = new Solicitud_Cantidad(solicitudes.size());
-            solicitudCantidadRepository.save(nuevaSolicitud);
-        });
+
+        Solicitud_Cantidad nuevaSolicitud = new Solicitud_Cantidad(solicitudes.size());
+        solicitudCantidadRepository.save(nuevaSolicitud);
+
 
         return solicitudes;
     }
