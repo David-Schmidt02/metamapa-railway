@@ -1,13 +1,11 @@
 package ar.edu.utn.frba.ddsi.agregador.controllers;
 
 
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ActualizacionColeccionDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.ColeccionDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.HechoSearchDTO;
-import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.SolicitudDTO;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.dtos.*;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Categoria;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Filtro;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Hecho;
+import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.Ubicacion;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Estado_Solicitud;
 import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.agregador.services.AgregadorService;
@@ -15,7 +13,9 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.coleccion.Coleccion;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequestMapping("/agregador")
@@ -38,10 +38,16 @@ public class AgregadorController {
         return this.agregadorService.crearColeccion(coleccion);
     }
 
+    @GetMapping("/hechos/{id}")
+    public Hecho obtenerHechoPorId(@PathVariable Integer id) {
+        return this.agregadorService.obtenerHechoPorId(id);
+    }
+
     /**
      * Devuelve una lista de colecciones dependiendo de los parametros enviados en la req.
      * Si no se envian parametros, devuelve todas las colecciones.
      */
+
     @GetMapping("/colecciones")
     public List<Coleccion> obtenerColecciones(){
         return this.agregadorService.obtenerColecciones();
@@ -64,6 +70,7 @@ public class AgregadorController {
      * Elimina una coleccion del sistema a partir de su ID. No devuelve contenido.
      * Si no se encuentra la coleccion, devuelve un error 404.
      */
+
     @DeleteMapping("/colecciones/{id}")
     @ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
     public void eliminarColeccion(@PathVariable Integer id) {
@@ -82,17 +89,18 @@ public class AgregadorController {
 
 
      //Endpoint para modificar coleccion
+
     @PatchMapping("/colecciones/{id}")
     public Coleccion modificarColeccion(@PathVariable Integer id, @RequestBody ActualizacionColeccionDTO actualizacionColeccion) {
 
         if(actualizacionColeccion.getAlgoritmo_consenso() != null) {
-            return this.agregadorService.modificarAlgoritmoConsenso(id, actualizacionColeccion.getAlgoritmo_consenso());
-        } else if (actualizacionColeccion.getUrls_fuente() != null) {
-            return this.agregadorService.modificarListaDeFuentes(id, actualizacionColeccion.getUrls_fuente());
+            this.agregadorService.modificarAlgoritmoConsenso(id, actualizacionColeccion.getAlgoritmo_consenso());
+        } if (actualizacionColeccion.getUrls_fuente() != null) {
+            this.agregadorService.modificarListaDeFuentes(id, actualizacionColeccion.getUrls_fuente());
         } else {
             throw new IllegalArgumentException("Debe proporcionar al menos un campo para actualizar");
         }
-
+        return this.agregadorService.obtenerColeccion(id);
     }
 
 
@@ -143,6 +151,13 @@ public class AgregadorController {
         return agregadorService.encontrarSolicitudes();
     }
 
+    //  ENDPOINT PARA BUSCAR SOLICITUDES PENDIENTES
+
+    @GetMapping("/solicitudes/pendientes")
+    public List<SolicitudEliminacion> obtenerSolicitudesPendientes() {
+        return agregadorService.encontrarSolicitudesPendientes();
+    }
+
 
     // Endpoint para generar solicitudes de eliminacion de hechos le pega metamapa
     @PostMapping("/solicitudes")
@@ -151,6 +166,7 @@ public class AgregadorController {
     }
 
     // Endpoint para aceptar/rechazar solicitudes de eliminacion
+
     @PutMapping("/solicitudes/{id}")
     public SolicitudEliminacion modificarSolicitud(@PathVariable Integer id, @RequestBody Estado_Solicitud nuevoEstado) {
         return agregadorService.modificarEstadoSolicitud(id, nuevoEstado);
@@ -159,13 +175,38 @@ public class AgregadorController {
 
 
     @GetMapping("/hechos")
-    public List<Hecho> obtenerTodosLosHechos() {
-        return this.agregadorService.obtenerTodosLosHechos();
+    public List<Hecho> obtenerTodosLosHechos(@RequestParam(required = false) String categoria,
+                                             @RequestParam(required = false) String fecha_reporte_desde,
+                                             @RequestParam(required = false) String fecha_reporte_hasta,
+                                             @RequestParam(required = false) String fecha_acontecimiento_desde,
+                                             @RequestParam(required = false) String fecha_acontecimiento_hasta,
+                                             @RequestParam(required = false) Double latitud,
+                                             @RequestParam(required = false) Double longitud
+                                             ) {
+
+        var filtros = new Filtro(
+                categoria,
+                fecha_reporte_desde,
+                fecha_reporte_hasta,
+                fecha_acontecimiento_desde,
+                fecha_acontecimiento_hasta,
+                latitud,
+                longitud
+        );
+
+        List<Hecho> unosHechos = this.agregadorService.obtenerTodosLosHechos();
+        return this.agregadorService.hechosFiltrados(unosHechos, filtros);
     }
 
     @GetMapping("/search")
     public List<HechoSearchDTO> busquedaTextoLibre(@RequestParam(required = false) String texto) {
         return agregadorService.buscarTextoLibre(texto);
+    }
+
+    /* Ubicaciones para mapa front */
+    @GetMapping("/hechos/ubicaciones")
+    public List<UbicacionParaMapaDTO> obtenerUbicaciones() {
+        return this.agregadorService.obtenerUbicaciones();
     }
 
 }
