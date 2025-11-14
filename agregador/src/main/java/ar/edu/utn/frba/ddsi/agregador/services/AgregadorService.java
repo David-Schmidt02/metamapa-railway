@@ -19,6 +19,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.solicitudEliminacion.Solic
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -45,10 +46,18 @@ public class AgregadorService {
     private final ArchivoProcesadoRepository archivoProcesadoRepository;
     private final OrigenFuenteRepository origenFuenteRepository;
     private final CategoriaRepository categoriaRepository;
-    private final Importador importador = new Importador();
+    private final Importador importador;
     private LocalDateTime ultimaConsulta;
 
-    public AgregadorService(HechosRepository hechosRepository, FuentesRepository fuentesRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository, CategoriaRepository categoriaRepository) {
+    // URLs Otros servicios
+    @Value("${dinamica.url}")
+    private String dinamicaUrl;
+    @Value("${estatica.url}")
+    private String estaticaUrl;
+    @Value("${proxy.url}")
+    private String proxyUrl;
+
+    public AgregadorService(HechosRepository hechosRepository, FuentesRepository fuentesRepository, SolicitudesRepository solicitudesRepository, ColeccionRepository coleccionRepository, ContribuyenteRepository contribuyenteRepository, ArchivoProcesadoRepository archivoProcesadoRepository, OrigenFuenteRepository origenFuenteRepository, CategoriaRepository categoriaRepository, Importador importador) {
         this.hechosRepository = hechosRepository;
         this.fuentesRepository = fuentesRepository;
         this.solicitudesRepository = solicitudesRepository;
@@ -57,6 +66,7 @@ public class AgregadorService {
         this.archivoProcesadoRepository = archivoProcesadoRepository;
         this.origenFuenteRepository = origenFuenteRepository;
         this.categoriaRepository = categoriaRepository;
+        this.importador = importador;
     }
 
     /**
@@ -82,9 +92,9 @@ public class AgregadorService {
 
         Fuente fuenteExistente = fuentesRepository.findFuenteByNombre("estatica");
         if(fuenteExistente == null){
-            FuenteEstatica fuenteEstatica = new FuenteEstatica( "ESTATICA", "http://localhost:8081/api/estatica/hechos", new ArrayList<>());
-            Fuente dinamica = new Fuente("http://localhost:8082/api/dinamica/hechos", "DINAMICA");
-            Fuente proxy = new Fuente("http://localhost:8083/api/proxy/hechos", "PROXY");
+            FuenteEstatica fuenteEstatica = new FuenteEstatica( "ESTATICA", estaticaUrl + "/api/estatica/hechos", new ArrayList<>());
+            Fuente dinamica = new Fuente(dinamicaUrl + "/api/dinamica/hechos", "DINAMICA");
+            Fuente proxy = new Fuente(proxyUrl + "/api/proxy/hechos", "PROXY");
             fuentesRepository.saveAndFlush(fuenteEstatica);
             fuentesRepository.saveAndFlush(dinamica);
             fuentesRepository.saveAndFlush(proxy);

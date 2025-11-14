@@ -4,6 +4,7 @@ import ar.edu.utn.frba.ddsi.estadistica.models.entities.*;
 import ar.edu.utn.frba.ddsi.estadistica.models.repositories.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,10 @@ import java.util.stream.Collectors;
 @Service
 public class EstadisticaService {
 
-    private final AgregadorClient agregadorClient = new AgregadorClient("http://localhost:8080/agregador");
+    @Value("${agregador.url}")
+    private String agregadorUrl;
+
+    private final AgregadorClient agregadorClient = new AgregadorClient(agregadorUrl + "/agregador");
     private final ProvinciaRepository provinciaRepository;
     private final CategoriaRepository categoriaRepository;
     private final ProvinciaColeccionRepository provinciaColeccionRepository;

@@ -15,7 +15,7 @@ public class ContribuyenteRepository {
 
     private WebClient webClient;
 
-    @Value("http://localhost:8091/internal/usuarios")
+    @Value("${contribuyente.url}/internal/usuarios")
     private String baseUrl;
 
     public ContribuyenteRepository() {

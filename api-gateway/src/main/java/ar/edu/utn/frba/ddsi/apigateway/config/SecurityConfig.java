@@ -1,5 +1,6 @@
 package ar.edu.utn.frba.ddsi.apigateway.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -29,6 +30,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
+    @Value("${visualizador.url}")
+    private String visualizadorUrl;
+
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http.cors(cors -> {})
@@ -39,7 +43,7 @@ public class SecurityConfig {
                 // sin esto no puedo hacer post a los endpoints que requieren roles especificos
                 .cors(cors -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedOrigins(List.of(visualizadorUrl));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
                     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

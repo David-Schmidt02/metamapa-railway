@@ -7,6 +7,7 @@ import ar.edu.utn.frba.ddsi.agregador.models.repositories.ArchivoProcesadoReposi
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.CategoriaRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ContribuyenteRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.OrigenFuenteRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,17 +16,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 
+@Component
 public class Importador {
 
     protected WebClient webClient;
-    private final Conversor conversor = new Conversor();
+    private final Conversor conversor;
 
     final int size = (int) DataSize.ofMegabytes(16).toBytes();
     final ExchangeStrategies strategies = ExchangeStrategies.builder()
             .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(size))
             .build();
 
-    public Importador() {
+    public Importador(Conversor conversor) {
+        this.conversor = conversor;
         this.webClient = WebClient.builder()
                 .baseUrl("")
                 .exchangeStrategies(strategies)

@@ -6,11 +6,18 @@ import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.Estatic
 import ar.edu.utn.frba.ddsi.agregador.models.entities.hecho.origenFuente.OrigenFuente;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.CategoriaRepository;
 import ar.edu.utn.frba.ddsi.agregador.models.repositories.ContribuyenteRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 
+@Component
 public class Conversor {
+
+    @Value("${normalizador.url}")
+    private String normalizadorUrl;
+
     public Conversor() {}
 
     public Hecho convertirHecho(HechoDTO hechoDTO, OrigenFuente origen, ContribuyenteRepository contribuyenteRepository, CategoriaRepository categoriaRepository) {
@@ -46,7 +53,7 @@ public class Conversor {
     }
 
     public HechoDTO aplicarNormalizacion(HechoDTO hecho) {
-        WebClient webClient = WebClient.create("http://localhost:8087");
+        WebClient webClient = WebClient.create(normalizadorUrl);
         return webClient.patch()
                 .uri("/normalizador/normalizar")
                 .bodyValue(hecho)

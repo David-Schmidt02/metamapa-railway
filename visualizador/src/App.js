@@ -18,8 +18,10 @@ import { Spinner } from "react-bootstrap";
 import ColeccionesPage  from "./features/colecciones/ColeccionesPage";
 import ColeccionesHechoPage from "./features/viewHechos-page/coleccion-page.jsx";
 
+const keyCloakBaseUrl = process.env.REACT_APP_KEYCLOAK_URL_BASE || "http://localhost:9090/";
+
 const kcConfig = {
-    url: "http://localhost:9090/",
+    url: keyCloakBaseUrl,
     realm: "MetaMapa",
     clientId: "metamapa-frontend"
 };

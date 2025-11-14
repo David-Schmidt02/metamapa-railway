@@ -20,9 +20,9 @@ const algoritmosConsenso = [
 const tiposDeFuente = ["ESTATICA", "DINAMICA", "PROXY"];
 
 const urlsFuentes = {
-    "ESTATICA": "http://localhost:8081/api/estatica/hechos",
-    "DINAMICA": "http://localhost:8082/api/dinamica/hechos",
-    "PROXY": "http://localhost:8083/api/proxy/hechos"
+    "ESTATICA": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/estatica/hechos`,
+    "DINAMICA": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/dinamica/hechos`,
+    "PROXY": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/proxy/hechos`
 }
 
 const criteriosDisponibles = [

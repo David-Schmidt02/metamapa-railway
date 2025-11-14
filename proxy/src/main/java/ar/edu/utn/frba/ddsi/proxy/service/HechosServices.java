@@ -7,6 +7,7 @@ import ar.edu.utn.frba.ddsi.proxy.models.entities.Hecho.Hecho;
 import ar.edu.utn.frba.ddsi.proxy.models.entities.solicitudes.SolicitudEliminacion;
 import ar.edu.utn.frba.ddsi.proxy.models.repositories.HechosRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,10 +24,12 @@ public class HechosServices {
     private final HechosRepository hechosRepository;
     private static List<MetaMapaClient> instanciasMetaMapa = new ArrayList<>();
 
+    @Value("${metamapa.instancia.url}")
+    private String metaMapaUrl;
+
     @PostConstruct
     public void inicializarInstancias() {
-        //this.instanciasMetaMapa.add(new MetaMapaClient("http://localhost:8081"));
-        this.instanciasMetaMapa.add(new MetaMapaClient("http://localhost:8092"));
+        this.instanciasMetaMapa.add(new MetaMapaClient(metaMapaUrl));
     }
 
     public HechosServices(HechosRepository hechosRepository) {
