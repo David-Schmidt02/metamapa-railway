@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { API_GATEWAY_BASE_URL } from './config'
 import { data } from 'react-router'
 import qs from 'qs'
 
@@ -6,7 +7,7 @@ class ApiDinamica {
     constructor() {
         this.tokenAuth = null
         this.axiosInstance = axios.create({
-            baseURL: `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/dinamica` || 'http://localhost:8089/api/dinamica',
+            baseURL: `${API_GATEWAY_BASE_URL}/api/dinamica`,
         })
     }
 

@@ -2,6 +2,7 @@ import axios from 'axios'
 import { data } from 'react-router'
 import qs from 'qs'
 import kc from "../App.js"
+import { API_GATEWAY_BASE_URL } from './config'
 
 class ApiEstadistica {
     constructor() {
@@ -9,7 +10,7 @@ class ApiEstadistica {
         this.tokenAuth = null;
 
         this.axiosInstance = axios.create({
-            baseURL: `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/estadisticas` || 'http://localhost:8089/api/estadisticas',
+            baseURL: `${API_GATEWAY_BASE_URL}/api/estadisticas`,
         });
 
         // --- 2. AÑADE EL INTERCEPTOR DE PETICIONES ---
