@@ -30,14 +30,16 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.4
-    command: start-dev --http-port 9090 --hostname-strict=false --hostname=localhost
+    command: start-dev --http-port 9090 --hostname-strict=false --hostname=${KEYCLOAK_FRONTEND_HOST}
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: localhost
+      KC_HOSTNAME: ${KEYCLOAK_FRONTEND_HOST}
       KC_HOSTNAME_PORT: 9090
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HOSTNAME_URL: ${KEYCLOAK_FRONTEND_URL}
     volumes:
       - keycloak_data:/opt/keycloak/data
     ports:
@@ -55,8 +57,10 @@ services:
       ESTADISTICA_URL: ${ESTADISTICA_URL}
       DINAMICA_URL: ${DINAMICA_URL}
       AGREGADOR_URL: ${AGREGADOR_URL}
-      KEYCLOAK_URL: ${KEYCLOAK_URL}
-      KEYCLOAK_JWK_SET_URI: ${KEYCLOAK_JWK_SET_URI}
+      KEYCLOAK_REALM_URL_PUBLIC: ${KEYCLOAK_REALM_URL_PUBLIC}
+      KEYCLOAK_REALM_URL_INTERNAL: ${KEYCLOAK_REALM_URL_INTERNAL}
+      KEYCLOAK_JWK_SET_URI_PUBLIC: ${KEYCLOAK_JWK_SET_URI_PUBLIC}
+      KEYCLOAK_JWK_SET_URI_INTERNAL: ${KEYCLOAK_JWK_SET_URI_INTERNAL}
       KEYCLOAK_VALID_ISSUERS: ${KEYCLOAK_VALID_ISSUERS}
       REACT_APP_API_URL: ${REACT_APP_API_URL}
     depends_on:
