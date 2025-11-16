@@ -9,6 +9,7 @@
   - `KEYCLOAK_JWK_SET_URI_INTERNAL=http://keycloak:9090/realms/MetaMapa/protocol/openid-connect/certs` (resolver llaves con red interna)
   - `KEYCLOAK_JWK_SET_URI_PUBLIC=http://localhost:9090/realms/MetaMapa/protocol/openid-connect/certs` (opcional: JWKS accesible desde el host)
   - Si no defines las variables de JWK, el gateway deriva `${KEYCLOAK_REALM_URL_PUBLIC}/protocol/openid-connect/certs` automáticamente.
+
   - `GATEWAY_PORT=8089`, `FRONTEND_PORT=3000`
   - `REACT_APP_API_URL=http://localhost:8089` (para dev; en build se pasa por build-arg)
 - `docker-compose.prod.yml`: define todos los servicios.
