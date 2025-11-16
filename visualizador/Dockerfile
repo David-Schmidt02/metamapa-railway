@@ -7,6 +7,10 @@ COPY . .
 # Ajusta REACT_APP_API_URL al gateway interno cuando construyas la imagen (puedes pasarla como build-arg)
 ARG REACT_APP_API_URL=http://localhost:8089
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
+# Base del API Gateway usada por los clientes Axios
+ARG REACT_APP_API_GATEWAY_URL_BASE=http://localhost:8089
+ENV REACT_APP_API_GATEWAY_URL_BASE=$REACT_APP_API_GATEWAY_URL_BASE
 RUN npm run build
 
 # Stage 2: serve static files with nginx

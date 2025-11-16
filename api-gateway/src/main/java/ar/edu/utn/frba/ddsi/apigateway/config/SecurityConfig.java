@@ -31,9 +31,6 @@ public class SecurityConfig {
     @Value("${visualizador.url}")
     private String visualizadorUrl;
 
-    @Value("${keycloak.url}")
-    private String keycloakUrl;
-
     @Value("${keycloak.jwk-set-uri}")
     private String keycloakJwkSetUri;
 

@@ -1,10 +1,14 @@
  Deploy Docker (MetaMapa) – Guía rápida
 
 ## 1. Variables y archivos
-- `.env` (raíz): credenciales DB, puertos, Keycloak URL, etc.
+- `.env` (raíz): credenciales DB, puertos, URLs públicas/internas de Keycloak, etc.
   - `MYSQL_USER=admin`, `MYSQL_PASSWORD=...`
   - `MYSQL_DB_AGREGADOR/…/DINAMICA/…/ESTADISTICA/GESTOR`
-  - `KEYCLOAK_URL=http://keycloak:9090/realms/MetaMapa`
+  - `KEYCLOAK_REALM_URL_PUBLIC=http://localhost:9090/realms/MetaMapa` (issuer que ve el navegador)
+  - `KEYCLOAK_REALM_URL_INTERNAL=http://keycloak:9090/realms/MetaMapa` (uso interno entre contenedores)
+  - `KEYCLOAK_JWK_SET_URI_INTERNAL=http://keycloak:9090/realms/MetaMapa/protocol/openid-connect/certs` (resolver llaves con red interna)
+  - `KEYCLOAK_JWK_SET_URI_PUBLIC=http://localhost:9090/realms/MetaMapa/protocol/openid-connect/certs` (opcional: JWKS accesible desde el host)
+  - Si no defines las variables de JWK, el gateway deriva `${KEYCLOAK_REALM_URL_PUBLIC}/protocol/openid-connect/certs` automáticamente.
   - `GATEWAY_PORT=8089`, `FRONTEND_PORT=3000`
   - `REACT_APP_API_URL=http://localhost:8089` (para dev; en build se pasa por build-arg)
 - `docker-compose.prod.yml`: define todos los servicios.
@@ -49,7 +53,7 @@ FLUSH PRIVILEGES;"
    - Web origins: `http://localhost:3000` (en pruebas, `+` para permitir todos).
    - Standard flow: ON. Client authentication: OFF (si es public).
 3) Usuario de prueba con contraseña y roles si aplica.
-4) Gateway usa `KEYCLOAK_URL=http://keycloak:9090/realms/MetaMapa`.
+4) Gateway valida tokens con `KEYCLOAK_REALM_URL_PUBLIC=http://localhost:9090/realms/MetaMapa` y descarga JWKS usando la URL interna `KEYCLOAK_JWK_SET_URI_INTERNAL=http://keycloak:9090/realms/MetaMapa/protocol/openid-connect/certs`.
 
 Token rápido (grant password):
 ```bash

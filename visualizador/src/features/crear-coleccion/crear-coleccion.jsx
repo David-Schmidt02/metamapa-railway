@@ -9,6 +9,7 @@ import {
     Spinner
 } from 'react-bootstrap';
 import ApiAgregador from "../../api/api-agregador";
+import { API_GATEWAY_BASE_URL } from '../../api/config'
 
 const algoritmosConsenso = [
     "MULTIPLES_MENCIONES",
@@ -20,9 +21,9 @@ const algoritmosConsenso = [
 const tiposDeFuente = ["ESTATICA", "DINAMICA", "PROXY"];
 
 const urlsFuentes = {
-    "ESTATICA": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/estatica/hechos`,
-    "DINAMICA": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/dinamica/hechos`,
-    "PROXY": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/proxy/hechos`
+    "ESTATICA": `${API_GATEWAY_BASE_URL}/api/estatica/hechos`,
+    "DINAMICA": `${API_GATEWAY_BASE_URL}/api/dinamica/hechos`,
+    "PROXY": `${API_GATEWAY_BASE_URL}/api/proxy/hechos`
 }
 
 const criteriosDisponibles = [
