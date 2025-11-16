@@ -10,7 +10,9 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -18,6 +20,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +30,47 @@ public class SecurityConfig {
 
     @Value("${visualizador.url}")
     private String visualizadorUrl;
+
+    @Value("${keycloak.url}")
+    private String keycloakUrl;
+
+    @Value("${keycloak.jwk-set-uri}")
+    private String keycloakJwkSetUri;
+
+    @Value("${keycloak.valid-issuers}")
+    private String keycloakValidIssuers;
+
+    /**
+     * Configura el JwtDecoder para aceptar múltiples issuers válidos.
+     * Esto permite trabajar en desarrollo (localhost) y producción (dominio público).
+     */
+    @Bean
+    public ReactiveJwtDecoder jwtDecoder() {
+        // Construir decoder con la URI de JWK Set
+        NimbusReactiveJwtDecoder decoder = NimbusReactiveJwtDecoder
+            .withJwkSetUri(keycloakJwkSetUri)
+            .build();
+
+        // Parsear los issuers válidos desde la variable de entorno (separados por coma)
+        List<String> validIssuers = Arrays.asList(keycloakValidIssuers.split(","));
+        
+        // Crear validadores de issuer para cada issuer válido
+        List<OAuth2TokenValidator<Jwt>> issuerValidators = validIssuers.stream()
+            .map(String::trim)
+            .map(JwtIssuerValidator::new)
+            .collect(java.util.stream.Collectors.toList());
+
+        // Combinar todos los validadores
+        OAuth2TokenValidator<Jwt> issuerValidator = new DelegatingOAuth2TokenValidator<>(issuerValidators);
+        OAuth2TokenValidator<Jwt> timestampValidator = new JwtTimestampValidator();
+        OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(
+            timestampValidator,
+            issuerValidator
+        );
+
+        decoder.setJwtValidator(combinedValidator);
+        return decoder;
+    }
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
