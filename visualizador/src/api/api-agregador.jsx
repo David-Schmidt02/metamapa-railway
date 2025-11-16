@@ -1,13 +1,14 @@
 import axios from 'axios'
 import { data } from 'react-router'
 import qs from 'qs'
+import { API_GATEWAY_BASE_URL } from './config'
 
 class ApiAgregador {
 
     constructor() {
         this.tokenAuth = null
         this.axiosInstance = axios.create({
-            baseURL: `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/agregador` || 'http://localhost:8089/agregador',
+            baseURL: `${API_GATEWAY_BASE_URL}/agregador`,
         })
     }
 

@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 // import InputGroup from 'react-bootstrap/InputGroup' // No se usaba
 import './ventana-configuracion.css'
+import { API_GATEWAY_BASE_URL } from '../../../../api/config'
 
 const ALGORITMOS = [
     { key: 'MULTIPLES_MENCIONES', label: 'Múltiples menciones' },
@@ -62,9 +63,9 @@ export default function VentanaConfiguracion({ show, onClose, onConfirm, fuentes
 
     // Definimos las fuentes hardcodeadas como en tu ejemplo
     const urlsFuentes = {
-        "ESTATICA": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/estatica/hechos`,
-        "DINAMICA": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/dinamica/hechos`,
-        "PROXY": `${process.env.REACT_APP_API_GATEWAY_URL_BASE}/api/proxy/hechos`
+        "ESTATICA": `${API_GATEWAY_BASE_URL}/api/estatica/hechos`,
+        "DINAMICA": `${API_GATEWAY_BASE_URL}/api/dinamica/hechos`,
+        "PROXY": `${API_GATEWAY_BASE_URL}/api/proxy/hechos`
     }
     const tiposDeFuente = ["ESTATICA", "DINAMICA", "PROXY"];
 
