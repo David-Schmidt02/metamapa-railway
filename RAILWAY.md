@@ -63,12 +63,11 @@ Para cada servicio, haz lo siguiente:
 
 #### A. Keycloak
 
-1. Click **"+ New"** → **"Empty Service"**
-2. Nombre: `keycloak`
-3. En **Settings** → **Source**:
-   - Source: **"Docker Image"**
-   - Image: `quay.io/keycloak/keycloak:26.4.2`
-   - Deploy Command: `start --import-realm`
+1. Click **"+ New"** → **"GitHub Repo"**
+2. Selecciona tu repositorio `metamapa-grupo10`
+3. En **Settings**:
+   - **Root Directory**: `keycloak-config`
+   - Railway detectará automáticamente el Dockerfile
 4. En **Variables**, agrega:
    ```
    KC_DB=mysql
