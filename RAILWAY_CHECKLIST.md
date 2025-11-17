@@ -22,9 +22,9 @@ Usa este checklist para asegurarte de que todos los pasos están completos.
   - [ ] `keycloak_db`
 
 ### 2. Keycloak
-- [ ] Servicio creado (Empty Service)
-- [ ] Configurado como Docker Image: `quay.io/keycloak/keycloak:26.4.2`
-- [ ] Deploy Command: `start --import-realm`
+- [ ] Servicio creado desde GitHub
+- [ ] Root Directory: `keycloak-config`
+- [ ] Railway detectará automáticamente el Dockerfile
 - [ ] Variables de entorno configuradas:
   - [ ] `KC_DB`
   - [ ] `KC_DB_URL_HOST`
