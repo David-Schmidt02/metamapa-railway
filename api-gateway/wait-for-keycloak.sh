@@ -11,8 +11,8 @@ echo "------ Esperando a Keycloak en $KEYCLOAK_URL ------"
 # El bucle se repite mientras 'curl' falle (código de salida != 0)
 until curl -s -f -o /dev/null "$KEYCLOAK_URL"
 do
-  echo "Keycloak o el realm 'MetaMapa' aún no están listos. Reintentando en 5 segundos..."
-  sleep 5
+  echo "Keycloak o el realm 'MetaMapa' aún no están listos. Reintentando en 15 segundos..."
+  sleep 15
 done
 
 echo "------ ¡Keycloak y el realm MetaMapa están listos! ------"

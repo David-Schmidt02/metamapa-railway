@@ -1,3 +1,6 @@
+include:
+  - keycloak-config/docker-compose.init.yml
+
 services:
 
   # MySQL para entorno demo/prod (usar RDS gestionado en cloud real)

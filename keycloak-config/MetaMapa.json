@@ -50,7 +50,7 @@
       {
         "id": "83f90b2c-b148-4b3c-a6d1-642606043a4e",
         "name": "admin",
-        "description": "",
+        "description": "${role_admin}",
         "composite": false,
         "clientRole": false,
         "containerId": "1a646ea9-50b9-462e-bf1b-124e6ef7be93",
