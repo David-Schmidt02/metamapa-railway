@@ -29,20 +29,37 @@ services:
       start_period: 30s # Incrementamos el start_period por seguridad
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0.4
-    command: start-dev --http-port 9090 --hostname-strict=false --hostname=localhost
+    image: quay.io/keycloak/keycloak:26.4.2
+    command: start --import-realm
+    env_file: .env
     environment:
+      # 1. Configuración de Base de Datos (Esto está bien)
+      KC_DB: mysql
+      KC_DB_URL_HOST: mysql
+      KC_DB_URL_DATABASE: keycloak_db
+      KC_DB_USERNAME: ${MYSQL_USER}
+      KC_DB_PASSWORD: ${MYSQL_PASSWORD}
+
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # 2. Configuración de Host (Esto está bien)
       KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 9090
+      KC_HTTP_PORT: 9090
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+
+      # 3. ELIMINADAS LAS LÍNEAS DE BOOTSTRAP ADMIN EN CONFLICTO
+
     volumes:
-      - keycloak_data:/opt/keycloak/data
+      # 4. LA RUTA DE VOLUMEN CORRECTA para la importación
+      - ./keycloak-config:/opt/keycloak/data/import:ro
+
     ports:
       - "9090:9090"
     restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   api-gateway:
     build: ./api-gateway

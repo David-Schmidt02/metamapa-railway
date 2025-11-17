@@ -19,5 +19,8 @@ GRANT ALL PRIVILEGES ON estadistica_db.* TO 'admin'@'%';
 GRANT ALL PRIVILEGES ON usuarios_db.* TO 'admin'@'%';
 GRANT ALL PRIVILEGES ON gestor_db.* TO 'admin'@'%';
 
+CREATE DATABASE IF NOT EXISTS keycloak_db;
+GRANT ALL PRIVILEGES ON keycloak_db.* TO 'admin'@'%';
+
 # Aplica los cambios de privilegios
 FLUSH PRIVILEGES;

@@ -11,9 +11,24 @@ RUN mvn -B -DskipTests clean package
 ## Etapa runtime: imagen liviana con solo JRE
 FROM eclipse-temurin:17-jre
 WORKDIR /app
+
+# --- INICIO DE MODIFICACIONES ---
+# Instalar curl (esta imagen usa 'apt-get') y limpiar caché
+USER root
+RUN apt-get update && apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copiar el script de espera (debe estar en esta misma carpeta)
+COPY wait-for-keycloak.sh /app/wait-for-keycloak.sh
+RUN chmod +x /app/wait-for-keycloak.sh
+# --- FIN DE MODIFICACIONES ---
+
 # Tomamos el JAR ya construido desde la etapa anterior
 COPY --from=build /app/target/*.jar app.jar
+
 # Puerto expuesto por el servicio
 EXPOSE 8089
-# Arranque del servicio
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+
+# CAMBIO: El Entrypoint ahora es el script de espera.
+# Este script se encargará de ejecutar "java -jar /app/app.jar" cuando Keycloak esté listo.
+ENTRYPOINT ["/app/wait-for-keycloak.sh"]
