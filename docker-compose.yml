@@ -22,11 +22,11 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_PASSWORD}"] # Usamos -uroot
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s
+      start_period: 30s # Incrementamos el start_period por seguridad
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.4

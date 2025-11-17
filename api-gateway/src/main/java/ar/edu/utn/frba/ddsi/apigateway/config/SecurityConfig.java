@@ -48,25 +48,35 @@ public class SecurityConfig {
     public ReactiveJwtDecoder jwtDecoder() {
         // Construir decoder con la URI de JWK Set
         NimbusReactiveJwtDecoder decoder = NimbusReactiveJwtDecoder
-            .withJwkSetUri(keycloakJwkSetUri)
-            .build();
+                .withJwkSetUri(keycloakJwkSetUri)
+                .build();
+
+        // --- INICIO DE LA CORRECCIÓN ---
 
         // Parsear los issuers válidos desde la variable de entorno (separados por coma)
-        List<String> validIssuers = Arrays.asList(keycloakValidIssuers.split(","));
-        
-        // Crear validadores de issuer para cada issuer válido
-        List<OAuth2TokenValidator<Jwt>> issuerValidators = validIssuers.stream()
-            .map(String::trim)
-            .map(JwtIssuerValidator::new)
-            .collect(java.util.stream.Collectors.toList());
+        List<String> validIssuers = Arrays.stream(keycloakValidIssuers.split(","))
+                .map(String::trim)
+                .toList();
 
-        // Combinar todos los validadores
-        OAuth2TokenValidator<Jwt> issuerValidator = new DelegatingOAuth2TokenValidator<>(issuerValidators);
+        // Un validador de 'timestamp' (expiración)
         OAuth2TokenValidator<Jwt> timestampValidator = new JwtTimestampValidator();
+
+        // Un validador customizado para el 'issuer' (iss)
+        // Valida si el 'iss' del token ESTÁ EN la lista de 'validIssuers'
+        OAuth2TokenValidator<Jwt> issuerValidator = new JwtClaimValidator<String>(JwtClaimNames.ISS, issuer -> {
+            if (issuer == null) {
+                return false;
+            }
+            return validIssuers.contains(issuer);
+        });
+
+        // Combinar ambos validadores (el delegador SÍ funciona bien aquí)
         OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(
-            timestampValidator,
-            issuerValidator
+                timestampValidator,
+                issuerValidator
         );
+
+        // --- FIN DE LA CORRECCIÓN ---
 
         decoder.setJwtValidator(combinedValidator);
         return decoder;
