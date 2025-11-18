@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(dos2unix:*)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
